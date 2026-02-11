@@ -1,0 +1,5 @@
+com\eventmgmt\notifications\resource\NotificationResource.class
+com\eventmgmt\notifications\model\Notification.class
+com\eventmgmt\notifications\repository\NotificationRepository.class
+com\eventmgmt\notifications\service\NotificationService.class
+META-INF\panache-archive.marker

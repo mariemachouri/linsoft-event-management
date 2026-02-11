@@ -1,0 +1,5 @@
+com\eventmgmt\dashboard\repository\DashboardSnapshotRepository.class
+com\eventmgmt\dashboard\resource\DashboardSnapshotResource.class
+com\eventmgmt\dashboard\model\DashboardSnapshot.class
+com\eventmgmt\dashboard\service\DashboardSnapshotService.class
+META-INF\panache-archive.marker

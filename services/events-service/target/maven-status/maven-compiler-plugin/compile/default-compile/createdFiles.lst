@@ -1,0 +1,5 @@
+com\eventmgmt\events\repository\EventRepository.class
+com\eventmgmt\events\service\EventService.class
+com\eventmgmt\events\model\Event.class
+com\eventmgmt\events\resource\EventResource.class
+META-INF\panache-archive.marker
