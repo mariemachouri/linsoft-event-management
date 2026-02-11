@@ -1,5 +1,0 @@
-com\eventmgmt\users\model\UserProfile.class
-com\eventmgmt\users\repository\UserProfileRepository.class
-com\eventmgmt\users\resource\UserProfileResource.class
-com\eventmgmt\users\service\UserProfileService.class
-META-INF\panache-archive.marker

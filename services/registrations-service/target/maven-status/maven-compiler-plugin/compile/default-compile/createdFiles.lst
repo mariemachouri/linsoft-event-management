@@ -1,5 +1,0 @@
-com\eventmgmt\registrations\model\Registration.class
-com\eventmgmt\registrations\repository\RegistrationRepository.class
-com\eventmgmt\registrations\service\RegistrationService.class
-com\eventmgmt\registrations\resource\RegistrationResource.class
-META-INF\panache-archive.marker
