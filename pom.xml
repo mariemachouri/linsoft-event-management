@@ -6,6 +6,9 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>services/eureka-server</module>
+    <module>services/config-server</module>
+    <module>services/gateway-service</module>
     <module>services/events-service</module>
     <module>services/registrations-service</module>
     <module>services/users-service</module>

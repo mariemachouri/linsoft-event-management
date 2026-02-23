@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: ./services/eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - eventmgmt-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  config-server:
+    build:
+      context: ./services/config-server
+      dockerfile: Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - eventmgmt-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  gateway-service:
+    build:
+      context: ./services/gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - eventmgmt-network
+
+  events-service:
+    build:
+      context: ./services/events-service
+      dockerfile: Dockerfile
+    container_name: events-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+  registrations-service:
+    build:
+      context: ./services/registrations-service
+      dockerfile: Dockerfile
+    container_name: registrations-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+  users-service:
+    build:
+      context: ./services/users-service
+      dockerfile: Dockerfile
+    container_name: users-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+      dockerfile: Dockerfile
+    container_name: notifications-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+  dashboard-service:
+    build:
+      context: ./services/dashboard-service
+      dockerfile: Dockerfile
+    container_name: dashboard-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+  charges-service:
+    build:
+      context: ./services/charges-service
+      dockerfile: Dockerfile
+    container_name: charges-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - eventmgmt-network
+
+networks:
+  eventmgmt-network:
+    driver: bridge
