@@ -8,6 +8,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -45,5 +46,11 @@ public class EventResource {
         if (!service.delete(id)) {
             throw new NotFoundException();
         }
+    }
+
+    @PUT
+    @Path("{id}/charges/{chargeId}")
+    public Event addChargeToEvent(@PathParam("id") String eventId, @PathParam("chargeId") String chargeId) {
+        return service.addCharge(eventId, chargeId);
     }
 }

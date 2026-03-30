@@ -1,0 +1,117 @@
+<div class="content users-container">
+  <!-- En-tête -->
+  <div class="page-header mb-5">
+    <div class="header-content">
+      <h1 class="page-title">👥 Gestion des Utilisateurs</h1>
+      <p class="page-subtitle">Gérez et administrez tous les utilisateurs du système</p>
+    </div>
+    <div class="header-action">
+      <button class="btn btn-primary" routerLink="./create">
+        <i class="tim-icons icon-add"></i>Nouvel Utilisateur
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages d'erreur -->
+  <div *ngIf="error" class="alert alert-danger mb-4">
+    <i class="tim-icons icon-simple-remove"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Carte principale -->
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div>
+          <h5 class="card-title">Liste des Utilisateurs</h5>
+          <p class="card-subtitle">Tous les utilisateurs enregistrés dans le système</p>
+        </div>
+        <span class="badge badge-primary" *ngIf="users.length > 0">
+          {{ users.length }} utilisateur(s)
+        </span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <!-- État de Chargement -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p>Chargement des utilisateurs...</p>
+      </div>
+
+      <!-- Aucun utilisateur -->
+      <div *ngIf="!loading && users.length === 0" class="empty-state">
+        <i class="tim-icons icon-single-02"></i>
+        <h3>Aucun utilisateur trouvé</h3>
+        <p>Commencez par créer un nouvel utilisateur</p>
+        <button class="btn btn-primary mt-3" routerLink="./create">
+          <i class="tim-icons icon-add"></i>Créer un utilisateur
+        </button>
+      </div>
+
+      <!-- Tableau Utilisateurs -->
+      <div *ngIf="!loading && users.length > 0" class="table-wrapper">
+        <div class="table-responsive">
+          <table class="table table-hover users-table">
+            <thead>
+              <tr>
+                <th class="text-center">
+                  <input type="checkbox" class="form-check-input" />
+                </th>
+                <th><i class="tim-icons icon-single-02"></i> Utilisateur</th>
+                <th><i class="tim-icons icon-email-85"></i> Email</th>
+                <th><i class="tim-icons icon-single-copy-04"></i> Prénom</th>
+                <th><i class="tim-icons icon-single-copy-04"></i> Nom</th>
+                <th class="text-center"><i class="tim-icons icon-settings"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users" class="user-row">
+                <td class="text-center">
+                  <input type="checkbox" class="form-check-input" />
+                </td>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">
+                      {{ user.username?.charAt(0).toUpperCase() }}
+                    </div>
+                    <strong class="username">{{ user.username }}</strong>
+                  </div>
+                </td>
+                <td>
+                  <span class="user-email">{{ user.email || '-' }}</span>
+                </td>
+                <td>
+                  <span class="text-muted">{{ user.firstName || '-' }}</span>
+                </td>
+                <td>
+                  <span class="text-muted">{{ user.lastName || '-' }}</span>
+                </td>
+                <td class="text-center">
+                  <div class="action-buttons">
+                    <button
+                      class="btn btn-sm btn-info"
+                      (click)="editUser(user)"
+                      title="Éditer"
+                    >
+                      <i class="tim-icons icon-pencil"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      (click)="deleteUser(user.id)"
+                      title="Supprimer"
+                    >
+                      <i class="tim-icons icon-trash-simple"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

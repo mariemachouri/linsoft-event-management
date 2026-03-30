@@ -1,0 +1,171 @@
+
+<div class="tables-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📊 Tableau de Gestion</h1>
+      <p class="subtitle">Gérez et consultez vos données facilement</p>
+    </div>
+    <button class="btn btn-primary">
+      <i class="tim-icons icon-simple-add"></i> Ajouter
+    </button>
+  </div>
+
+  <!-- Tables Section -->
+  <div class="row">
+    <!-- Simple Table -->
+    <div class="col-md-12">
+      <div class="table-card">
+        <!-- Table Header -->
+        <div class="table-header">
+          <div>
+            <h3 class="table-title">👥 Données Utilisateurs</h3>
+            <p class="table-subtitle">Liste complète des utilisateurs et informations</p>
+          </div>
+          <div class="table-controls">
+            <input type="text" class="search-input" placeholder="Rechercher...">
+            <select class="filter-select">
+              <option>Tout filtrer</option>
+              <option>Actif</option>
+              <option>Inactif</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="checkbox-col">
+                  <input type="checkbox" id="selectAll">
+                </th>
+                <th>Nom</th>
+                <th>Pays</th>
+                <th>Ville</th>
+                <th>Salaire</th>
+                <th class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">DR</span> Dakota Rice</td>
+                <td>Niger</td>
+                <td>Oud-Turnhout</td>
+                <td><span class="salary-badge">$36,738</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">MH</span> Minerva Hooper</td>
+                <td>Curaçao</td>
+                <td>Sinaai-Waas</td>
+                <td><span class="salary-badge">$23,789</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">SR</span> Sage Rodriguez</td>
+                <td>Netherlands</td>
+                <td>Baileux</td>
+                <td><span class="salary-badge">$56,142</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">PC</span> Philip Chaney</td>
+                <td>Korea, South</td>
+                <td>Overland Park</td>
+                <td><span class="salary-badge">$38,735</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">DG</span> Doris Greene</td>
+                <td>Malawi</td>
+                <td>Feldkirchen in Kärnten</td>
+                <td><span class="salary-badge">$63,542</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">MP</span> Mason Porter</td>
+                <td>Chile</td>
+                <td>Gloucester</td>
+                <td><span class="salary-badge">$78,615</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-col"><input type="checkbox"></td>
+                <td><span class="name-badge">JP</span> Jon Porter</td>
+                <td>Portugal</td>
+                <td>Gloucester</td>
+                <td><span class="salary-badge">$98,615</span></td>
+                <td class="actions-col">
+                  <button class="btn-action btn-edit" title="Modifier"><i class="tim-icons icon-pencil"></i></button>
+                  <button class="btn-action btn-delete" title="Supprimer"><i class="tim-icons icon-trash-simple"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Footer - Pagination -->
+        <div class="table-footer">
+          <div class="pagination-info">Affichage 1 à 7 sur 7</div>
+          <div class="pagination">
+            <button class="page-btn" disabled>&lt; Précédent</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">Suivant &gt;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="col-md-6 mt-4">
+      <div class="stat-card card-summary">
+        <div class="stat-icon summary-icon-1">
+          <i class="tim-icons icon-single-02"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Total Enregistrements</p>
+          <h3 class="stat-value">1,248</h3>
+          <p class="stat-change">↑ 12% cette semaine</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mt-4">
+      <div class="stat-card card-summary">
+        <div class="stat-icon summary-icon-2">
+          <i class="tim-icons icon-chart-bar-32"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Moyenne Salaire</p>
+          <h3 class="stat-value">$54,829</h3>
+          <p class="stat-change">↑ 5% vs mois dernier</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

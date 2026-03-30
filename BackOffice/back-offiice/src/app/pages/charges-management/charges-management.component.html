@@ -1,0 +1,73 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="card-title">Charges Management</h4>
+              <p class="card-category">Manage all charges and expenses</p>
+            </div>
+            <div class="text-right">
+              <h3 class="text-info">Total: ${{ getTotalCharges() | number:'1.2-2' }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+            <button type="button" class="close" (click)="error = null">
+              <span>&times;</span>
+            </button>
+          </div>
+
+          <div class="table-responsive" *ngIf="!loading">
+            <table class="table tablesorter">
+              <thead class="text-primary">
+                <tr>
+                  <th>Description</th>
+                  <th>Event ID</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let charge of charges">
+                  <td>{{ charge.description }}</td>
+                  <td>{{ charge.eventId }}</td>
+                  <td>{{ charge.category || 'General' }}</td>
+                  <td class="text-info">
+                    <strong>${{ charge.amount | number:'1.2-2' }}</strong>
+                  </td>
+                  <td>{{ charge.date | date:'short' }}</td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-info" title="View">
+                      <i class="tim-icons icon-notes"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning" title="Edit">
+                      <i class="tim-icons icon-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteCharge(charge.id!)" title="Delete">
+                      <i class="tim-icons icon-trash-simple"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="charges.length === 0">
+                  <td colspan="6" class="text-center">No charges found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

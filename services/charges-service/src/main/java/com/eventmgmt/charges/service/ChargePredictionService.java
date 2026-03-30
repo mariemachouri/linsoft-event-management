@@ -1,6 +1,8 @@
 package com.eventmgmt.charges.service;
 
 import com.eventmgmt.charges.model.ChargePrediction;
+import com.eventmgmt.charges.model.ChargeStatus;
+import com.eventmgmt.charges.model.PaymentMethod;
 import com.eventmgmt.charges.repository.ChargePredictionRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -30,7 +32,7 @@ public class ChargePredictionService {
         prediction.eventId = eventId;
         prediction.organizerId = organizerId;
         prediction.eventMetrics = eventMetrics;
-        prediction.status = "pending";
+        prediction.status = ChargeStatus.PENDING;
         prediction.createdAt = LocalDateTime.now().toString();
         
         // Utiliser l'IA pour prédire les charges
@@ -38,7 +40,7 @@ public class ChargePredictionService {
         
         // Initialiser la décision de paiement avec les recommandations IA
         prediction.paymentDecision = new ChargePrediction.PaymentDecision();
-        java.util.List<String> recommendedMethods = aiService.recommendPaymentMethods(
+        java.util.List<PaymentMethod> recommendedMethods = aiService.recommendPaymentMethods(
             eventMetrics, 
             prediction.predictionResult.predictedTotalCost
         );
@@ -57,7 +59,7 @@ public class ChargePredictionService {
      */
     public ChargePrediction updatePaymentDecision(
         String predictionId,
-        String paymentMethod,
+        PaymentMethod paymentMethod,
         String decidedBy,
         String reason
     ) {
@@ -77,7 +79,7 @@ public class ChargePredictionService {
         prediction.paymentDecision.requiresApproval = 
             prediction.predictionResult.predictedTotalCost > 5000.0;
             
-        prediction.status = prediction.paymentDecision.requiresApproval ? "pending_approval" : "approved";
+        prediction.status = prediction.paymentDecision.requiresApproval ? ChargeStatus.PENDING : ChargeStatus.APPROVED;
         
         repository.update(prediction);
         return prediction;
@@ -90,7 +92,7 @@ public class ChargePredictionService {
         var prediction = repository.findByIdOptional(new ObjectId(predictionId))
             .orElseThrow(() -> new RuntimeException("Prediction not found"));
             
-        prediction.status = approved ? "approved" : "rejected";
+        prediction.status = approved ? ChargeStatus.APPROVED : ChargeStatus.REJECTED;
         
         repository.update(prediction);
         return prediction;
@@ -128,7 +130,10 @@ public class ChargePredictionService {
      * Prédictions en attente d'approbation
      */
     public List<ChargePrediction> findPendingApprovals() {
-        return repository.find("status", "pending_approval").list();
+        return repository.listAll().stream()
+            .filter(p -> p.status == ChargeStatus.PENDING)
+            .filter(p -> p.paymentDecision != null && p.paymentDecision.requiresApproval)
+            .toList();
     }
     
     /**

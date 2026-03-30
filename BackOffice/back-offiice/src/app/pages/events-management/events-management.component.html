@@ -1,0 +1,72 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Events Management</h4>
+          <p class="card-category">Manage all events in the system</p>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+            <button type="button" class="close" (click)="error = null">
+              <span>&times;</span>
+            </button>
+          </div>
+
+          <div class="table-responsive" *ngIf="!loading">
+            <table class="table tablesorter">
+              <thead class="text-primary">
+                <tr>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Max Participants</th>
+                  <th>Status</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let event of events">
+                  <td>{{ event.name }}</td>
+                  <td>{{ event.location || 'N/A' }}</td>
+                  <td>{{ event.startDate | date:'short' }}</td>
+                  <td>{{ event.endDate | date:'short' }}</td>
+                  <td>{{ event.maxParticipants || 'Unlimited' }}</td>
+                  <td>
+                    <span class="badge" [class.badge-success]="event.status === 'active'" 
+                          [class.badge-warning]="event.status === 'pending'"
+                          [class.badge-danger]="event.status === 'cancelled'">
+                      {{ event.status || 'active' }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-info" title="View">
+                      <i class="tim-icons icon-notes"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning" title="Edit">
+                      <i class="tim-icons icon-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteEvent(event.id!)" title="Delete">
+                      <i class="tim-icons icon-trash-simple"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="events.length === 0">
+                  <td colspan="7" class="text-center">No events found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 package com.eventmgmt.charges.resource;
 
 import com.eventmgmt.charges.model.ChargePrediction;
+import com.eventmgmt.charges.model.PaymentMethod;
 import com.eventmgmt.charges.service.ChargePredictionService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -148,7 +149,7 @@ public class ChargePredictionResource {
     }
     
     public static class PaymentDecisionRequest {
-        public String paymentMethod; // "online", "onsite", "hybrid"
+        public PaymentMethod paymentMethod;
         public String decidedBy; // User ID
         public String reason;
     }

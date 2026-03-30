@@ -22,7 +22,21 @@ public class EventService {
     }
 
     public Event create(Event event) {
+        if (event.status == null) {
+            event.status = com.eventmgmt.events.model.EventStatus.DRAFT;
+        }
         repository.persist(event);
+        return event;
+    }
+
+    public Event addCharge(String eventId, String chargeId) {
+        Event event = repository.findByIdOptional(new ObjectId(eventId))
+            .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        if (!event.chargeIds.contains(chargeId)) {
+            event.chargeIds.add(chargeId);
+            repository.update(event);
+        }
         return event;
     }
 

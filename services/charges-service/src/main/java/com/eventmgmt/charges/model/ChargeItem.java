@@ -7,18 +7,20 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 public class ChargeItem extends PanacheMongoEntity {
     public String eventId;
     public String predictionId; // Lien vers ChargePrediction
-    public String category; // "venue", "catering", "equipment", "staffing", "marketing", "insurance", "miscellaneous"
+    public ChargeItemType item;
+    public ChargeCategory category;
     public String description;
     public double amount;
     public String currency;
-    public String status; // "estimated", "confirmed", "paid", "pending"
+    public ChargeStatus status = ChargeStatus.PENDING;
     public PaymentInfo paymentInfo;
     public String createdAt;
     public String updatedAt;
     
     // Information de paiement
     public static class PaymentInfo {
-        public String method; // "online", "onsite", "hybrid"
+        public PaymentMethod method;
+        public PaymentStatus status = PaymentStatus.PENDING;
         public String provider; // "stripe", "paypal", "cash", "bank_transfer"
         public boolean isActual; // true = coût réel, false = estimation
         public String paidBy; // User ID

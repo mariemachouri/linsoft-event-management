@@ -1,0 +1,240 @@
+﻿<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <!-- Graphique principal de performance -->
+      <div class="card card-chart">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-sm-6 text-left">
+              <h5 class="card-category">Total Shipments</h5>
+              <h2 class="card-title">Performance</h2>
+            </div>
+            <div class="col-sm-6">
+              <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                <label class="btn btn-sm btn-primary btn-simple" 
+                       [class.active]="activeTab === 'accounts'"
+                       (click)="switchTab('accounts')">
+                  <input type="radio" name="options" checked>
+                  <span class="d-none d-sm-block">Accounts</span>
+                  <span class="d-block d-sm-none">
+                    <i class="tim-icons icon-single-02"></i>
+                  </span>
+                </label>
+                <label class="btn btn-sm btn-primary btn-simple" 
+                       [class.active]="activeTab === 'purchases'"
+                       (click)="switchTab('purchases')">
+                  <input type="radio" class="d-none d-sm-none" name="options">
+                  <span class="d-none d-sm-block">Purchases</span>
+                  <span class="d-block d-sm-none">
+                    <i class="tim-icons icon-gift-2"></i>
+                  </span>
+                </label>
+                <label class="btn btn-sm btn-primary btn-simple" 
+                       [class.active]="activeTab === 'sessions'"
+                       (click)="switchTab('sessions')">
+                  <input type="radio" class="d-none" name="options">
+                  <span class="d-none d-sm-block">Sessions</span>
+                  <span class="d-block d-sm-none">
+                    <i class="tim-icons icon-tap-02"></i>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="performanceChart" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques secondaires -->
+  <div class="row">
+    <!-- Total Shipments -->
+    <div class="col-lg-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-category">Total Shipments</h5>
+          <h3 class="card-title">
+            <i class="tim-icons icon-bell-55 text-primary"></i> 
+            {{ formatNumber(totalShipments) }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height: 120px;">
+            <canvas id="shipmentsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Sales -->
+    <div class="col-lg-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-category">Daily Sales</h5>
+          <h3 class="card-title">
+            <i class="tim-icons icon-delivery-fast text-info"></i> 
+            {{ dailySales }}€
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height: 120px;">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Tasks -->
+    <div class="col-lg-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-category">Completed Tasks</h5>
+          <h3 class="card-title">
+            <i class="tim-icons icon-send text-success"></i> 
+            {{ formatNumber(completedTasks) }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height: 120px;">
+            <canvas id="tasksChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message de chargement -->
+  <div *ngIf="loading" class="row">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <i class="tim-icons icon-refresh-01"></i>
+        Chargement des données depuis la base de données...
+      </div>
+    </div>
+  </div>
+
+  <!-- Affichage des erreurs -->
+  <div *ngIf="error" class="row">
+    <div class="col-12">
+      <div class="alert alert-warning">
+        <i class="tim-icons icon-alert-circle-exc"></i>
+        {{ error }} - Affichage des données de démonstration
+      </div>
+    </div>
+  </div>
+
+  <!-- Informations sur les données -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">📊 Sources de données</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="stats-box">
+                <i class="tim-icons icon-calendar-60 text-primary"></i>
+                <h5>Événements</h5>
+                <h3>{{ events?.length || 0 }}</h3>
+                <small>Total des événements</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stats-box">
+                <i class="tim-icons icon-single-02 text-info"></i>
+                <h5>Utilisateurs</h5>
+                <h3>{{ users?.length || 0 }}</h3>
+                <small>Comptes utilisateurs</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stats-box">
+                <i class="tim-icons icon-notes text-success"></i>
+                <h5>Inscriptions</h5>
+                <h3>{{ registrations?.length || 0 }}</h3>
+                <small>Total des inscriptions</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stats-box">
+                <i class="tim-icons icon-chart-bar-32 text-warning"></i>
+                <h5>Tâches</h5>
+                <h3>{{ completedTasks }}</h3>
+                <small>Événements terminés</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights IA -->
+  <div class="row" *ngIf="!loading && healthScore">
+    <div class="col-lg-6">
+      <div class="card card-ai-insights">
+        <div class="card-header">
+          <h4 class="card-title">
+            <i class="tim-icons icon-atom"></i> Analyse IA - Score de Santé
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="health-score-container">
+            <div class="score-circle" [ngClass]="getHealthScoreClass()">
+              <i class="tim-icons" [ngClass]="getHealthScoreIcon()"></i>
+              <h2>{{ healthScore.score }}/100</h2>
+              <p class="status-text">{{ healthScore.status | uppercase }}</p>
+            </div>
+            <div class="score-details mt-4">
+              <h5>Recommandations IA:</h5>
+              <ul class="recommendation-list">
+                <li *ngFor="let rec of healthScore.recommendations">
+                  <i class="tim-icons icon-bulb-63"></i> {{ rec }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card card-ai-insights">
+        <div class="card-header">
+          <h4 class="card-title">
+            <i class="tim-icons icon-chart-pie-36"></i> Insights Intelligents
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="insights-container">
+            <h5>Analyses Prédictives:</h5>
+            <div class="insight-item" *ngFor="let recommendation of aiRecommendations">
+              <div class="insight-icon">
+                <i class="tim-icons icon-bulb-63"></i>
+              </div>
+              <div class="insight-text">
+                {{ recommendation }}
+              </div>
+            </div>
+
+            <div class="mt-4" *ngIf="predictions && predictions.length > 0">
+              <h5>Prédictions (3 prochains mois):</h5>
+              <div class="predictions-box">
+                <span class="badge badge-primary" *ngFor="let pred of predictions; let i = index">
+                  Mois {{ i + 1 }}: {{ pred }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

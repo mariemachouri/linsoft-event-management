@@ -1,0 +1,256 @@
+<div class="notifications-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🔔 Centre de Notifications</h1>
+      <p class="subtitle">Gérez et consultez toutes vos notifications</p>
+    </div>
+    <button class="btn btn-primary">
+      <i class="tim-icons icon-refresh-69"></i> Actualiser
+    </button>
+  </div>
+
+  <div class="row">
+    <!-- Notification Styles -->
+    <div class="col-md-6">
+      <div class="notifications-card">
+        <div class="card-header">
+          <h3 class="card-title">📋 Types de Notifications</h3>
+          <p class="card-subtitle">Différents styles d'alerte</p>
+        </div>
+        <div class="card-body">
+          <!-- Plain Notification -->
+          <div class="notification-item">
+            <div class="notification-badge info">i</div>
+            <div class="notification-content">
+              <h5 class="notification-title">Information</h5>
+              <p class="notification-message">Ceci est une notification d'information simple.</p>
+            </div>
+            <button class="close-btn" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Notification with Close Button -->
+          <div class="notification-item" *ngIf="!staticAlertClosed">
+            <div class="notification-badge info">i</div>
+            <div class="notification-content">
+              <h5 class="notification-title">Notification Fermable</h5>
+              <p class="notification-message">Vous pouvez fermer cette notification.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Notification with Icon -->
+          <div class="notification-item" *ngIf="!staticAlertClosed1">
+            <div class="notification-badge info">
+              <i class="tim-icons icon-bell-55"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Avec Icône</h5>
+              <p class="notification-message">Notification avec bouton de fermeture et icône personnalisée.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed1 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Multi-line Notification -->
+          <div class="notification-item" *ngIf="!staticAlertClosed2">
+            <div class="notification-badge info">
+              <i class="tim-icons icon-bell-55"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Notification Détaillée</h5>
+              <p class="notification-message">
+                Vous pouvez voir que l'icône et le bouton de fermeture sont toujours alignés verticalement. C'est une belle notification. Donc vous n'avez pas à vous soucier du style.
+              </p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed2 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification States -->
+    <div class="col-md-6">
+      <div class="notifications-card">
+        <div class="card-header">
+          <h3 class="card-title">🎨 États des Notifications</h3>
+          <p class="card-subtitle">Différentes variantes de couleur</p>
+        </div>
+        <div class="card-body">
+          <!-- Primary Alert -->
+          <div class="notification-item" *ngIf="!staticAlertClosed3">
+            <div class="notification-badge primary">
+              <i class="tim-icons icon-send"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Principal</h5>
+              <p class="notification-message">Ceci est une notification de type principal.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed3 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Info Alert -->
+          <div class="notification-item" *ngIf="!staticAlertClosed4">
+            <div class="notification-badge info">
+              <i class="tim-icons icon-bell-55"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Information</h5>
+              <p class="notification-message">Une notification d'information utile en bleu.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed4 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Success Alert -->
+          <div class="notification-item" *ngIf="!staticAlertClosed5">
+            <div class="notification-badge success">
+              <i class="tim-icons icon-check-2"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Succès</h5>
+              <p class="notification-message">Opération réalisée avec succès!</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed5 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Warning Alert -->
+          <div class="notification-item" *ngIf="!staticAlertClosed6">
+            <div class="notification-badge warning">
+              <i class="tim-icons icon-alert-circle-exc"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Attention</h5>
+              <p class="notification-message">Veuillez vérifier cette action avant de continuer.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed6 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+
+          <!-- Danger Alert -->
+          <div class="notification-item" *ngIf="!staticAlertClosed7">
+            <div class="notification-badge danger">
+              <i class="tim-icons icon-simple-remove"></i>
+            </div>
+            <div class="notification-content">
+              <h5 class="notification-title">Erreur</h5>
+              <p class="notification-message">Une erreur s'est produite lors du traitement.</p>
+            </div>
+            <button class="close-btn" (click)="staticAlertClosed7 = true" title="Fermer">
+              <i class="tim-icons icon-simple-remove"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Placements -->
+    <div class="col-md-12">
+      <div class="notifications-card">
+        <div class="card-header">
+          <h3 class="card-title">📍 Positions de Notifications</h3>
+          <p class="card-subtitle">Cliquez pour afficher une notification à différentes positions</p>
+        </div>
+        <div class="card-body">
+          <div class="placement-grid">
+            <!-- Top Positions -->
+            <div class="placement-section">
+              <h4 class="placement-label">En Haut</h4>
+              <div class="button-group">
+                <button
+                  class="btn btn-notification btn-info"
+                  (click)="showNotification('top', 'left')"
+                  title="Notification en haut à gauche"
+                >
+                  <i class="tim-icons icon-world"></i> Haut Gauche
+                </button>
+                <button
+                  class="btn btn-notification btn-info"
+                  (click)="showNotification('top', 'center')"
+                  title="Notification en haut au centre"
+                >
+                  <i class="tim-icons icon-world"></i> Haut Centre
+                </button>
+                <button
+                  class="btn btn-notification btn-info"
+                  (click)="showNotification('top', 'right')"
+                  title="Notification en haut à droite"
+                >
+                  <i class="tim-icons icon-world"></i> Haut Droite
+                </button>
+              </div>
+            </div>
+
+            <!-- Bottom Positions -->
+            <div class="placement-section">
+              <h4 class="placement-label">En Bas</h4>
+              <div class="button-group">
+                <button
+                  class="btn btn-notification btn-warning"
+                  (click)="showNotification('bottom', 'left')"
+                  title="Notification en bas à gauche"
+                >
+                  <i class="tim-icons icon-world"></i> Bas Gauche
+                </button>
+                <button
+                  class="btn btn-notification btn-warning"
+                  (click)="showNotification('bottom', 'center')"
+                  title="Notification en bas au centre"
+                >
+                  <i class="tim-icons icon-world"></i> Bas Centre
+                </button>
+                <button
+                  class="btn btn-notification btn-warning"
+                  (click)="showNotification('bottom', 'right')"
+                  title="Notification en bas à droite"
+                >
+                  <i class="tim-icons icon-world"></i> Bas Droite
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="col-md-6 mt-4">
+      <div class="stat-card">
+        <div class="stat-icon icon-1">
+          <i class="tim-icons icon-bell-55"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Total Notifications</p>
+          <h3 class="stat-value">247</h3>
+          <p class="stat-change">↑ 18% cette semaine</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mt-4">
+      <div class="stat-card">
+        <div class="stat-icon icon-2">
+          <i class="tim-icons icon-check-2"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Non Lues</p>
+          <h3 class="stat-value">12</h3>
+          <p class="stat-change">↓ 5% vs hier</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

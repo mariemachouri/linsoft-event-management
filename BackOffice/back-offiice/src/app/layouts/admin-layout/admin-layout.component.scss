@@ -1,0 +1,169 @@
+/*
+ * Main layout styles for Admin Panel
+ * Defines the structure for sidebar and main content area.
+ */
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #f5f7fa; // A soft background for the entire app
+  overflow-x: hidden;
+}
+
+.sidebar {
+  width: 260px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1030;
+  transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
+  overflow: visible;
+  
+  ::ng-deep .sidebar-wrapper {
+    transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    .nav {
+      li {
+        overflow: hidden;
+        
+        a {
+          p {
+            opacity: 1;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+    
+    .logo {
+      .logo-normal {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+      }
+    }
+  }
+}
+
+.main-panel {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
+  margin-left: 260px;
+  width: calc(100% - 260px);
+}
+
+.content {
+  flex-grow: 1;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+
+  .content-wrapper {
+    width: 100%;
+    max-width: 1600px; // Max width for the content on large screens
+    animation: fadeIn 0.5s ease-out;
+  }
+}
+
+// Styles pour la sidebar réduite (mini)
+:host ::ng-deep body.sidebar-mini {
+  .wrapper {
+    .sidebar {
+      width: 80px;
+      
+      .sidebar-wrapper {
+        overflow: visible;
+        
+        .nav {
+          li {
+            a {
+              p {
+                opacity: 0;
+                transform: translateX(-25px);
+                position: absolute;
+                width: 0;
+              }
+            }
+          }
+        }
+        
+        .logo {
+          .logo-normal {
+            opacity: 0;
+            transform: translateX(-25px);
+          }
+        }
+        
+        .sidebar-footer {
+          button {
+            overflow: hidden;
+            
+            span {
+              opacity: 0;
+            }
+            
+            i {
+              margin: 0 !important;
+            }
+          }
+        }
+      }
+    }
+    
+    .main-panel {
+      margin-left: 80px;
+      width: calc(100% - 80px);
+    }
+  }
+}
+
+// Animation d'entrée
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-260px);
+  }
+  
+  .main-panel {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .content {
+    padding: 15px;
+  }
+  
+  :host ::ng-deep body.nav-open {
+    .wrapper {
+      .sidebar {
+        transform: translateX(0);
+      }
+    }
+  }
+}
+
+:host ::ng-deep .content > router-outlet + * {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+

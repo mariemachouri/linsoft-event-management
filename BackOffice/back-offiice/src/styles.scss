@@ -1,0 +1,339 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* ===== VARIABLES GLOBALES ===== */
+$primary-color: #51bcda;
+$secondary-color: #6c757d;
+$success-color: #6bd098;
+$danger-color: #ef8157;
+$warning-color: #fbc658;
+$info-color: #51cbce;
+
+$transition-speed: 0.3s;
+$border-radius: 10px;
+
+/* ===== ANIMATIONS GLOBALES ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== STYLES GLOBAUX ===== */
+* {
+  transition: color $transition-speed ease, background-color $transition-speed ease;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content {
+  animation: fadeIn 0.5s ease-in-out;
+  padding: 30px 15px; // Ajustement du padding horizontal
+}
+
+/* ===== CARTES AMÉLIORÉES ===== */
+.card {
+  border: none;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all $transition-speed ease;
+  overflow: hidden;
+  background: white;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 30px 40px;
+    border-radius: $border-radius $border-radius 0 0;
+
+    .card-title {
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .card-category {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .card-body {
+    padding: 40px;
+  }
+
+  .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+  }
+}
+
+/* ===== BOUTONS AMÉLIORÉS ===== */
+.btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all $transition-speed ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  &.btn-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  &.btn-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+  }
+
+  &.btn-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+
+  i {
+    font-size: 16px;
+  }
+}
+
+/* ===== FORMULAIRES AMÉLIORÉS ===== */
+.form-group {
+  margin-bottom: 25px;
+
+  label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 15px;
+  transition: all $transition-speed ease;
+  background-color: #f8f9fa;
+
+  &:focus {
+    border-color: $primary-color;
+    background-color: white;
+    box-shadow: 0 0 15px rgba(81, 188, 218, 0.2);
+    outline: none;
+  }
+
+  &:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ===== TABLEAUX AMÉLIORÉS ===== */
+.table {
+  border-collapse: collapse;
+  margin: 0;
+
+  thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    th {
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 15px;
+      text-align: left;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e9ecef;
+      transition: background-color $transition-speed ease;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      td {
+        padding: 15px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+/* ===== ALERTES AMÉLIORÉES ===== */
+.alert {
+  border-radius: $border-radius;
+  border: none;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  animation: slideInLeft 0.4s ease-out;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  &.alert-danger {
+    background-color: #fee;
+    color: #c33;
+    border-left: 4px solid #c33;
+  }
+
+  &.alert-success {
+    background-color: #efe;
+    color: #3c3;
+    border-left: 4px solid #3c3;
+  }
+
+  &.alert-info {
+    background-color: #eef;
+    color: #33c;
+    border-left: 4px solid #33c;
+  }
+
+  &.alert-warning {
+    background-color: #ffe;
+    color: #cc3;
+    border-left: 4px solid #cc3;
+  }
+}
+
+/* ===== BADGES AMÉLIORÉS ===== */
+.badge {
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-block;
+
+  &.badge-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  &.badge-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  &.badge-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+  }
+}
+
+/* ===== SPINNER DE CHARGEMENT ===== */
+.spinner-border {
+  border-width: 3px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 20px;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .table {
+    font-size: 12px;
+
+    td, th {
+      padding: 10px;
+    }
+  }
+}

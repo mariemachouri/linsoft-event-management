@@ -1,0 +1,36 @@
+<div class="logo">
+  <a href="#" class="simple-text logo-mini">
+    <div class="logo-img">
+      <i class="tim-icons icon-calendar-60" style="font-size: 28px; color: #e14eca;"></i>
+    </div>
+  </a>
+  <a href="#" class="simple-text logo-normal">
+    Evently
+  </a>
+</div>
+<div class="sidebar-wrapper">
+  <ul class="nav">
+    <li
+      routerLinkActive="active"
+      *ngFor="let menuItem of menuItems"
+      class="{{ menuItem.class }} nav-item"
+    >
+      <a [routerLink]="[menuItem.path]">
+        <i class="tim-icons  {{ menuItem.icon }}"></i>
+        <p>{{ menuItem.title }}</p>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Logout Button -->
+  <div class="sidebar-footer" style="margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+    <button 
+      (click)="logout()" 
+      class="btn btn-sm btn-outline-light w-100"
+      style="font-size: 12px;"
+    >
+      <i class="tim-icons icon-key-25 me-2"></i> Logout
+    </button>
+  </div>
+</div>
+

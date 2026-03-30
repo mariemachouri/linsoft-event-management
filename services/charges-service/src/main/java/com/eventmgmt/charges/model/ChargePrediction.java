@@ -10,13 +10,13 @@ public class ChargePrediction extends PanacheMongoEntity {
     public EventMetrics eventMetrics;
     public PredictionResult predictionResult;
     public PaymentDecision paymentDecision;
-    public String status; // "pending", "approved", "rejected"
+    public ChargeStatus status;
     public String createdAt;
     
     // Métrique de l'événement pour l'IA
     public static class EventMetrics {
         public int expectedAttendees;
-        public String eventType; // "conference", "workshop", "meetup", "seminar"
+        public EventCategory eventType;
         public int durationHours;
         public String location; // "online", "venue"
         public String city;
@@ -33,6 +33,7 @@ public class ChargePrediction extends PanacheMongoEntity {
         public String aiModel; // "linear_regression", "neural_network"
         public java.util.List<String> riskFactors;
         public java.util.List<String> recommendations;
+        public java.util.List<ItemRecommendation> itemRecommendations;
     }
     
     // Détail des coûts prédits
@@ -45,10 +46,16 @@ public class ChargePrediction extends PanacheMongoEntity {
         public double insuranceCost;
         public double miscellaneousCost;
     }
+
+    public static class ItemRecommendation {
+        public ChargeItemType item;
+        public int suggestedQuantity;
+        public String reason;
+    }
     
     // Décision de paiement par l'organisateur/admin
     public static class PaymentDecision {
-        public String paymentMethod; // "online", "onsite", "hybrid"
+        public PaymentMethod paymentMethod;
         public String decidedBy; // User ID
         public String decisionDate;
         public String reason;

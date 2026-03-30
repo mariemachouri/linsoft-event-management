@@ -1,0 +1,74 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Notifications Management</h4>
+          <p class="card-category">Manage all system notifications</p>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+            <button type="button" class="close" (click)="error = null">
+              <span>&times;</span>
+            </button>
+          </div>
+
+          <div class="table-responsive" *ngIf="!loading">
+            <table class="table tablesorter">
+              <thead class="text-primary">
+                <tr>
+                  <th>User ID</th>
+                  <th>Message</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Created At</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let notification of notifications" [class.table-active]="!notification.read">
+                  <td>{{ notification.userId }}</td>
+                  <td>{{ notification.message }}</td>
+                  <td>
+                    <span class="badge" [class.badge-info]="notification.type === 'info'" 
+                          [class.badge-success]="notification.type === 'success'"
+                          [class.badge-warning]="notification.type === 'warning'"
+                          [class.badge-danger]="notification.type === 'error'">
+                      {{ notification.type || 'info' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class.badge-success]="notification.read" 
+                          [class.badge-secondary]="!notification.read">
+                      {{ notification.read ? 'Read' : 'Unread' }}
+                    </span>
+                  </td>
+                  <td>{{ notification.createdAt | date:'short' }}</td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-primary" *ngIf="!notification.read" 
+                            (click)="markAsRead(notification.id!)" title="Mark as read">
+                      <i class="tim-icons icon-check-2"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteNotification(notification.id!)" title="Delete">
+                      <i class="tim-icons icon-trash-simple"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="notifications.length === 0">
+                  <td colspan="6" class="text-center">No notifications found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

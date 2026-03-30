@@ -1,0 +1,248 @@
+
+<div class="content user-profile-container">
+  <!-- En-tête -->
+  <div class="profile-header mb-5">
+    <h1 class="profile-title">⚙️ Éditer mon Profil</h1>
+    <p class="profile-subtitle">Mettez à jour vos informations personnelles</p>
+  </div>
+
+  <div class="row">
+    <!-- Formulaire Profil -->
+    <div class="col-lg-8">
+      <div class="card profile-card">
+        <div class="card-header">
+          <h5 class="card-title">📝 Informations Personnelles</h5>
+          <p class="card-subtitle">Modifiez vos données personnelles</p>
+        </div>
+        <div class="card-body">
+          <form class="profile-form">
+            <!-- Ligne 1: Company, Username, Email -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-briefcase-2"></i> Entreprise
+                  </label>
+                  <input
+                    class="form-control"
+                    disabled
+                    placeholder="Entreprise"
+                    type="text"
+                    value="Creative Code Inc."
+                  />
+                  <small class="form-text-muted">Non modifiable</small>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-single-02"></i> Nom d'utilisateur
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Nom d'utilisateur"
+                    type="text"
+                    value="michael23"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-email-85"></i> Email
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Email"
+                    type="email"
+                    value="mike@email.com"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Ligne 2: Prénom et Nom -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-single-copy-04"></i> Prénom
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Prénom"
+                    type="text"
+                    value="Mike"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-single-copy-04"></i> Nom
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Nom"
+                    type="text"
+                    value="Andrew"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Adresse -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="tim-icons icon-pin"></i> Adresse
+              </label>
+              <input
+                class="form-control"
+                placeholder="Adresse"
+                type="text"
+                value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+              />
+            </div>
+
+            <!-- Ligne 3: Ville, Pays, Code Postal -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-pin"></i> Ville
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Ville"
+                    type="text"
+                    value="RomaniaBucharest"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-world"></i> Pays
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Pays"
+                    type="text"
+                    value="Romania"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="tim-icons icon-bulb-63"></i> Code Postal
+                  </label>
+                  <input
+                    class="form-control"
+                    placeholder="Code Postal"
+                    type="text"
+                    value="011111"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- À propos -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="tim-icons icon-notes"></i> À propos de moi
+              </label>
+              <textarea
+                class="form-control"
+                placeholder="Décrivez-vous..."
+                rows="4"
+              >
+Je suis un développeur passionné avec plus de 5 ans d'expérience dans le développement web.
+              </textarea>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <div class="button-group">
+            <button class="btn btn-secondary" type="button">
+              <i class="tim-icons icon-simple-remove"></i> Annuler
+            </button>
+            <button class="btn btn-primary" type="submit">
+              <i class="tim-icons icon-check-2"></i> Enregistrer les modifications
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Profil -->
+    <div class="col-lg-4">
+      <!-- Carte Avatar -->
+      <div class="card avatar-card">
+        <div class="card-body">
+          <div class="avatar-wrapper">
+            <img alt="Avatar" class="profile-avatar" src="assets/img/emilyz.jpg" />
+            <div class="avatar-status">
+              <span class="status-badge online"></span>
+              <span class="status-text">En ligne</span>
+            </div>
+          </div>
+          <h4 class="profile-name">Mike Andrew</h4>
+          <p class="profile-role">PDG/Co-Fondateur</p>
+          <div class="profile-badges">
+            <span class="badge badge-primary">Administrateur</span>
+            <span class="badge badge-success">Vérifié</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistiques -->
+      <div class="card stats-card">
+        <div class="card-header">
+          <h5 class="card-title">📊 Statistiques</h5>
+        </div>
+        <div class="card-body">
+          <div class="stat-item">
+            <span class="stat-label">Événements créés</span>
+            <span class="stat-value">12</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Utilisateurs gérés</span>
+            <span class="stat-value">45</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Inscriptions traitées</span>
+            <span class="stat-value">128</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Membre depuis</span>
+            <span class="stat-value">2022</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Réseaux Sociaux -->
+      <div class="card social-card">
+        <div class="card-header">
+          <h5 class="card-title">🔗 Réseaux Sociaux</h5>
+        </div>
+        <div class="card-body">
+          <div class="social-buttons">
+            <button class="btn btn-social facebook" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </button>
+            <button class="btn btn-social twitter" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </button>
+            <button class="btn btn-social linkedin" title="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </button>
+            <button class="btn btn-social github" title="GitHub">
+              <i class="fab fa-github"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

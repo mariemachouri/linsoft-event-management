@@ -7,6 +7,6 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 public class Registration extends PanacheMongoEntity {
     public String eventId;
     public String participantId;
-    public String status;
+    public RegistrationStatus status = RegistrationStatus.PENDING;
     public String registeredAt;
 }

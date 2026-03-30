@@ -1,6 +1,8 @@
 package com.eventmgmt.charges.service;
 
 import com.eventmgmt.charges.model.ChargePrediction;
+import com.eventmgmt.charges.model.EventCategory;
+import com.eventmgmt.charges.model.PaymentMethod;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.*;
@@ -41,7 +43,7 @@ public class AIChargePredictionService {
         
         // Obtenir les coûts de base pour le type d'événement
         Map<String, Double> baseCosts = HISTORICAL_COSTS.getOrDefault(
-            metrics.eventType.toLowerCase(), HISTORICAL_COSTS.get("meetup")
+            metrics.eventType.name().toLowerCase(), HISTORICAL_COSTS.get("meetup")
         );
         
         // Multiplicateur de ville
@@ -116,13 +118,12 @@ public class AIChargePredictionService {
         return breakdown;
     }
     
-    private double[] calculateVenueSizeRange(int attendees, String eventType) {
-        double baseSpace = switch (eventType.toLowerCase()) {
-            case "conference" -> 3.0; // m² par personne
-            case "workshop" -> 4.0;
-            case "meetup" -> 2.0;
-            case "seminar" -> 3.5;
-            default -> 3.0;
+    private double[] calculateVenueSizeRange(int attendees, EventCategory eventType) {
+        double baseSpace = switch (eventType) {
+            case CONFERENCE -> 3.0; // m² par personne
+            case WORKSHOP -> 4.0;
+            case MEETUP -> 2.0;
+            case SEMINAR -> 3.5;
         };
         
         double totalSpace = attendees * baseSpace;
@@ -152,7 +153,7 @@ public class AIChargePredictionService {
         if (metrics.location.equals("outdoor")) {
             risks.add("Weather dependency - consider backup options");
         }
-        if (metrics.eventType.equals("conference") && metrics.durationHours > 8) {
+        if (metrics.eventType == EventCategory.CONFERENCE && metrics.durationHours > 8) {
             risks.add("Extended duration - fatigue and additional staffing costs");
         }
         
@@ -191,17 +192,17 @@ public class AIChargePredictionService {
     /**
      * Génère des suggestions de méthodes de paiement basées sur l'analyse IA
      */
-    public java.util.List<String> recommendPaymentMethods(ChargePrediction.EventMetrics metrics, double predictedCost) {
-        List<String> methods = new ArrayList<>();
+    public java.util.List<PaymentMethod> recommendPaymentMethods(ChargePrediction.EventMetrics metrics, double predictedCost) {
+        List<PaymentMethod> methods = new ArrayList<>();
         
         if (predictedCost < 1000) {
-            methods.add("online"); // Simple et efficace pour petits budgets
+            methods.add(PaymentMethod.ONLINE); // Simple et efficace pour petits budgets
         } else if (predictedCost < 5000) {
-            methods.add("hybrid"); // Flexibilité pour montants moyens
-            methods.add("online");
+            methods.add(PaymentMethod.HYBRID); // Flexibilité pour montants moyens
+            methods.add(PaymentMethod.ONLINE);
         } else {
-            methods.add("hybrid"); // Nécessaire pour gros budgets
-            methods.add("onsite"); // Options pour paiements échelonnés
+            methods.add(PaymentMethod.HYBRID); // Nécessaire pour gros budgets
+            methods.add(PaymentMethod.ONSITE); // Options pour paiements échelonnés
         }
         
         return methods;
