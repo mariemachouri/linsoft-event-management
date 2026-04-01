@@ -8,6 +8,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -37,6 +38,13 @@ public class NotificationResource {
     public Response create(Notification notification) {
         Notification created = service.create(notification);
         return Response.status(Response.Status.CREATED).entity(created).build();
+    }
+
+    @PUT
+    @Path("{id}/retry")
+    public Response retry(@PathParam("id") String id) {
+        service.retryFailedNotification(id);
+        return Response.ok().build();
     }
 
     @DELETE
