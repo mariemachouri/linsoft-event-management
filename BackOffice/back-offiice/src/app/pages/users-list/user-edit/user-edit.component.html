@@ -1,0 +1,160 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Modifier l'Utilisateur</h3>
+          <p class="card-category" *ngIf="currentUser">
+            <strong>{{ currentUser.username }}</strong>
+            <span class="text-muted ml-2" *ngIf="currentUser.createdAt">
+              (Créé le {{ currentUser.createdAt | date:'dd/MM/yyyy' }})
+            </span>
+          </p>
+        </div>
+        <div class="card-body">
+          
+          <!-- Loading spinner -->
+          <div *ngIf="loadingUser" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Chargement...</span>
+            </div>
+            <p class="mt-3">Chargement des informations...</p>
+          </div>
+
+          <!-- Messages d'erreur/succès -->
+          <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="tim-icons icon-alert-circle-exc"></i>
+            {{ error }}
+            <button type="button" class="close" (click)="error = ''">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="tim-icons icon-check-2"></i>
+            {{ success }}
+            <button type="button" class="close" (click)="success = ''">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <!-- Formulaire -->
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()" *ngIf="!loadingUser && currentUser">
+            
+            <!-- Username (lecture seule) -->
+            <div class="form-group">
+              <label for="username">Nom d'utilisateur</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="username"
+                [value]="currentUser.username"
+                readonly
+                disabled
+              />
+              <small class="form-text text-muted">
+                Le nom d'utilisateur ne peut pas être modifié
+              </small>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">
+                Email <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email"
+                formControlName="email"
+                [class.is-invalid]="f['email'].invalid && f['email'].touched"
+                placeholder="john.doe@example.com"
+              />
+              <div *ngIf="f['email'].invalid && f['email'].touched" class="invalid-feedback">
+                <div *ngIf="f['email'].errors?.['required']">L'email est requis</div>
+                <div *ngIf="f['email'].errors?.['email']">Email invalide</div>
+              </div>
+            </div>
+
+            <!-- Prénom et Nom -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="firstName">Prénom</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="firstName"
+                    formControlName="firstName"
+                    placeholder="John"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lastName">Nom</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="lastName"
+                    formControlName="lastName"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Sélection des rôles -->
+            <div class="form-group">
+              <label>
+                Rôles <span class="text-danger">*</span>
+              </label>
+              <div class="role-selection">
+                <div *ngFor="let role of availableRoles" class="custom-control custom-checkbox mb-3">
+                  <input 
+                    type="checkbox" 
+                    class="custom-control-input" 
+                    [id]="'role-' + role.value"
+                    [checked]="isRoleSelected(role.value)"
+                    (change)="toggleRole(role.value)"
+                  />
+                  <label class="custom-control-label" [for]="'role-' + role.value">
+                    <strong>{{ role.label }}</strong>
+                    <small class="d-block text-muted">{{ role.description }}</small>
+                  </label>
+                </div>
+              </div>
+              <small class="form-text text-muted">
+                Au moins un rôle doit être sélectionné
+              </small>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-group mt-4">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="loading"
+              >
+                <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                {{ loading ? 'Mise à jour en cours...' : 'Mettre à jour' }}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-lg ml-2"
+                (click)="cancel()"
+                [disabled]="loading"
+              >
+                <i class="tim-icons icon-simple-remove"></i>
+                Annuler
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

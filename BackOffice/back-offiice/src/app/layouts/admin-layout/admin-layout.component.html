@@ -2,6 +2,9 @@
   <div class="sidebar">
     <app-sidebar></app-sidebar>
   </div>
+  <button class="sidebar-open-btn" (click)="openSidebar()" title="Ouvrir le menu" [class.visible]="isSidebarHidden()">
+    <i class="tim-icons icon-align-left-2"></i>
+  </button>
   <div class="main-panel">
     <app-navbar></app-navbar>
     <div class="content">

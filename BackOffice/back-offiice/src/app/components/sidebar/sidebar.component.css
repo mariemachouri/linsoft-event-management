@@ -1,0 +1,110 @@
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(225, 30, 36, 0.2);
+  border: 1px solid rgba(225, 30, 36, 0.4);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.sidebar-toggle-btn i {
+  color: #E31E24;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+body.sidebar-mini .sidebar-toggle-btn i {
+  transform: rotate(180deg);
+}
+
+.sidebar-toggle-btn:hover {
+  background: rgba(225, 30, 36, 0.3);
+  border-color: #E31E24;
+  box-shadow: 0 4px 12px rgba(225, 30, 36, 0.3);
+}
+
+.sidebar-toggle-btn:hover i {
+  color: #FF5158;
+}
+
+.logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 40px;
+}
+
+.sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 90px);
+  position: relative;
+}
+
+.sidebar-wrapper .nav {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.logout-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px 20px;
+  background: linear-gradient(0deg, #1a1a2e 0%, rgba(26, 26, 46, 0.9) 100%);
+  border-top: 1px solid rgba(0, 102, 204, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 12px 15px;
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, rgba(0, 204, 255, 0.1) 100%);
+  border: 1px solid rgba(0, 102, 204, 0.3);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-logout:hover {
+  background: linear-gradient(135deg, #0066cc 0%, #00ccff 100%);
+  border-color: #00ccff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 102, 204, 0.4);
+}
+
+.btn-logout:active {
+  transform: translateY(0);
+}
+
+.btn-logout i {
+  font-size: 16px;
+}

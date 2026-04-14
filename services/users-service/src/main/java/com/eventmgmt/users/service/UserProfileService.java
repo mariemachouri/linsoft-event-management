@@ -3,6 +3,7 @@ package com.eventmgmt.users.service;
 import com.eventmgmt.users.dto.UserCreateRequest;
 import com.eventmgmt.users.dto.UserResponse;
 import com.eventmgmt.users.dto.UserUpdateRequest;
+import com.eventmgmt.users.kafka.UserPublisher;
 import com.eventmgmt.users.model.UserProfile;
 import com.eventmgmt.users.model.UserRole;
 import com.eventmgmt.users.repository.UserProfileRepository;
@@ -41,6 +42,9 @@ public class UserProfileService {
     @Inject
     Keycloak keycloak;
     
+    @Inject
+    UserPublisher userPublisher;
+    
     @ConfigProperty(name = "keycloak.realm")
     String realm;
     
@@ -61,7 +65,7 @@ public class UserProfileService {
         return Optional.ofNullable(profile).map(this::mapToResponse);
     }
     
-    @Transactional
+    // @Transactional // Désactivé pour MongoDB standalone
     public UserResponse createUser(UserCreateRequest request) {
         // Check if user already exists in MongoDB
         UserProfile existingProfile = repository.find("username", request.getUsername()).firstResult();
@@ -93,10 +97,13 @@ public class UserProfileService {
         repository.persist(profile);
         LOG.info("User created successfully: " + request.getUsername());
         
+        // Publish user creation to Kafka (asynchronous)
+        userPublisher.publishUserCreated(profile);
+        
         return mapToResponse(profile);
     }
     
-    @Transactional
+    // @Transactional // Désactivé pour MongoDB standalone
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         UserProfile profile = repository.findByIdOptional(new ObjectId(id))
             .orElseThrow(() -> new WebApplicationException("User not found", 404));
@@ -132,11 +139,14 @@ public class UserProfileService {
         
         repository.update(profile);
         LOG.info("User updated successfully: " + profile.getUsername());
+       
+        // Publish user update to Kafka
+        userPublisher.publishUserUpdated(profile);
         
         return mapToResponse(profile);
     }
     
-    @Transactional
+    // @Transactional // Désactivé pour MongoDB standalone
     public void deleteUser(String id) {
         UserProfile profile = repository.findByIdOptional(new ObjectId(id))
             .orElseThrow(() -> new WebApplicationException("User not found", 404));
@@ -154,9 +164,12 @@ public class UserProfileService {
         // Delete from MongoDB
         repository.deleteById(new ObjectId(id));
         LOG.info("User deleted successfully: " + profile.getUsername());
+        
+        // Publish user deletion to Kafka
+        userPublisher.publishUserDeleted(profile);
     }
     
-    @Transactional
+    // @Transactional // Désactivé pour MongoDB standalone
     public void assignRolesToUser(String userId, Set<UserRole> roleNames) {
         UserProfile profile = repository.findByIdOptional(new ObjectId(userId))
             .orElseThrow(() -> new WebApplicationException("User not found", 404));
@@ -191,7 +204,7 @@ public class UserProfileService {
         }
     }
     
-    @Transactional
+    // @Transactional // Désactivé pour MongoDB standalone
     public void removeRolesFromUser(String userId, Set<UserRole> roleNames) {
         UserProfile profile = repository.findByIdOptional(new ObjectId(userId))
             .orElseThrow(() -> new WebApplicationException("User not found", 404));

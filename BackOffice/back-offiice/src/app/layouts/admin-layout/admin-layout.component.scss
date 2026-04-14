@@ -7,7 +7,7 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: #f5f7fa; // A soft background for the entire app
+  background: #1e1e2e; // Fond sombre du thème
   overflow-x: hidden;
 }
 
@@ -16,10 +16,11 @@
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
+  height: 100vh;
   z-index: 1030;
-  transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
+  transition: all 0.4s cubic-bezier(0.685, 0.0473, 0.346, 1);
   overflow: visible;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   
   ::ng-deep .sidebar-wrapper {
     transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
@@ -57,26 +58,36 @@
   transition: all 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
   margin-left: 260px;
   width: calc(100% - 260px);
+  min-height: 100vh; // Force la hauteur minimale à 100vh
 }
 
 .content {
-  flex-grow: 1;
-  padding: 30px;
-  display: flex;
-  justify-content: center;
-
-  .content-wrapper {
-    width: 100%;
-    max-width: 1600px; // Max width for the content on large screens
-    animation: fadeIn 0.5s ease-out;
+  flex: 1 0 auto;
+  padding: 20px; // Padding pour l'espace autour
+  margin-top: 30px;
+  background: #1e1e2e;
+  width: 100% !important;
+  max-width: none !important;
+  
+  // Force la card à prendre toute la largeur disponible
+  > .card {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
+}
+
+// Styles pour le footer en bas de page
+::ng-deep app-footer {
+  margin-top: auto; // Pousse le footer en bas
 }
 
 // Styles pour la sidebar réduite (mini)
 :host ::ng-deep body.sidebar-mini {
   .wrapper {
     .sidebar {
-      width: 80px;
+      transform: translateX(-260px);
       
       .sidebar-wrapper {
         overflow: visible;
@@ -118,8 +129,8 @@
     }
     
     .main-panel {
-      margin-left: 80px;
-      width: calc(100% - 80px);
+      margin-left: 0;
+      width: 100%;
     }
   }
 }
@@ -133,6 +144,49 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Bouton flottant pour ouvrir la sidebar
+.sidebar-open-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #E31E24 0%, #B71820 100%);
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1020;
+  box-shadow: 0 4px 15px rgba(225, 30, 36, 0.4);
+  opacity: 0;
+  transform: translateX(-100px);
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.685, 0.0473, 0.346, 1);
+
+  i {
+    color: white;
+    font-size: 22px;
+  }
+
+  &.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #FF5158 0%, #E31E24 100%);
+    box-shadow: 0 6px 20px rgba(225, 30, 36, 0.6);
+    transform: translateX(0) scale(1.05);
+  }
+
+  &:active {
+    transform: translateX(0) scale(0.95);
   }
 }
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { EventService, Event } from '../../core/services/event.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class EventsManagementComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private eventService: EventService) { }
+  constructor(
+    private eventService: EventService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadEvents();
@@ -28,23 +32,81 @@ export class EventsManagementComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading events:', err);
-        this.error = 'Failed to load events. Please try again.';
+        this.error = 'Erreur lors du chargement des événements. Veuillez réessayer.';
         this.loading = false;
       }
     });
   }
 
+  createEvent(): void {
+    this.router.navigate(['/events/create']);
+  }
+
+  editEvent(id: string): void {
+    this.router.navigate(['/events/edit', id]);
+  }
+
+  viewEvent(id: string): void {
+    // Placeholder pour vue détaillée (à implémenter plus tard)
+    console.log('View event:', id);
+  }
+
   deleteEvent(id: string): void {
-    if (confirm('Are you sure you want to delete this event?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
       this.eventService.deleteEvent(id).subscribe({
         next: () => {
           this.loadEvents();
         },
         error: (err) => {
           console.error('Error deleting event:', err);
-          alert('Failed to delete event');
+          alert('Erreur lors de la suppression de l\'événement');
         }
       });
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'badge-secondary';
+      case 'PUBLISHED':
+        return 'badge-success';
+      case 'CANCELLED':
+        return 'badge-danger';
+      case 'COMPLETED':
+        return 'badge-info';
+      default:
+        return 'badge-secondary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'DRAFT':
+        return 'Brouillon';
+      case 'PUBLISHED':
+        return 'Publié';
+      case 'CANCELLED':
+        return 'Annulé';
+      case 'COMPLETED':
+        return 'Terminé';
+      default:
+        return status;
+    }
+  }
+
+  getCategoryLabel(category: string): string {
+    switch (category) {
+      case 'CONFERENCE':
+        return 'Conférence';
+      case 'WORKSHOP':
+        return 'Atelier';
+      case 'MEETUP':
+        return 'Rencontre';
+      case 'SEMINAR':
+        return 'Séminaire';
+      default:
+        return category;
     }
   }
 }

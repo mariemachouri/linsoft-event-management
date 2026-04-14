@@ -87,5 +87,14 @@ export class SidebarComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
+
+  toggleSidebar(): void {
+    const body = document.getElementsByTagName('body')[0];
+    if (body.classList.contains('sidebar-mini')) {
+      body.classList.remove('sidebar-mini');
+    } else {
+      body.classList.add('sidebar-mini');
+    }
+  }
 }
 

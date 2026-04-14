@@ -52,8 +52,14 @@ export class UsersListComponent implements OnInit {
     }
   }
 
-  editUser(user: UserResponse): void {
-    // TODO: Implémenter la page d'édition
-    console.log('Edit user:', user);
+  editUser(id: string | undefined): void {
+    if (id) {
+      window.location.href = `#/users/edit/${id}`;
+    }
+  }
+
+  viewUser(user: UserResponse): void {
+    // TODO: Implémenter vue détaillée (modal ou page)
+    console.log('View user:', user);
   }
 }

@@ -1,0 +1,20 @@
+// Styles spécifiques au composant de création de prédiction
+.card-stats {
+  background: linear-gradient(to bottom right, #1e1e2e, #27293d);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.list-group-item {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.alert-success {
+  background-color: rgba(0, 209, 178, 0.1);
+  border-color: #00d1b2;
+}

@@ -1,66 +1,85 @@
 <div class="content">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h4 class="card-title">Registrations Management</h4>
-          <p class="card-category">Manage all event registrations</p>
+  <div class="card">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h4 class="card-title mb-0">✍️ Gestion des Inscriptions</h4>
+          <p class="card-category mb-0">Gérez toutes les inscriptions aux événements</p>
         </div>
-        <div class="card-body">
-          <div *ngIf="loading" class="text-center">
-            <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-          </div>
-
-          <div *ngIf="error" class="alert alert-danger">
-            {{ error }}
-            <button type="button" class="close" (click)="error = null">
-              <span>&times;</span>
-            </button>
-          </div>
-
-          <div class="table-responsive" *ngIf="!loading">
-            <table class="table tablesorter">
-              <thead class="text-primary">
-                <tr>
-                  <th>Registration ID</th>
-                  <th>Event ID</th>
-                  <th>User ID</th>
-                  <th>Status</th>
-                  <th>Registration Date</th>
-                  <th class="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let registration of registrations">
-                  <td>{{ registration.id }}</td>
-                  <td>{{ registration.eventId }}</td>
-                  <td>{{ registration.userId }}</td>
-                  <td>
-                    <span class="badge" [class.badge-success]="registration.status === 'confirmed'" 
-                          [class.badge-warning]="registration.status === 'pending'"
-                          [class.badge-danger]="registration.status === 'cancelled'">
-                      {{ registration.status || 'pending' }}
-                    </span>
-                  </td>
-                  <td>{{ registration.registrationDate | date:'short' }}</td>
-                  <td class="text-center">
-                    <button class="btn btn-sm btn-info" title="View">
-                      <i class="tim-icons icon-notes"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteRegistration(registration.id!)" title="Delete">
-                      <i class="tim-icons icon-trash-simple"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr *ngIf="registrations.length === 0">
-                  <td colspan="6" class="text-center">No registrations found</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="col-auto">
+          <button class="btn btn-primary btn-lg" (click)="createRegistration()">
+            <i class="tim-icons icon-simple-add"></i>
+            Créer une inscription
+          </button>
         </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Chargement...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des inscriptions...</p>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show">
+        <i class="tim-icons icon-alert-circle-exc"></i>
+        {{ error }}
+        <button type="button" class="close" (click)="error = null">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading">
+        <table class="table tablesorter">
+          <thead class="text-primary">
+            <tr>
+              <th>ID Inscription</th>
+              <th>ID Événement</th>
+              <th>ID Participant</th>
+              <th>Statut</th>
+              <th>Date d'inscription</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let registration of registrations">
+              <td>
+                <code class="small">{{ registration.id || 'N/A' }}</code>
+              </td>
+              <td>
+                <code class="small">{{ registration.eventId }}</code>
+              </td>
+              <td>
+                <code class="small">{{ registration.userId }}</code>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatusBadgeClass(registration.status || 'PENDING')">
+                  {{ getStatusLabel(registration.status || 'PENDING') }}
+                </span>
+              </td>
+              <td>{{ registration.registrationDate | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-warning mr-1" (click)="editRegistration(registration.id!)" title="Modifier">
+                  <i class="tim-icons icon-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteRegistration(registration.id!)" title="Supprimer">
+                  <i class="tim-icons icon-trash-simple"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="registrations.length === 0 && !loading">
+              <td colspan="6" class="text-center py-5">
+                <i class="tim-icons icon-paper display-4 text-muted"></i>
+                <p class="mt-3 text-muted">Aucune inscription trouvée</p>
+                <button class="btn btn-primary" (click)="createRegistration()">
+                  <i class="tim-icons icon-simple-add"></i>
+                  Créer la première inscription
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 package com.eventmgmt.events.service;
 
+import com.eventmgmt.events.kafka.EventPublisher;
 import com.eventmgmt.events.model.Event;
 import com.eventmgmt.events.repository.EventRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,6 +13,9 @@ import org.bson.types.ObjectId;
 public class EventService {
     @Inject
     EventRepository repository;
+
+    @Inject
+    EventPublisher eventPublisher;
 
     public List<Event> list() {
         return repository.listAll();
@@ -26,6 +30,10 @@ public class EventService {
             event.status = com.eventmgmt.events.model.EventStatus.DRAFT;
         }
         repository.persist(event);
+        
+        // Publish event creation to Kafka (asynchronous)
+        eventPublisher.publishEventCreated(event);
+        
         return event;
     }
 
@@ -36,11 +44,24 @@ public class EventService {
         if (!event.chargeIds.contains(chargeId)) {
             event.chargeIds.add(chargeId);
             repository.update(event);
+            
+            // Publish event update to Kafka
+            eventPublisher.publishEventUpdated(event);
         }
         return event;
     }
 
     public boolean delete(String id) {
-        return repository.deleteById(new ObjectId(id));
+        // Get event before deletion for Kafka message
+        Optional<Event> eventOpt = repository.findByIdOptional(new ObjectId(id));
+        boolean deleted = repository.deleteById(new ObjectId(id));
+        
+        if (deleted && eventOpt.isPresent()) {
+            // Publish event deletion to Kafka
+            eventPublisher.publishEventDeleted(id, eventOpt.get());
+        }
+        
+        return deleted;
     }
 }
+

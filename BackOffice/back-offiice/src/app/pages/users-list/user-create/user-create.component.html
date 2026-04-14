@@ -1,0 +1,189 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Créer un Nouvel Utilisateur</h3>
+        </div>
+        <div class="card-body">
+          
+          <!-- Messages d'erreur/succès -->
+          <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="tim-icons icon-alert-circle-exc"></i>
+            {{ error }}
+            <button type="button" class="close" (click)="error = ''">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="tim-icons icon-check-2"></i>
+            {{ success }}
+            <button type="button" class="close" (click)="success = ''">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <!-- Formulaire -->
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+            
+            <!-- Username -->
+            <div class="form-group">
+              <label for="username">
+                Nom d'utilisateur <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="username"
+                formControlName="username"
+                [class.is-invalid]="f['username'].invalid && f['username'].touched"
+                placeholder="johndoe"
+              />
+              <div *ngIf="f['username'].invalid && f['username'].touched" class="invalid-feedback">
+                <div *ngIf="f['username'].errors?.['required']">Le nom d'utilisateur est requis</div>
+                <div *ngIf="f['username'].errors?.['minlength']">Minimum 3 caractères</div>
+                <div *ngIf="f['username'].errors?.['maxlength']">Maximum 50 caractères</div>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">
+                Email <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email"
+                formControlName="email"
+                [class.is-invalid]="f['email'].invalid && f['email'].touched"
+                placeholder="john.doe@example.com"
+              />
+              <div *ngIf="f['email'].invalid && f['email'].touched" class="invalid-feedback">
+                <div *ngIf="f['email'].errors?.['required']">L'email est requis</div>
+                <div *ngIf="f['email'].errors?.['email']">Email invalide</div>
+              </div>
+            </div>
+
+            <!-- Prénom et Nom -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="firstName">Prénom</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="firstName"
+                    formControlName="firstName"
+                    placeholder="John"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lastName">Nom</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="lastName"
+                    formControlName="lastName"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Mot de passe -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="password">
+                    Mot de passe <span class="text-danger">*</span>
+                  </label>
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password"
+                    formControlName="password"
+                    [class.is-invalid]="f['password'].invalid && f['password'].touched"
+                    placeholder="********"
+                  />
+                  <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">
+                    <div *ngIf="f['password'].errors?.['required']">Le mot de passe est requis</div>
+                    <div *ngIf="f['password'].errors?.['minlength']">Minimum 8 caractères</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="confirmPassword">
+                    Confirmer le mot de passe <span class="text-danger">*</span>
+                  </label>
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="confirmPassword"
+                    formControlName="confirmPassword"
+                    [class.is-invalid]="f['confirmPassword'].invalid && f['confirmPassword'].touched"
+                    placeholder="********"
+                  />
+                  <div *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched" class="invalid-feedback">
+                    <div *ngIf="f['confirmPassword'].errors?.['required']">Confirmation requise</div>
+                    <div *ngIf="f['confirmPassword'].errors?.['passwordMismatch']">Les mots de passe ne correspondent pas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sélection des rôles -->
+            <div class="form-group">
+              <label>
+                Rôles <span class="text-danger">*</span>
+              </label>
+              <div class="role-selection">
+                <div *ngFor="let role of availableRoles" class="custom-control custom-checkbox mb-3">
+                  <input 
+                    type="checkbox" 
+                    class="custom-control-input" 
+                    [id]="'role-' + role.value"
+                    [checked]="isRoleSelected(role.value)"
+                    (change)="toggleRole(role.value)"
+                  />
+                  <label class="custom-control-label" [for]="'role-' + role.value">
+                    <strong>{{ role.label }}</strong>
+                    <small class="d-block text-muted">{{ role.description }}</small>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-group mt-4">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="loading"
+              >
+                <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                {{ loading ? 'Création en cours...' : 'Créer l\'utilisateur' }}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-lg ml-2"
+                (click)="cancel()"
+                [disabled]="loading"
+              >
+                <i class="tim-icons icon-simple-remove"></i>
+                Annuler
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

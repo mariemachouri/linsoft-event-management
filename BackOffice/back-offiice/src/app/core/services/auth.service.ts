@@ -119,6 +119,14 @@ export class AuthService {
   }
 
   /**
+   * Récupérer l'ID de l'utilisateur actuel
+   */
+  getCurrentUserId(): string {
+    const user = this.getCurrentUser();
+    return user?.id || user?.username || 'unknown';
+  }
+
+  /**
    * Vérifier si authentifié
    */
   isAuthenticated(): boolean {

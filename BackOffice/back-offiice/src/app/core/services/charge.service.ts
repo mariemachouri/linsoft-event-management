@@ -26,7 +26,7 @@ export interface ChargePrediction {
 })
 export class ChargeService {
 
-  private chargesApiUrl = environment.services.charges + '/charges';
+  private chargesApiUrl = environment.services.charges;
 
   constructor(private http: HttpClient) { }
 

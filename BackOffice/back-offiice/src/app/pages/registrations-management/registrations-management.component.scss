@@ -1,0 +1,30 @@
+// Force full width layout - registrations page
+:host {
+  display: block;
+  width: 100%;
+}
+
+.card {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+// Status badges styling
+.badge {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+// Action buttons
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+// Responsive table
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}

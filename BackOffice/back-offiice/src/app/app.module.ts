@@ -15,11 +15,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
 import { AuthInterceptor } from "./core/interceptors/auth.interceptor";
 import { LoginComponent } from "./pages/login/login.component";
-import { UsersListComponent } from "./pages/users-list/users-list.component";
-import { EventsManagementComponent } from './pages/events-management/events-management.component';
-import { RegistrationsManagementComponent } from './pages/registrations-management/registrations-management.component';
-import { ChargesManagementComponent } from './pages/charges-management/charges-management.component';
-import { NotificationsManagementComponent } from './pages/notifications-management/notifications-management.component';
 
 @NgModule({
   imports: [
@@ -34,15 +29,10 @@ import { NotificationsManagementComponent } from './pages/notifications-manageme
     ToastrModule.forRoot()
   ],
   declarations: [
-    AppComponent, 
-    AdminLayoutComponent, 
+    AppComponent,
+    AdminLayoutComponent,
     AuthLayoutComponent,
-    LoginComponent,
-    UsersListComponent,
-    EventsManagementComponent,
-    RegistrationsManagementComponent,
-    ChargesManagementComponent,
-    NotificationsManagementComponent
+    LoginComponent
   ],
   providers: [
     {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { RegistrationService, Registration } from '../../core/services/registration.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class RegistrationsManagementComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private registrationService: RegistrationService) { }
+  constructor(
+    private registrationService: RegistrationService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadRegistrations();
@@ -28,23 +32,61 @@ export class RegistrationsManagementComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading registrations:', err);
-        this.error = 'Failed to load registrations. Please try again.';
+        this.error = 'Erreur lors du chargement des inscriptions. Veuillez réessayer.';
         this.loading = false;
       }
     });
   }
 
+  createRegistration(): void {
+    this.router.navigate(['/registrations/create']);
+  }
+
+  editRegistration(id: string): void {
+    this.router.navigate(['/registrations/edit', id]);
+  }
+
   deleteRegistration(id: string): void {
-    if (confirm('Are you sure you want to delete this registration?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette inscription ?')) {
       this.registrationService.deleteRegistration(id).subscribe({
         next: () => {
           this.loadRegistrations();
         },
         error: (err) => {
           console.error('Error deleting registration:', err);
-          alert('Failed to delete registration');
+          alert('Erreur lors de la suppression de l\'inscription');
         }
       });
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
+        return 'badge-warning';
+      case 'CONFIRMED':
+        return 'badge-success';
+      case 'WAITLISTED':
+        return 'badge-info';
+      case 'CANCELLED':
+        return 'badge-danger';
+      default:
+        return 'badge-secondary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
+        return 'En attente';
+      case 'CONFIRMED':
+        return 'Confirmé';
+      case 'WAITLISTED':
+        return 'Liste d\'attente';
+      case 'CANCELLED':
+        return 'Annulé';
+      default:
+        return status || 'Inconnu';
     }
   }
 }

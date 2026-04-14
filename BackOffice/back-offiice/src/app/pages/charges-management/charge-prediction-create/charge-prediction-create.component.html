@@ -1,0 +1,289 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">
+            {{ currentStep === 1 ? 'Nouvelle Prédiction de Charges (IA)' : 'Résultat de la Prédiction IA' }}
+          </h4>
+        </div>
+        <div class="card-body">
+          <!-- Étape 1: Formulaire EventMetrics -->
+          <div *ngIf="currentStep === 1">
+            <form [formGroup]="predictionForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <!-- Sélection de l'événement -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Événement <span class="text-danger">*</span></label>
+                    <select class="form-control" formControlName="eventId">
+                      <option value="">-- Sélectionner un événement --</option>
+                      <option *ngFor="let event of events" [value]="event.id">
+                        {{ event.title }} ({{ event.startDate | date:'short' }})
+                      </option>
+                    </select>
+                    <small class="text-danger" *ngIf="predictionForm.get('eventId')?.touched && predictionForm.get('eventId')?.invalid">
+                      L'événement est requis
+                    </small>
+                  </div>
+                </div>
+
+                <!-- Type d'événement -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Type d'événement <span class="text-danger">*</span></label>
+                    <select class="form-control" formControlName="eventType">
+                      <option *ngFor="let category of eventCategories" [value]="category">
+                        {{ category }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Nombre de participants attendus -->
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Participants attendus <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="expectedAttendees" 
+                           placeholder="Ex: 50">
+                    <small class="text-danger" *ngIf="predictionForm.get('expectedAttendees')?.touched && predictionForm.get('expectedAttendees')?.invalid">
+                      Minimum 1 participant
+                    </small>
+                  </div>
+                </div>
+
+                <!-- Durée en heures -->
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Durée (heures) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="durationHours" 
+                           placeholder="Ex: 2">
+                    <small class="text-danger" *ngIf="predictionForm.get('durationHours')?.touched && predictionForm.get('durationHours')?.invalid">
+                      Minimum 1 heure
+                    </small>
+                  </div>
+                </div>
+
+                <!-- Taille du lieu -->
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Taille du lieu (m²) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="venueSize" 
+                           placeholder="Ex: 100">
+                    <small class="text-danger" *ngIf="predictionForm.get('venueSize')?.touched && predictionForm.get('venueSize')?.invalid">
+                      Taille requise
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Localisation -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Localisation <span class="text-danger">*</span></label>
+                    <select class="form-control" formControlName="location">
+                      <option *ngFor="let loc of locationOptions" [value]="loc">
+                        {{ loc === 'online' ? 'En ligne' : 'Sur site' }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Ville -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Ville <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="city" 
+                           placeholder="Ex: Paris">
+                    <small class="text-danger" *ngIf="predictionForm.get('city')?.touched && predictionForm.get('city')?.invalid">
+                      La ville est requise
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Options booléennes -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" formControlName="cateringRequired" id="catering">
+                      <label class="form-check-label" for="catering">
+                        Restauration requise
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" formControlName="equipmentRequired" id="equipment">
+                      <label class="form-check-label" for="equipment">
+                        Équipement requis
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Messages d'erreur -->
+              <div class="alert alert-danger" *ngIf="errorMessage">
+                {{ errorMessage }}
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="row">
+                <div class="col-md-12">
+                  <button type="submit" class="btn btn-primary" [disabled]="loading">
+                    <i class="tim-icons icon-chart-bar-32" *ngIf="!loading"></i>
+                    <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
+                    {{ loading ? 'Analyse en cours...' : 'Lancer la prédiction IA' }}
+                  </button>
+                  <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Étape 2: Résultat de la prédiction -->
+          <div *ngIf="currentStep === 2 && predictionResult">
+            <!-- En-tête du résultat -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="alert alert-success">
+                  <h5>
+                    <i class="tim-icons icon-check-2"></i>
+                    Prédiction générée avec succès !
+                  </h5>
+                  <p class="mb-0">
+                    Modèle IA utilisé: <strong>{{ predictionResult.predictionResult?.aiModel }}</strong> 
+                    - Confiance: <strong>{{ getConfidencePercentage() }}%</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Coût total prédit -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card card-stats">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="numbers text-center">
+                          <p class="card-category">Coût Total Prédit</p>
+                          <h2 class="card-title">{{ getTotalCost() | number:'1.2-2' }} €</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Répartition des coûts -->
+            <div class="row">
+              <div class="col-md-12">
+                <h5>Répartition des coûts</h5>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Catégorie</th>
+                        <th class="text-right">Montant</th>
+                        <th class="text-right">Pourcentage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let entry of getBreakdownEntries()">
+                        <td>{{ entry.label }}</td>
+                        <td class="text-right">{{ entry.value | number:'1.2-2' }} €</td>
+                        <td class="text-right">
+                          <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-primary" [style.width.%]="entry.percentage">
+                              {{ entry.percentage }}%
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommandations IA -->
+            <div class="row" *ngIf="predictionResult.predictionResult?.recommendations && predictionResult.predictionResult.recommendations.length > 0">
+              <div class="col-md-6">
+                <h5>Recommandations</h5>
+                <ul class="list-group">
+                  <li class="list-group-item" *ngFor="let rec of predictionResult.predictionResult.recommendations">
+                    <i class="tim-icons icon-bulb-63 text-info"></i> {{ rec }}
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Facteurs de risque -->
+              <div class="col-md-6" *ngIf="predictionResult.predictionResult?.riskFactors && predictionResult.predictionResult.riskFactors.length > 0">
+                <h5>Facteurs de risque</h5>
+                <ul class="list-group">
+                  <li class="list-group-item" *ngFor="let risk of predictionResult.predictionResult.riskFactors">
+                    <i class="tim-icons icon-alert-circle-exc text-warning"></i> {{ risk }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Recommandations d'articles -->
+            <div class="row mt-3" *ngIf="predictionResult.predictionResult?.itemRecommendations && predictionResult.predictionResult.itemRecommendations.length > 0">
+              <div class="col-md-12">
+                <h5>Articles recommandés</h5>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Article</th>
+                        <th class="text-center">Quantité suggérée</th>
+                        <th>Raison</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of predictionResult.predictionResult.itemRecommendations">
+                        <td>{{ item.item }}</td>
+                        <td class="text-center">{{ item.suggestedQuantity }}</td>
+                        <td>{{ item.reason }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="row mt-4">
+              <div class="col-md-12">
+                <button type="button" class="btn btn-success" (click)="goToPaymentDecision()">
+                  <i class="tim-icons icon-coins"></i>
+                  Décision de paiement
+                </button>
+                <button type="button" class="btn btn-info ml-2" (click)="backToForm()">
+                  <i class="tim-icons icon-refresh-01"></i>
+                  Nouvelle prédiction
+                </button>
+                <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">
+                  Retour à la liste
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

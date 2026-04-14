@@ -6,7 +6,7 @@
       <p class="page-subtitle">Gérez et administrez tous les utilisateurs du système</p>
     </div>
     <div class="header-action">
-      <button class="btn btn-primary" routerLink="./create">
+      <button class="btn btn-primary" routerLink="/users/create">
         <i class="tim-icons icon-add"></i>Nouvel Utilisateur
       </button>
     </div>
@@ -46,7 +46,7 @@
         <i class="tim-icons icon-single-02"></i>
         <h3>Aucun utilisateur trouvé</h3>
         <p>Commencez par créer un nouvel utilisateur</p>
-        <button class="btn btn-primary mt-3" routerLink="./create">
+        <button class="btn btn-primary mt-3" routerLink="/users/create">
           <i class="tim-icons icon-add"></i>Créer un utilisateur
         </button>
       </div>
@@ -93,7 +93,7 @@
                   <div class="action-buttons">
                     <button
                       class="btn btn-sm btn-info"
-                      (click)="editUser(user)"
+                      (click)="editUser(user.id)"
                       title="Éditer"
                     >
                       <i class="tim-icons icon-pencil"></i>

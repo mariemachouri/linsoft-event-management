@@ -1,0 +1,371 @@
+<div class="content">
+  <!-- En-tête de page -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🎨 Démonstration - Charte Graphique Linsoft</h2>
+          <p class="card-category">Découvrez les composants stylisés avec l'identité visuelle de Linsoft</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Couleurs -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Palette de Couleurs</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <div class="color-box linsoft-gradient-primary">
+                <span>Primary Gradient</span>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="color-box linsoft-gradient-dark">
+                <span style="color: white;">Dark Gradient</span>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="color-box linsoft-gradient-accent">
+                <span style="color: white;">Accent Gradient</span>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="color-box linsoft-gradient-hero">
+                <span style="color: white;">Hero Gradient</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Boutons -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header linsoft-gradient-primary">
+          <h4 class="card-title">Boutons</h4>
+          <p class="card-category">Différents styles de boutons avec gradients Linsoft</p>
+        </div>
+        <div class="card-body">
+          <div class="buttons-showcase">
+            <h5 class="mb-3">Boutons Standards</h5>
+            <div class="d-flex flex-wrap gap-3 mb-4">
+              <button class="btn btn-primary" (click)="showAlert('Primary')">
+                <i class="tim-icons icon-check-2"></i>
+                Primary
+              </button>
+              <button class="btn btn-success" (click)="showAlert('Success')">
+                <i class="tim-icons icon-check-2"></i>
+                Success
+              </button>
+              <button class="btn btn-danger" (click)="showAlert('Danger')">
+                <i class="tim-icons icon-simple-remove"></i>
+                Danger
+              </button>
+              <button class="btn btn-info" (click)="showAlert('Info')">
+                <i class="tim-icons icon-alert-circle-exc"></i>
+                Info
+              </button>
+              <button class="btn btn-warning" (click)="showAlert('Warning')">
+                <i class="tim-icons icon-bell-55"></i>
+                Warning
+              </button>
+            </div>
+
+            <h5 class="mb-3">Boutons Outline</h5>
+            <div class="d-flex flex-wrap gap-3 mb-4">
+              <button class="btn btn-outline-primary">
+                <i class="tim-icons icon-heart-2"></i>
+                Outline Primary
+              </button>
+              <button class="btn btn-outline-success">
+                Outline Success
+              </button>
+              <button class="btn btn-outline-danger">
+                Outline Danger
+              </button>
+            </div>
+
+            <h5 class="mb-3">États des boutons</h5>
+            <div class="d-flex flex-wrap gap-3">
+              <button class="btn btn-primary">Normal</button>
+              <button class="btn btn-primary" disabled>Désactivé</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Cartes -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header linsoft-gradient-primary">
+          <h5 class="card-title">Carte Standard</h5>
+          <p class="card-category">Avec header en gradient</p>
+        </div>
+        <div class="card-body">
+          <p>Ceci est une carte avec un header utilisant le gradient principal de Linsoft.</p>
+          <p class="text-muted">Design moderne et professionnel.</p>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-primary btn-sm">Action</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header linsoft-gradient-accent">
+          <h5 class="card-title">Carte Accent</h5>
+          <p class="card-category">Avec gradient d'accent</p>
+        </div>
+        <div class="card-body">
+          <p>Cette carte utilise le gradient accent orange/rouge de Linsoft.</p>
+          <p class="text-muted">Parfait pour attirer l'attention.</p>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-danger btn-sm">Action</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card linsoft-shadow-lg">
+        <div class="card-header linsoft-gradient-dark">
+          <h5 class="card-title">Carte Sombre</h5>
+          <p class="card-category">Avec gradient sombre</p>
+        </div>
+        <div class="card-body">
+          <p>Cette carte utilise le gradient sombre de Linsoft.</p>
+          <p class="text-muted">Élégant et discret.</p>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-info btn-sm">Action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Formulaire -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Formulaire Exemple</h4>
+          <p class="card-category">Champs de saisie stylisés</p>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="submitForm()">
+            <div class="form-group">
+              <label for="name">Nom complet</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="name" 
+                placeholder="Saisir votre nom">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                placeholder="exemple@linsoft.com">
+            </div>
+
+            <div class="form-group">
+              <label for="role">Rôle</label>
+              <select class="form-control" id="role">
+                <option>Administrateur</option>
+                <option>Utilisateur</option>
+                <option>Manager</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea 
+                class="form-control" 
+                id="message" 
+                rows="4"
+                placeholder="Saisir votre message..."></textarea>
+            </div>
+
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-primary">
+                <i class="tim-icons icon-check-2"></i>
+                Enregistrer
+              </button>
+              <button type="button" class="btn btn-outline-primary">
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Badges & Tags</h4>
+          <p class="card-category">Indicateurs et étiquettes</p>
+        </div>
+        <div class="card-body">
+          <h5>Badges de statut</h5>
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <span class="badge badge-primary">Nouveau</span>
+            <span class="badge badge-success">Actif</span>
+            <span class="badge badge-danger">Urgent</span>
+            <span class="badge badge-warning">En attente</span>
+            <span class="badge badge-info">Information</span>
+          </div>
+
+          <h5>Tags</h5>
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <span class="tag linsoft-bg-primary text-white">DevOps</span>
+            <span class="tag linsoft-bg-primary text-white">Cloud</span>
+            <span class="tag linsoft-bg-primary text-white">Kubernetes</span>
+            <span class="tag linsoft-bg-primary text-white">Open Source</span>
+          </div>
+
+          <h5>Icônes avec couleurs Linsoft</h5>
+          <div class="d-flex gap-3 icon-showcase">
+            <i class="tim-icons icon-laptop linsoft-text-primary"></i>
+            <i class="tim-icons icon-chart-bar-32 linsoft-text-primary"></i>
+            <i class="tim-icons icon-cloud-upload-94 linsoft-text-primary"></i>
+            <i class="tim-icons icon-settings linsoft-text-accent"></i>
+            <i class="tim-icons icon-bell-55 linsoft-text-accent"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body text-center">
+          <h5>Logo & Branding</h5>
+          <div class="linsoft-gradient-hero p-5 rounded">
+            <h2 class="text-white mb-2">LinSoft</h2>
+            <p class="text-white mb-0">Your success, our passion</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Statistiques -->
+  <div class="row">
+    <div class="col-lg-3 col-md-6">
+      <div class="card card-stats">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="info-icon text-center icon-primary">
+                <i class="tim-icons icon-single-02"></i>
+              </div>
+            </div>
+            <div class="col-7">
+              <div class="numbers">
+                <p class="card-category">Utilisateurs</p>
+                <h3 class="card-title">1,234</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="card card-stats">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="info-icon text-center icon-success">
+                <i class="tim-icons icon-chart-bar-32"></i>
+              </div>
+            </div>
+            <div class="col-7">
+              <div class="numbers">
+                <p class="card-category">Projets</p>
+                <h3 class="card-title">456</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="card card-stats">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="info-icon text-center icon-warning">
+                <i class="tim-icons icon-time-alarm"></i>
+              </div>
+            </div>
+            <div class="col-7">
+              <div class="numbers">
+                <p class="card-category">En cours</p>
+                <h3 class="card-title">89</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="card card-stats">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="info-icon text-center icon-danger">
+                <i class="tim-icons icon-trophy"></i>
+              </div>
+            </div>
+            <div class="col-7">
+              <div class="numbers">
+                <p class="card-category">Terminés</p>
+                <h3 class="card-title">678</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Information -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center p-5">
+          <h3 class="linsoft-text-primary mb-4">Charte Graphique Linsoft</h3>
+          <p class="lead mb-4">
+            Cette page démontre tous les composants stylisés selon l'identité visuelle de Linsoft.
+          </p>
+          <p class="text-muted">
+            Inspirée du site officiel <a href="https://www.linsoft.com/fr" target="_blank" class="linsoft-text-primary">www.linsoft.com</a>
+          </p>
+          <div class="mt-4">
+            <button class="btn btn-primary btn-lg">
+              <i class="tim-icons icon-bulb-63"></i>
+              Commencer votre projet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,4 +32,14 @@ export class AdminLayoutComponent implements OnInit {
     }
   }
   ngOnInit() {}
+
+  openSidebar(): void {
+    const body = document.getElementsByTagName('body')[0];
+    body.classList.remove('sidebar-mini');
+  }
+
+  isSidebarHidden(): boolean {
+    const body = document.getElementsByTagName('body')[0];
+    return body.classList.contains('sidebar-mini');
+  }
 }

@@ -20,7 +20,7 @@ export interface DashboardStats {
 })
 export class DashboardService {
 
-  private dashboardApiUrl = environment.services.dashboard + '/dashboard';
+  private dashboardApiUrl = environment.services.dashboard;
 
   constructor(
     private http: HttpClient,

@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ChargeService, Charge } from '../../core/services/charge.service';
+import { Router } from '@angular/router';
+import { 
+  ChargePredictionService, 
+  ChargePrediction,
+  ChargeStatus
+} from '../../core/services/charge-prediction.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-charges-management',
@@ -7,48 +13,137 @@ import { ChargeService, Charge } from '../../core/services/charge.service';
   styleUrls: ['./charges-management.component.scss']
 })
 export class ChargesManagementComponent implements OnInit {
-
-  charges: Charge[] = [];
+  predictions: ChargePrediction[] = [];
   loading = false;
-  error: string | null = null;
+  errorMessage = '';
+  isAdmin = false;
 
-  constructor(private chargeService: ChargeService) { }
+  constructor(
+    private chargePredictionService: ChargePredictionService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadCharges();
+    this.isAdmin = this.authService.hasRole('admin');
+    this.loadPredictions();
   }
 
-  loadCharges(): void {
+  loadPredictions(): void {
     this.loading = true;
-    this.error = null;
-    this.chargeService.getAllCharges().subscribe({
-      next: (data) => {
-        this.charges = data;
+    this.chargePredictionService.getAllPredictions().subscribe({
+      next: (predictions) => {
+        this.predictions = predictions;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading charges:', err);
-        this.error = 'Failed to load charges. Please try again.';
+      error: (error) => {
+        console.error('Erreur lors du chargement des prédictions:', error);
+        this.errorMessage = 'Impossible de charger les prédictions';
         this.loading = false;
       }
     });
   }
 
-  deleteCharge(id: string): void {
-    if (confirm('Are you sure you want to delete this charge?')) {
-      this.chargeService.deleteCharge(id).subscribe({
+  createPrediction(): void {
+    this.router.navigate(['/charges/create']);
+  }
+
+  viewDetails(prediction: ChargePrediction): void {
+    this.router.navigate(['/charges/payment-decision', prediction.id]);
+  }
+
+  approvePrediction(prediction: ChargePrediction): void {
+    if (!this.isAdmin) {
+      alert('Seuls les administrateurs peuvent approuver les prédictions');
+      return;
+    }
+
+    if (confirm(`Êtes-vous sûr de vouloir APPROUVER cette prédiction de ${this.getTotalCost(prediction)} € ?`)) {
+      const request = {
+        adminId: this.authService.getCurrentUserId(),
+        approved: true
+      };
+
+      this.chargePredictionService.approvePrediction(prediction.id!, request).subscribe({
         next: () => {
-          this.loadCharges();
+          alert('Prédiction approuvée avec succès');
+          this.loadPredictions(); // Recharger la liste
         },
-        error: (err) => {
-          console.error('Error deleting charge:', err);
-          alert('Failed to delete charge');
+        error: (error) => {
+          console.error('Erreur lors de l\'approbation:', error);
+          alert('Erreur lors de l\'approbation');
         }
       });
     }
   }
 
-  getTotalCharges(): number {
-    return this.charges.reduce((sum, charge) => sum + charge.amount, 0);
+  rejectPrediction(prediction: ChargePrediction): void {
+    if (!this.isAdmin) {
+      alert('Seuls les administrateurs peuvent rejeter les prédictions');
+      return;
+    }
+
+    if (confirm(`Êtes-vous sûr de vouloir REJETER cette prédiction de ${this.getTotalCost(prediction)} € ?`)) {
+      const request = {
+        adminId: this.authService.getCurrentUserId(),
+        approved: false
+      };
+
+      this.chargePredictionService.approvePrediction(prediction.id!, request).subscribe({
+        next: () => {
+          alert('Prédiction rejetée');
+          this.loadPredictions(); // Recharger la liste
+        },
+        error: (error) => {
+          console.error('Erreur lors du rejet:', error);
+          alert('Erreur lors du rejet');
+        }
+      });
+    }
+  }
+
+  // Méthodes utilitaires pour le template
+  getTotalCost(prediction: ChargePrediction): number {
+    return prediction.predictionResult?.predictedTotalCost || 0;
+  }
+
+  getConfidencePercentage(prediction: ChargePrediction): number {
+    if (!prediction.predictionResult) return 0;
+    return Math.round(prediction.predictionResult.confidenceScore * 100);
+  }
+
+  getStatusBadgeClass(status: ChargeStatus): string {
+    const classes = {
+      [ChargeStatus.PENDING]: 'badge-warning',
+      [ChargeStatus.APPROVED]: 'badge-success',
+      [ChargeStatus.PAID]: 'badge-info',
+      [ChargeStatus.REJECTED]: 'badge-danger'
+    };
+    return classes[status] || 'badge-secondary';
+  }
+
+  getStatusLabel(status: ChargeStatus): string {
+    const labels = {
+      [ChargeStatus.PENDING]: 'En attente',
+      [ChargeStatus.APPROVED]: 'Approuvé',
+      [ChargeStatus.PAID]: 'Payé',
+      [ChargeStatus.REJECTED]: 'Rejeté'
+    };
+    return labels[status] || status;
+  }
+
+  requiresApproval(prediction: ChargePrediction): boolean {
+    return prediction.paymentDecision?.requiresApproval || false;
+  }
+
+  canApprove(prediction: ChargePrediction): boolean {
+    return this.isAdmin && 
+           prediction.status === ChargeStatus.PENDING && 
+           this.requiresApproval(prediction);
+  }
+
+  canReject(prediction: ChargePrediction): boolean {
+    return this.isAdmin && 
+           (prediction.status === ChargeStatus.PENDING || prediction.status === ChargeStatus.APPROVED);
   }
 }

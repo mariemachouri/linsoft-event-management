@@ -1,0 +1,245 @@
+/* ========================================
+   🎨 CHARTE GRAPHIQUE LINSOFT
+   Inspirée du site officiel www.linsoft.com
+   ======================================== */
+
+/* ===== COULEURS PRINCIPALES LINSOFT ===== */
+$linsoft-primary: #E31E24;        // Rouge corporate principal Linsoft
+$linsoft-primary-dark: #B71820;   // Rouge foncé
+$linsoft-primary-light: #FF5158;  // Rouge clair
+$linsoft-secondary: #2B2B2B;      // Gris foncé (navigation)
+$linsoft-accent: #0066cc;         // Bleu accent
+$linsoft-accent-alt: #ff6b35;     // Orange accent
+
+/* ===== COULEURS NEUTRES ===== */
+$linsoft-dark: #1a1a2e;          // Fond sombre principal
+$linsoft-dark-secondary: #16213e; // Fond sombre secondaire
+$linsoft-gray-dark: #2c3e50;     // Gris texte foncé
+$linsoft-gray: #7f8c8d;          // Gris neutre
+$linsoft-gray-light: #ecf0f1;    // Gris clair
+$linsoft-white: #ffffff;         // Blanc pur
+$linsoft-background: #f5f7fa;    // Fond clair
+
+/* ===== COULEURS DE STATUT ===== */
+$linsoft-success: #27ae60;       // Vert succès
+$linsoft-warning: #f39c12;       // Orange warning
+$linsoft-danger: #e74c3c;        // Rouge danger
+$linsoft-info: #3498db;          // Bleu info
+
+/* ===== GRADIENTS LINSOFT ===== */
+$linsoft-gradient-primary: linear-gradient(135deg, #E31E24 0%, #FF5158 100%);
+$linsoft-gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+$linsoft-gradient-accent: linear-gradient(135deg, #B71820 0%, #E31E24 100%);
+$linsoft-gradient-hero: linear-gradient(135deg, #B71820 0%, #E31E24 50%, #FF5158 100%);
+$linsoft-gradient-subtle: linear-gradient(180deg, rgba(227, 30, 36, 0.05) 0%, rgba(255, 81, 88, 0.02) 100%);
+
+/* ===== OMBRES ===== */
+$linsoft-shadow-sm: 0 2px 8px rgba(227, 30, 36, 0.1);
+$linsoft-shadow-md: 0 4px 16px rgba(227, 30, 36, 0.15);
+$linsoft-shadow-lg: 0 8px 32px rgba(227, 30, 36, 0.2);
+$linsoft-shadow-xl: 0 12px 48px rgba(227, 30, 36, 0.25);
+
+/* ===== TYPOGRAPHIE ===== */
+$linsoft-font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+$linsoft-font-size-base: 14px;
+$linsoft-font-size-lg: 16px;
+$linsoft-font-size-xl: 20px;
+$linsoft-font-size-2xl: 24px;
+$linsoft-font-size-3xl: 32px;
+
+/* ===== ESPACEMENTS ===== */
+$linsoft-spacing-xs: 4px;
+$linsoft-spacing-sm: 8px;
+$linsoft-spacing-md: 16px;
+$linsoft-spacing-lg: 24px;
+$linsoft-spacing-xl: 32px;
+$linsoft-spacing-2xl: 48px;
+
+/* ===== BORDURES ===== */
+$linsoft-border-radius-sm: 4px;
+$linsoft-border-radius-md: 8px;
+$linsoft-border-radius-lg: 12px;
+$linsoft-border-radius-xl: 16px;
+$linsoft-border-radius-full: 9999px;
+
+/* ===== TRANSITIONS ===== */
+$linsoft-transition-fast: 0.15s ease;
+$linsoft-transition-base: 0.3s ease;
+$linsoft-transition-slow: 0.5s ease;
+
+/* ===== Z-INDEX ===== */
+$linsoft-z-dropdown: 1000;
+$linsoft-z-sticky: 1020;
+$linsoft-z-fixed: 1030;
+$linsoft-z-modal-backdrop: 1040;
+$linsoft-z-modal: 1050;
+$linsoft-z-popover: 1060;
+$linsoft-z-tooltip: 1070;
+
+/* ===== ANIMATIONS LINSOFT ===== */
+@keyframes linsoft-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes linsoft-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes linsoft-scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes linsoft-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes linsoft-shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* ===== CLASSES UTILITAIRES LINSOFT ===== */
+.linsoft-gradient-primary {
+  background: $linsoft-gradient-primary;
+}
+
+.linsoft-gradient-dark {
+  background: $linsoft-gradient-dark;
+}
+
+.linsoft-gradient-accent {
+  background: $linsoft-gradient-accent;
+}
+
+.linsoft-gradient-hero {
+  background: $linsoft-gradient-hero;
+}
+
+.linsoft-text-primary {
+  color: $linsoft-primary !important;
+}
+
+.linsoft-text-accent {
+  color: $linsoft-accent !important;
+}
+
+.linsoft-bg-primary {
+  background-color: $linsoft-primary !important;
+}
+
+.linsoft-bg-dark {
+  background-color: $linsoft-dark !important;
+}
+
+.linsoft-shadow-sm {
+  box-shadow: $linsoft-shadow-sm !important;
+}
+
+.linsoft-shadow-md {
+  box-shadow: $linsoft-shadow-md !important;
+}
+
+.linsoft-shadow-lg {
+  box-shadow: $linsoft-shadow-lg !important;
+}
+
+.linsoft-border-radius {
+  border-radius: $linsoft-border-radius-md !important;
+}
+
+/* ===== MIXINS LINSOFT ===== */
+@mixin linsoft-card {
+  background: $linsoft-white;
+  border-radius: $linsoft-border-radius-lg;
+  box-shadow: $linsoft-shadow-md;
+  transition: all $linsoft-transition-base;
+  
+  &:hover {
+    box-shadow: $linsoft-shadow-lg;
+    transform: translateY(-4px);
+  }
+}
+
+@mixin linsoft-button {
+  border-radius: $linsoft-border-radius-md;
+  padding: $linsoft-spacing-md $linsoft-spacing-lg;
+  font-weight: 600;
+  font-size: $linsoft-font-size-base;
+  transition: all $linsoft-transition-base;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: $linsoft-spacing-sm;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: $linsoft-shadow-md;
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin linsoft-input {
+  border: 2px solid $linsoft-gray-light;
+  border-radius: $linsoft-border-radius-md;
+  padding: $linsoft-spacing-md;
+  font-size: $linsoft-font-size-base;
+  transition: all $linsoft-transition-fast;
+  background-color: $linsoft-white;
+  
+  &:focus {
+    outline: none;
+    border-color: $linsoft-primary;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  }
+  
+  &::placeholder {
+    color: $linsoft-gray;
+  }
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+$linsoft-breakpoint-xs: 480px;
+$linsoft-breakpoint-sm: 640px;
+$linsoft-breakpoint-md: 768px;
+$linsoft-breakpoint-lg: 1024px;
+$linsoft-breakpoint-xl: 1280px;
+$linsoft-breakpoint-2xl: 1536px;

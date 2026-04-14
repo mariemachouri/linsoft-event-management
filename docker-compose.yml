@@ -67,25 +67,87 @@ services:
       timeout: 5s
       retries: 5
 
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - eventmgmt-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - eventmgmt-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # Kafka UI for monitoring
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: event-mgmt-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - eventmgmt-network
+
   eureka-server:
     build:
-      context: ./services/eureka-server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/eureka-server/Dockerfile
     container_name: eureka-server
     ports:
       - "8761:8761"
     networks:
       - eventmgmt-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
 
   config-server:
     build:
-      context: ./services/config-server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/config-server/Dockerfile
     container_name: config-server
     ports:
       - "8888:8888"
@@ -97,15 +159,16 @@ services:
     networks:
       - eventmgmt-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
 
   gateway-service:
     build:
-      context: ./services/gateway-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/gateway-service/Dockerfile
     container_name: gateway-service
     ports:
       - "8080:8080"
@@ -115,44 +178,56 @@ services:
       eureka-server:
         condition: service_healthy
       config-server:
-        condition: service_healthy
+        condition: service_started
     networks:
       - eventmgmt-network
 
   events-service:
     build:
-      context: ./services/events-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/events-service/Dockerfile
     container_name: events-service
     ports:
       - "8081:8081"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/events_db?authSource=admin
     depends_on:
-      - eureka-server
-      - gateway-service
+      kafka:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      gateway-service:
+        condition: service_started
     networks:
       - eventmgmt-network
 
   registrations-service:
     build:
-      context: ./services/registrations-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/registrations-service/Dockerfile
     container_name: registrations-service
     ports:
       - "8082:8082"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/registrations_db?authSource=admin
     depends_on:
-      - eureka-server
-      - gateway-service
+      kafka:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      gateway-service:
+        condition: service_started
     networks:
       - eventmgmt-network
 
   users-service:
     build:
-      context: ./services/users-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/users-service/Dockerfile
     container_name: users-service
     ports:
       - "8083:8083"
@@ -165,9 +240,12 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=admin
       - KEYCLOAK_REALM=event-mgmt
       - KEYCLOAK_CLIENT_SECRET=users-service-secret
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
-      keycloak:
+      kafka:
         condition: service_healthy
+      keycloak:
+        condition: service_started
       mongodb:
         condition: service_healthy
       eureka-server:
@@ -179,43 +257,57 @@ services:
 
   notifications-service:
     build:
-      context: ./services/notifications-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/notifications-service/Dockerfile
     container_name: notifications-service
     ports:
       - "8084:8084"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/notifications_db?authSource=admin
     depends_on:
-      - eureka-server
-      - gateway-service
+      kafka:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      gateway-service:
+        condition: service_started
     networks:
       - eventmgmt-network
 
   dashboard-service:
     build:
-      context: ./services/dashboard-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/dashboard-service/Dockerfile
     container_name: dashboard-service
     ports:
       - "8085:8085"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/dashboard_db?authSource=admin
     depends_on:
-      - eureka-server
-      - gateway-service
+      kafka:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+      gateway-service:
+        condition: service_started
     networks:
       - eventmgmt-network
 
   charges-service:
     build:
-      context: ./services/charges-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/charges-service/Dockerfile
     container_name: charges-service
     ports:
       - "8086:8086"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/charges_db?authSource=admin
     depends_on:
       - eureka-server
       - gateway-service

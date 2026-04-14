@@ -18,7 +18,7 @@ export interface Notification {
 })
 export class NotificationService {
 
-  private notificationsApiUrl = environment.services.notifications + '/notifications';
+  private notificationsApiUrl = environment.services.notifications;
 
   constructor(private http: HttpClient) { }
 

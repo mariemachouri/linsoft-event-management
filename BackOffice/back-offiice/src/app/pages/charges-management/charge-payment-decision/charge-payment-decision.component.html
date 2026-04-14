@@ -1,0 +1,157 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Décision de Paiement</h4>
+        </div>
+        <div class="card-body">
+          <!-- Chargement -->
+          <div *ngIf="loading && !prediction" class="text-center">
+            <span class="spinner-border spinner-border-lg"></span>
+            <p>Chargement...</p>
+          </div>
+
+          <!-- Message d'erreur -->
+          <div class="alert alert-danger" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Contenu principal -->
+          <div *ngIf="prediction">
+            <!-- Résumé de la prédiction -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="card card-stats">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="numbers">
+                          <p class="card-category">Coût Total Prédit</p>
+                          <h3 class="card-title">{{ getTotalCost() | number:'1.2-2' }} €</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card card-stats">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="numbers">
+                          <p class="card-category">Confiance IA</p>
+                          <h3 class="card-title">{{ getConfidencePercentage() }}%</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Informations complémentaires -->
+            <div class="row mb-4">
+              <div class="col-md-12">
+                <div class="alert alert-info">
+                  <h6><i class="tim-icons icon-alert-circle-exc"></i> Informations importantes</h6>
+                  <ul class="mb-0">
+                    <li>Modèle IA: <strong>{{ prediction.predictionResult?.aiModel }}</strong></li>
+                    <li>Événement ID: <strong>{{ prediction.eventId }}</strong></li>
+                    <li>Organisateur ID: <strong>{{ prediction.organizerId }}</strong></li>
+                    <li>Statut actuel: <strong>{{ prediction.status }}</strong></li>
+                    <li *ngIf="getTotalCost() > 5000" class="text-warning">
+                      ⚠️ Montant > 5000€ - Une approbation admin sera requise
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulaire de décision -->
+            <form [formGroup]="decisionForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="col-md-12">
+                  <h5>Sélection du mode de paiement</h5>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Mode de paiement <span class="text-danger">*</span></label>
+                    <select class="form-control" formControlName="paymentMethod">
+                      <option *ngFor="let method of paymentMethods" [value]="method">
+                        {{ getPaymentMethodLabel(method) }}
+                      </option>
+                    </select>
+                    <small class="form-text text-muted">
+                      Choisissez le mode de paiement approprié pour cet événement
+                    </small>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="alert alert-secondary mt-4">
+                    <small>
+                      <strong>Guide des modes de paiement:</strong><br>
+                      • <strong>En ligne:</strong> Paiement anticipé par carte/virement<br>
+                      • <strong>Sur place:</strong> Paiement le jour de l'événement<br>
+                      • <strong>Hybride:</strong> Acompte en ligne + solde sur place
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Justification de la décision <span class="text-danger">*</span></label>
+                    <textarea class="form-control" formControlName="reason" rows="4" 
+                              placeholder="Expliquez pourquoi vous avez choisi ce mode de paiement..."></textarea>
+                    <small class="text-danger" 
+                           *ngIf="decisionForm.get('reason')?.touched && decisionForm.get('reason')?.invalid">
+                      La justification est requise (minimum 10 caractères)
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Affichage de la décision existante -->
+              <div class="row" *ngIf="prediction.paymentDecision">
+                <div class="col-md-12">
+                  <div class="alert alert-warning">
+                    <h6><i class="tim-icons icon-alert-circle-exc"></i> Décision existante</h6>
+                    <p class="mb-0">
+                      Mode: <strong>{{ getPaymentMethodLabel(prediction.paymentDecision.paymentMethod) }}</strong><br>
+                      Décidé par: <strong>{{ prediction.paymentDecision.decidedBy }}</strong><br>
+                      Date: <strong>{{ prediction.paymentDecision.decisionDate | date:'medium' }}</strong><br>
+                      Raison: {{ prediction.paymentDecision.reason }}<br>
+                      Approbation requise: <strong>{{ prediction.paymentDecision.requiresApproval ? 'Oui' : 'Non' }}</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="row">
+                <div class="col-md-12">
+                  <button type="submit" class="btn btn-success" [disabled]="loading">
+                    <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
+                    <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
+                    {{ loading ? 'Enregistrement...' : 'Enregistrer la décision' }}
+                  </button>
+                  <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

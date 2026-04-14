@@ -1,0 +1,27 @@
+// Styles spécifiques au composant de décision de paiement
+.card-stats {
+  background: linear-gradient(to bottom right, #1e1e2e, #27293d);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  .numbers {
+    text-align: center;
+  }
+}
+
+.alert-info {
+  background-color: rgba(30, 144, 255, 0.1);
+  border-color: #1e90ff;
+  
+  ul {
+    padding-left: 20px;
+    
+    li {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.alert-secondary {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}

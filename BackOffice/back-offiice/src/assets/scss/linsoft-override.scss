@@ -1,0 +1,39 @@
+// ========================================
+// SURCHARGE DES VARIABLES BLACK DASHBOARD
+// Avec les couleurs de la charte Linsoft
+// IMPORTANT: Sans !default pour FORCER l'écrasement
+// Force rebuild
+// ========================================
+
+// Surcharge des couleurs de base Black Dashboard
+$blue: $linsoft-primary;
+$indigo: darken($linsoft-primary, 10%);
+$purple: $linsoft-primary;
+$cyan: $linsoft-secondary;
+$green: $linsoft-success;
+$red: $linsoft-danger;
+$orange: $linsoft-warning;
+
+// Surcharge des couleurs principales du thème
+$default: $linsoft-dark;
+$primary: $linsoft-primary;               // #0066cc au lieu de #e14eca  
+$primary-states: darken($linsoft-primary, 10%); // Plus foncé pour le gradient sidebar
+$secondary: $linsoft-secondary;
+$success: $linsoft-success;
+$info: $linsoft-info;
+$warning: $linsoft-warning;
+$danger: $linsoft-danger;
+$black: $linsoft-dark;
+
+// Surcharge des états (utilisés pour les gradients)
+$success-states: darken($linsoft-success, 10%);
+$info-states: lighten($linsoft-info, 5%);
+$warning-states: darken($linsoft-warning, 10%);
+$danger-states: darken($linsoft-danger, 10%);
+
+// Surcharge des couleurs de fond
+$background-black: $linsoft-dark;
+$background-states-black: darken($linsoft-dark, 5%);
+
+// Surcharge des couleurs des liens
+$link-color: $linsoft-primary;

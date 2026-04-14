@@ -1,15 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* ===== VARIABLES GLOBALES ===== */
-$primary-color: #51bcda;
-$secondary-color: #6c757d;
-$success-color: #6bd098;
-$danger-color: #ef8157;
-$warning-color: #fbc658;
-$info-color: #51cbce;
+/* ===== IMPORTATION CHARTE GRAPHIQUE LINSOFT ===== */
+@import 'assets/scss/linsoft-theme.scss';
+/* Déclenchement de la recompilation */
 
-$transition-speed: 0.3s;
-$border-radius: 10px;
+/* ===== VARIABLES GLOBALES (COMPATIBILITÉ) ===== */
+$primary-color: $linsoft-primary;
+$secondary-color: $linsoft-gray;
+$success-color: $linsoft-success;
+$danger-color: $linsoft-danger;
+$warning-color: $linsoft-warning;
+$info-color: $linsoft-info;
+
+$transition-speed: $linsoft-transition-base;
+$border-radius: $linsoft-border-radius-lg;
 
 /* ===== ANIMATIONS GLOBALES ===== */
 @keyframes fadeIn {
@@ -45,15 +49,17 @@ $border-radius: 10px;
   }
 }
 
-/* ===== STYLES GLOBAUX ===== */
+/* ===== STYLES GLOBAUX LINSOFT ===== */
 * {
   transition: color $transition-speed ease, background-color $transition-speed ease;
 }
 
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: $linsoft-background;
   min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
+  font-family: $linsoft-font-family;
+  color: $linsoft-gray-dark;
+  font-size: $linsoft-font-size-base;
 }
 
 .content {
@@ -61,99 +67,126 @@ body {
   padding: 30px 15px; // Ajustement du padding horizontal
 }
 
-/* ===== CARTES AMÉLIORÉES ===== */
+/* ===== CARTES LINSOFT ===== */
 .card {
+  @include linsoft-card;
   border: none;
-  border-radius: $border-radius;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all $transition-speed ease;
   overflow: hidden;
-  background: white;
-
-  &:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    transform: translateY(-5px);
-  }
+  background: $linsoft-white;
 
   .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: $linsoft-gradient-primary;
+    color: $linsoft-white;
     border: none;
-    padding: 30px 40px;
+    padding: $linsoft-spacing-2xl;
     border-radius: $border-radius $border-radius 0 0;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+      pointer-events: none;
+    }
 
     .card-title {
-      color: white;
-      font-weight: 600;
-      font-size: 18px;
+      color: $linsoft-white;
+      font-weight: 700;
+      font-size: $linsoft-font-size-xl;
       margin: 0;
+      letter-spacing: -0.5px;
     }
 
     .card-category {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: $linsoft-font-size-base;
       font-weight: 500;
+      margin-top: $linsoft-spacing-xs;
     }
   }
 
   .card-body {
-    padding: 40px;
+    padding: $linsoft-spacing-2xl;
   }
 
   .card-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    padding: 30px;
+    background-color: $linsoft-gray-light;
+    border-top: 1px solid rgba(0, 102, 204, 0.1);
+    padding: $linsoft-spacing-lg;
     display: flex;
-    gap: 15px;
+    gap: $linsoft-spacing-md;
     justify-content: flex-end;
   }
 }
 
-/* ===== BOUTONS AMÉLIORÉS ===== */
+/* ===== BOUTONS LINSOFT ===== */
 .btn {
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: all $transition-speed ease;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  @include linsoft-button;
 
   &.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: $linsoft-gradient-primary;
+    color: $linsoft-white;
+    box-shadow: $linsoft-shadow-sm;
+
+    &:hover:not(:disabled) {
+      box-shadow: $linsoft-shadow-md;
+    }
   }
 
   &.btn-success {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
+    background: linear-gradient(135deg, $linsoft-success 0%, darken($linsoft-success, 10%) 100%);
+    color: $linsoft-white;
+    box-shadow: 0 2px 8px rgba($linsoft-success, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba($linsoft-success, 0.4);
+    }
   }
 
   &.btn-danger {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: white;
+    background: $linsoft-gradient-accent;
+    color: $linsoft-white;
+    box-shadow: 0 2px 8px rgba($linsoft-danger, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba($linsoft-danger, 0.4);
+    }
   }
 
   &.btn-info {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
+    background: linear-gradient(135deg, $linsoft-info 0%, lighten($linsoft-info, 10%) 100%);
+    color: $linsoft-white;
+    box-shadow: 0 2px 8px rgba($linsoft-info, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba($linsoft-info, 0.4);
+    }
+  }
+
+  &.btn-warning {
+    background: linear-gradient(135deg, $linsoft-warning 0%, darken($linsoft-warning, 5%) 100%);
+    color: $linsoft-white;
+    box-shadow: 0 2px 8px rgba($linsoft-warning, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba($linsoft-warning, 0.4);
+    }
+  }
+
+  &.btn-outline-primary {
+    background: transparent;
+    border: 2px solid $linsoft-primary;
+    color: $linsoft-primary;
+
+    &:hover:not(:disabled) {
+      background: $linsoft-primary;
+      color: $linsoft-white;
+    }
   }
 
   i {
@@ -161,38 +194,26 @@ body {
   }
 }
 
-/* ===== FORMULAIRES AMÉLIORÉS ===== */
+/* ===== FORMULAIRES LINSOFT ===== */
 .form-group {
-  margin-bottom: 25px;
+  margin-bottom: $linsoft-spacing-lg;
 
   label {
     font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 8px;
+    color: $linsoft-gray-dark;
+    margin-bottom: $linsoft-spacing-sm;
     display: block;
-    font-size: 14px;
+    font-size: $linsoft-font-size-base;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 }
 
 .form-control {
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  padding: 12px 15px;
-  font-size: 15px;
-  transition: all $transition-speed ease;
-  background-color: #f8f9fa;
-
-  &:focus {
-    border-color: $primary-color;
-    background-color: white;
-    box-shadow: 0 0 15px rgba(81, 188, 218, 0.2);
-    outline: none;
-  }
+  @include linsoft-input;
 
   &:disabled {
-    background-color: #e9ecef;
+    background-color: $linsoft-gray-light;
     cursor: not-allowed;
   }
 }

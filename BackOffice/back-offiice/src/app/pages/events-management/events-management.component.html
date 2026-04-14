@@ -1,71 +1,95 @@
 <div class="content">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h4 class="card-title">Events Management</h4>
-          <p class="card-category">Manage all events in the system</p>
+  <div class="card">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h4 class="card-title mb-0">📅 Gestion des Événements</h4>
+          <p class="card-category mb-0">Gérez tous les événements du système</p>
         </div>
-        <div class="card-body">
-          <div *ngIf="loading" class="text-center">
-            <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-          </div>
-
-          <div *ngIf="error" class="alert alert-danger">
-            {{ error }}
-            <button type="button" class="close" (click)="error = null">
-              <span>&times;</span>
-            </button>
-          </div>
-
-          <div class="table-responsive" *ngIf="!loading">
-            <table class="table tablesorter">
-              <thead class="text-primary">
-                <tr>
-                  <th>Name</th>
-                  <th>Location</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Max Participants</th>
-                  <th>Status</th>
-                  <th class="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let event of events">
-                  <td>{{ event.name }}</td>
-                  <td>{{ event.location || 'N/A' }}</td>
-                  <td>{{ event.startDate | date:'short' }}</td>
-                  <td>{{ event.endDate | date:'short' }}</td>
-                  <td>{{ event.maxParticipants || 'Unlimited' }}</td>
-                  <td>
-                    <span class="badge" [class.badge-success]="event.status === 'active'" 
-                          [class.badge-warning]="event.status === 'pending'"
-                          [class.badge-danger]="event.status === 'cancelled'">
-                      {{ event.status || 'active' }}
-                    </span>
-                  </td>
-                  <td class="text-center">
-                    <button class="btn btn-sm btn-info" title="View">
-                      <i class="tim-icons icon-notes"></i>
-                    </button>
-                    <button class="btn btn-sm btn-warning" title="Edit">
-                      <i class="tim-icons icon-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteEvent(event.id!)" title="Delete">
-                      <i class="tim-icons icon-trash-simple"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr *ngIf="events.length === 0">
-                  <td colspan="7" class="text-center">No events found</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="col-auto">
+          <button class="btn btn-primary btn-lg" (click)="createEvent()">
+            <i class="tim-icons icon-simple-add"></i>
+            Créer un événement
+          </button>
         </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Chargement...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des événements...</p>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show">
+        <i class="tim-icons icon-alert-circle-exc"></i>
+        {{ error }}
+        <button type="button" class="close" (click)="error = null">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading">
+        <table class="table tablesorter">
+          <thead class="text-primary">
+            <tr>
+              <th>Titre</th>
+              <th>Catégorie</th>
+              <th>Lieu</th>
+              <th>Date de début</th>
+              <th>Date de fin</th>
+              <th>Participants max</th>
+              <th>Statut</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let event of events">
+              <td>
+                <strong>{{ event.name }}</strong>
+                <div *ngIf="event.description" class="text-muted small">
+                  {{ event.description.length > 50 ? (event.description | slice:0:50) + '...' : event.description }}
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-default">
+                  {{ getCategoryLabel(event.category || '') }}
+                </span>
+              </td>
+              <td>{{ event.location || 'N/A' }}</td>
+              <td>{{ event.startDate | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ event.endDate | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ event.maxParticipants || 'Illimité' }}</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusBadgeClass(event.status)">
+                  {{ getStatusLabel(event.status) }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-info mr-1" (click)="viewEvent(event.id!)" title="Voir">
+                  <i class="tim-icons icon-notes"></i>
+                </button>
+                <button class="btn btn-sm btn-warning mr-1" (click)="editEvent(event.id!)" title="Modifier">
+                  <i class="tim-icons icon-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteEvent(event.id!)" title="Supprimer">
+                  <i class="tim-icons icon-trash-simple"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="events.length === 0 && !loading">
+              <td colspan="8" class="text-center py-5">
+                <i class="tim-icons icon-calendar-60 display-4 text-muted"></i>
+                <p class="mt-3 text-muted">Aucun événement trouvé</p>
+                <button class="btn btn-primary" (click)="createEvent()">
+                  <i class="tim-icons icon-simple-add"></i>
+                  Créer le premier événement
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

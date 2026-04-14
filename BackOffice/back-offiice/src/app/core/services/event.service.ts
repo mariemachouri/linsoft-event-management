@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export type EventCategory = 'CONFERENCE' | 'WORKSHOP' | 'MEETUP' | 'SEMINAR';
+export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
+
 export interface Event {
   id?: string;
   name: string;
@@ -12,7 +15,13 @@ export interface Event {
   endDate: string;
   maxParticipants?: number;
   currentParticipants?: number;
-  status?: string;
+  registrationsCount?: number;
+  status: EventStatus;
+  category?: EventCategory;
+  organizerId?: string;
+  chargeIds?: string[];
+  chargePredictionId?: string;
+  eventStatisticsId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -22,7 +31,7 @@ export interface Event {
 })
 export class EventService {
 
-  private eventsApiUrl = environment.services.events + '/events';
+  private eventsApiUrl = environment.services.events;
 
   constructor(private http: HttpClient) { }
 

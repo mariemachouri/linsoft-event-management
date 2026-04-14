@@ -3,68 +3,172 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h4 class="card-title">Charges Management</h4>
-              <p class="card-category">Manage all charges and expenses</p>
+          <div class="row">
+            <div class="col-8">
+              <h4 class="card-title">Gestion des Charges (Prédictions IA)</h4>
             </div>
-            <div class="text-right">
-              <h3 class="text-info">Total: ${{ getTotalCharges() | number:'1.2-2' }}</h3>
+            <div class="col-4 text-right">
+              <button class="btn btn-primary btn-sm" (click)="createPrediction()">
+                <i class="tim-icons icon-simple-add"></i>
+                Nouvelle Prédiction
+              </button>
             </div>
           </div>
         </div>
         <div class="card-body">
+          <!-- Chargement -->
           <div *ngIf="loading" class="text-center">
-            <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
+            <span class="spinner-border spinner-border-lg"></span>
+            <p>Chargement des prédictions...</p>
           </div>
 
-          <div *ngIf="error" class="alert alert-danger">
-            {{ error }}
-            <button type="button" class="close" (click)="error = null">
-              <span>&times;</span>
-            </button>
+          <!-- Message d'erreur -->
+          <div class="alert alert-danger" *ngIf="errorMessage">
+            {{ errorMessage }}
           </div>
 
-          <div class="table-responsive" *ngIf="!loading">
+          <!-- Liste vide -->
+          <div *ngIf="!loading && predictions.length === 0" class="alert alert-info">
+            <i class="tim-icons icon-alert-circle-exc"></i>
+            Aucune prédiction de charges trouvée. Créez-en une nouvelle pour commencer.
+          </div>
+
+          <!-- Table des prédictions -->
+          <div class="table-responsive" *ngIf="!loading && predictions.length > 0">
             <table class="table tablesorter">
               <thead class="text-primary">
                 <tr>
-                  <th>Description</th>
-                  <th>Event ID</th>
-                  <th>Category</th>
-                  <th>Amount</th>
+                  <th>ID Événement</th>
+                  <th>Organisateur</th>
+                  <th>Coût Prédit</th>
+                  <th>Confiance IA</th>
+                  <th>Modèle IA</th>
+                  <th>Statut</th>
+                  <th>Mode Paiement</th>
+                  <th>Approbation</th>
                   <th>Date</th>
-                  <th class="text-center">Actions</th>
+                  <th class="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let charge of charges">
-                  <td>{{ charge.description }}</td>
-                  <td>{{ charge.eventId }}</td>
-                  <td>{{ charge.category || 'General' }}</td>
-                  <td class="text-info">
-                    <strong>${{ charge.amount | number:'1.2-2' }}</strong>
+                <tr *ngFor="let prediction of predictions">
+                  <!-- ID Événement -->
+                  <td>
+                    <small class="text-muted">{{ prediction.eventId }}</small>
                   </td>
-                  <td>{{ charge.date | date:'short' }}</td>
-                  <td class="text-center">
-                    <button class="btn btn-sm btn-info" title="View">
-                      <i class="tim-icons icon-notes"></i>
+
+                  <!-- Organisateur -->
+                  <td>
+                    <small class="text-muted">{{ prediction.organizerId }}</small>
+                  </td>
+
+                  <!-- Coût prédit -->
+                  <td>
+                    <strong>{{ getTotalCost(prediction) | number:'1.2-2' }} €</strong>
+                  </td>
+
+                  <!-- Confiance IA -->
+                  <td>
+                    <div class="progress" style="height: 20px; min-width: 80px;">
+                      <div class="progress-bar" 
+                           [ngClass]="{'bg-success': getConfidencePercentage(prediction) >= 80,
+                                      'bg-warning': getConfidencePercentage(prediction) >= 60 && getConfidencePercentage(prediction) < 80,
+                                      'bg-danger': getConfidencePercentage(prediction) < 60}"
+                           [style.width.%]="getConfidencePercentage(prediction)">
+                        {{ getConfidencePercentage(prediction) }}%
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Modèle IA -->
+                  <td>
+                    <span class="badge badge-info">
+                      {{ prediction.predictionResult?.aiModel || 'N/A' }}
+                    </span>
+                  </td>
+
+                  <!-- Statut -->
+                  <td>
+                    <span class="badge" [ngClass]="getStatusBadgeClass(prediction.status)">
+                      {{ getStatusLabel(prediction.status) }}
+                    </span>
+                  </td>
+
+                  <!-- Mode de paiement -->
+                  <td>
+                    <span *ngIf="prediction.paymentDecision" class="badge badge-secondary">
+                      {{ prediction.paymentDecision.paymentMethod }}
+                    </span>
+                    <span *ngIf="!prediction.paymentDecision" class="text-muted">
+                      Non défini
+                    </span>
+                  </td>
+
+                  <!-- Approbation requise -->
+                  <td>
+                    <span *ngIf="requiresApproval(prediction)" class="badge badge-warning">
+                      <i class="tim-icons icon-alert-circle-exc"></i> Requise
+                    </span>
+                    <span *ngIf="!requiresApproval(prediction)" class="text-muted">
+                      Non
+                    </span>
+                  </td>
+
+                  <!-- Date de création -->
+                  <td>
+                    <small>{{ prediction.createdAt | date:'short' }}</small>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="text-right">
+                    <button class="btn btn-info btn-sm" 
+                            (click)="viewDetails(prediction)"
+                            title="Voir les détails">
+                      <i class="tim-icons icon-zoom-split"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning" title="Edit">
-                      <i class="tim-icons icon-pencil"></i>
+
+                    <button *ngIf="canApprove(prediction)" 
+                            class="btn btn-success btn-sm ml-1" 
+                            (click)="approvePrediction(prediction)"
+                            title="Approuver">
+                      <i class="tim-icons icon-check-2"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteCharge(charge.id!)" title="Delete">
-                      <i class="tim-icons icon-trash-simple"></i>
+
+                    <button *ngIf="canReject(prediction)" 
+                            class="btn btn-danger btn-sm ml-1" 
+                            (click)="rejectPrediction(prediction)"
+                            title="Rejeter">
+                      <i class="tim-icons icon-simple-remove"></i>
                     </button>
                   </td>
-                </tr>
-                <tr *ngIf="charges.length === 0">
-                  <td colspan="6" class="text-center">No charges found</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Légende -->
+          <div class="row mt-3" *ngIf="!loading && predictions.length > 0">
+            <div class="col-md-12">
+              <div class="alert alert-secondary">
+                <small>
+                  <strong>Légende des statuts:</strong><br>
+                  <span class="badge badge-warning">En attente</span> Prédiction créée, en attente de décision/approbation<br>
+                  <span class="badge badge-success">Approuvé</span> Prédiction approuvée par un administrateur<br>
+                  <span class="badge badge-info">Payé</span> Paiement effectué<br>
+                  <span class="badge badge-danger">Rejeté</span> Prédiction rejetée par un administrateur
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note pour les admins -->
+          <div class="row mt-2" *ngIf="isAdmin && !loading && predictions.length > 0">
+            <div class="col-md-12">
+              <div class="alert alert-info">
+                <i class="tim-icons icon-alert-circle-exc"></i>
+                <strong>Note admin:</strong> Les prédictions avec un montant > 5000€ nécessitent votre approbation.
+              </div>
+            </div>
           </div>
         </div>
       </div>

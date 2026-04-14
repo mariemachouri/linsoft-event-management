@@ -27,8 +27,8 @@ export interface Notification {
 })
 export class RegistrationService {
 
-  private registrationsApiUrl = environment.services.registrations + '/registrations';
-  private notificationsApiUrl = environment.services.notifications + '/notifications';
+  private registrationsApiUrl = environment.services.registrations;
+  private notificationsApiUrl = environment.services.notifications;
 
   constructor(private http: HttpClient) { }
 
