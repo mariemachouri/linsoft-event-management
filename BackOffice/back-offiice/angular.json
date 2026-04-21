@@ -25,7 +25,8 @@
             "allowedCommonJsDependencies": ["chart.js"],
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/firebase-messaging-sw.js"
             ],
             "styles": [
               "src/styles.scss",

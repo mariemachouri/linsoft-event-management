@@ -37,8 +37,8 @@ export class ChargesManagementComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des prédictions:', error);
-        this.errorMessage = 'Impossible de charger les prédictions';
+        console.error('Error loading predictions:', error);
+        this.errorMessage = 'Unable to load predictions';
         this.loading = false;
       }
     });
@@ -70,8 +70,8 @@ export class ChargesManagementComponent implements OnInit {
           this.loadPredictions(); // Recharger la liste
         },
         error: (error) => {
-          console.error('Erreur lors de l\'approbation:', error);
-          alert('Erreur lors de l\'approbation');
+          console.error('Error approving:', error);
+          alert('Error approving prediction');
         }
       });
     }
@@ -95,8 +95,8 @@ export class ChargesManagementComponent implements OnInit {
           this.loadPredictions(); // Recharger la liste
         },
         error: (error) => {
-          console.error('Erreur lors du rejet:', error);
-          alert('Erreur lors du rejet');
+          console.error('Error rejecting:', error);
+          alert('Error rejecting prediction');
         }
       });
     }

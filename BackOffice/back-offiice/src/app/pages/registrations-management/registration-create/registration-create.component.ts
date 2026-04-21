@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { RegistrationService, Registration } from '../../../core/services/registration.service';
 import { EventService, Event } from '../../../core/services/event.service';
 import { UserService, UserResponse } from '../../../core/services/user.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registration-create',
@@ -24,10 +25,10 @@ export class RegistrationCreateComponent implements OnInit {
   
   // Options pour les statuts
   statuses = [
-    { value: 'PENDING', label: 'En attente', color: 'warning', icon: 'icon-time-alarm' },
-    { value: 'CONFIRMED', label: 'Confirmé', color: 'success', icon: 'icon-check-2' },
-    { value: 'WAITLISTED', label: 'Liste d\'attente', color: 'info', icon: 'icon-calendar-60' },
-    { value: 'CANCELLED', label: 'Annulé', color: 'danger', icon: 'icon-simple-remove' }
+    { value: 'PENDING', label: 'Pending', color: 'warning', icon: 'icon-time-alarm' },
+    { value: 'CONFIRMED', label: 'Confirmed', color: 'success', icon: 'icon-check-2' },
+    { value: 'WAITLISTED', label: 'Waitlisted', color: 'info', icon: 'icon-calendar-60' },
+    { value: 'CANCELLED', label: 'Cancelled', color: 'danger', icon: 'icon-simple-remove' }
   ];
 
   constructor(
@@ -52,19 +53,16 @@ export class RegistrationCreateComponent implements OnInit {
     this.loadingData = true;
     this.error = '';
 
-    // Charger les événements et utilisateurs en parallèle
     forkJoin({
-      events: this.eventService.getAllEvents(),
-      users: this.userService.getAllUsers()
+      events: this.eventService.getAllEvents().pipe(catchError(() => of([]))),
+      users: this.userService.getAllUsers().pipe(catchError(() => of([])))
     }).subscribe({
       next: (data) => {
-        this.events = data.events.filter(e => e.status === 'PUBLISHED'); // Uniquement les événements publiés
-        this.users = data.users;
+        this.events = (data.events as Event[]).filter(e => e.status === 'PUBLISHED');
+        this.users = data.users as UserResponse[];
         this.loadingData = false;
       },
-      error: (err) => {
-        console.error('Error loading data:', err);
-        this.error = 'Impossible de charger les données. Vérifiez que les services sont actifs.';
+      error: () => {
         this.loadingData = false;
       }
     });
@@ -89,7 +87,7 @@ export class RegistrationCreateComponent implements OnInit {
 
     const registrationData: Registration = {
       eventId: this.f['eventId'].value,
-      userId: this.f['participantId'].value,
+      participantId: this.f['participantId'].value,
       status: this.f['status'].value,
       registrationDate: new Date().toISOString()
     };
@@ -111,7 +109,7 @@ export class RegistrationCreateComponent implements OnInit {
         } else if (err.status === 409) {
           this.error = 'Cet utilisateur est déjà inscrit à cet événement';
         } else {
-          this.error = 'Erreur lors de la création de l\'inscription';
+          this.error = 'Error creating registration';
         }
       }
     });

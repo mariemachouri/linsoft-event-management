@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       (error) => {
         console.error('Error loading dashboard stats:', error);
-        this.error = 'Erreur lors du chargement des statistiques';
+        this.error = 'Error loading statistics';
         this.loading = false;
         
         // Initialiser avec des donn�es par d�faut
@@ -344,7 +344,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       data: {
         labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
         datasets: [{
-          label: "Inscriptions",
+          label: "Registrations",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: '#ec250d',
@@ -551,11 +551,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getActiveDatasetLabel(): string {
     switch (this.activeTab) {
       case 'accounts':
-        return 'Comptes créés';
+        return 'Accounts Created';
       case 'purchases':
-        return 'Achats / Événements';
+        return 'Purchases / Events';
       case 'sessions':
-        return 'Sessions actives';
+        return 'Active Sessions';
       default:
         return 'Comptes';
     }

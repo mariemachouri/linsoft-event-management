@@ -1,0 +1,5 @@
+# Firebase Credentials - NE PAS COMMITER !
+firebase-credentials.json
+*.json
+
+# Sauf si vous avez d'autres fichiers JSON de config utiles

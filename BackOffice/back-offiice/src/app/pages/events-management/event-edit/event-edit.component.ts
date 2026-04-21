@@ -20,18 +20,18 @@ export class EventEditComponent implements OnInit {
   
   // Options pour les catégories
   categories = [
-    { value: 'CONFERENCE', label: 'Conférence', icon: 'icon-badge' },
-    { value: 'WORKSHOP', label: 'Atelier', icon: 'icon-settings' },
-    { value: 'MEETUP', label: 'Rencontre', icon: 'icon-chat-33' },
-    { value: 'SEMINAR', label: 'Séminaire', icon: 'icon-book-bookmark' }
+    { value: 'CONFERENCE', label: 'Conference', icon: 'icon-badge' },
+    { value: 'WORKSHOP', label: 'Workshop', icon: 'icon-settings' },
+    { value: 'MEETUP', label: 'Meetup', icon: 'icon-chat-33' },
+    { value: 'SEMINAR', label: 'Seminar', icon: 'icon-book-bookmark' }
   ];
 
-  // Options pour le statut avec gestion du workflow
+  // Status options with workflow
   statuses = [
-    { value: 'DRAFT', label: 'Brouillon', color: 'secondary', description: 'Non visible publiquement' },
-    { value: 'PUBLISHED', label: 'Publié', color: 'success', description: 'Visible et ouvert aux inscriptions' },
-    { value: 'CANCELLED', label: 'Annulé', color: 'danger', description: 'Événement annulé' },
-    { value: 'COMPLETED', label: 'Terminé', color: 'info', description: 'Événement terminé' }
+    { value: 'DRAFT', label: 'Draft', color: 'secondary', description: 'Not publicly visible' },
+    { value: 'PUBLISHED', label: 'Published', color: 'success', description: 'Visible and open for registrations' },
+    { value: 'CANCELLED', label: 'Cancelled', color: 'danger', description: 'Event cancelled' },
+    { value: 'COMPLETED', label: 'Completed', color: 'info', description: 'Event completed' }
   ];
 
   constructor(
@@ -71,7 +71,7 @@ export class EventEditComponent implements OnInit {
         const endDate = event.endDate ? this.formatDateForInput(event.endDate) : '';
         
         this.eventForm.patchValue({
-          title: event.name,
+          title: event.title || event.name,
           description: event.description || '',
           location: event.location,
           startDate: startDate,
@@ -84,7 +84,7 @@ export class EventEditComponent implements OnInit {
       error: (err) => {
         console.error('Error loading event:', err);
         this.loadingEvent = false;
-        this.error = 'Impossible de charger l\'événement';
+        this.error = 'Unable to load event';
       }
     });
   }
@@ -162,7 +162,7 @@ export class EventEditComponent implements OnInit {
         } else if (err.status === 404) {
           this.error = 'Événement non trouvé';
         } else {
-          this.error = 'Erreur lors de la mise à jour de l\'événement';
+          this.error = 'Error updating event';
         }
       }
     });

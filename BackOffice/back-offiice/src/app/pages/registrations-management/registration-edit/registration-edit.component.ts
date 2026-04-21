@@ -27,10 +27,10 @@ export class RegistrationEditComponent implements OnInit {
   
   // Options pour les statuts
   statuses = [
-    { value: 'PENDING', label: 'En attente', color: 'warning', icon: 'icon-time-alarm', description: 'En attente de confirmation' },
-    { value: 'CONFIRMED', label: 'Confirmé', color: 'success', icon: 'icon-check-2', description: 'Inscription confirmée' },
-    { value: 'WAITLISTED', label: 'Liste d\'attente', color: 'info', icon: 'icon-calendar-60', description: 'Sur liste d\'attente' },
-    { value: 'CANCELLED', label: 'Annulé', color: 'danger', icon: 'icon-simple-remove', description: 'Inscription annulée' }
+    { value: 'PENDING', label: 'Pending', color: 'warning', icon: 'icon-time-alarm', description: 'Awaiting confirmation' },
+    { value: 'CONFIRMED', label: 'Confirmed', color: 'success', icon: 'icon-check-2', description: 'Registration confirmed' },
+    { value: 'WAITLISTED', label: 'Waitlisted', color: 'info', icon: 'icon-calendar-60', description: 'On waiting list' },
+    { value: 'CANCELLED', label: 'Cancelled', color: 'danger', icon: 'icon-simple-remove', description: 'Registration cancelled' }
   ];
 
   constructor(
@@ -79,7 +79,7 @@ export class RegistrationEditComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading data:', err);
-        this.error = 'Impossible de charger les données';
+        this.error = 'Unable to load data';
         this.loadingData = false;
         this.loadingRegistration = false;
       }
@@ -106,7 +106,7 @@ export class RegistrationEditComponent implements OnInit {
     const registrationData: Registration = {
       id: this.registrationId,
       eventId: this.currentRegistration!.eventId,
-      userId: this.currentRegistration!.userId,
+      participantId: this.currentRegistration!.participantId,
       status: this.f['status'].value,
       registrationDate: this.currentRegistration!.registrationDate
     };
@@ -128,7 +128,7 @@ export class RegistrationEditComponent implements OnInit {
         } else if (err.status === 404) {
           this.error = 'Inscription non trouvée';
         } else {
-          this.error = 'Erreur lors de la mise à jour de l\'inscription';
+          this.error = 'Error updating registration';
         }
       }
     });

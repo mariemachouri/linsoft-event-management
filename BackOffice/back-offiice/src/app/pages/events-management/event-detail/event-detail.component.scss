@@ -1,0 +1,70 @@
+.card {
+  background: linear-gradient(180deg, #1e1e2e 0%, #27293d 100%);
+  
+  .card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+  }
+  
+  .card-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  .card-category {
+    color: #9a9a9a;
+    font-size: 0.875rem;
+  }
+}
+
+.info-group {
+  label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  p {
+    font-size: 1rem;
+    margin-bottom: 0;
+    word-wrap: break-word;
+  }
+}
+
+.badge-lg {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.badge-default {
+  background: linear-gradient(to bottom left, #344675, #263148, #344675);
+  color: #ffffff;
+}
+
+.font-monospace {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.alert {
+  border-radius: 0.4285rem;
+  padding: 1rem 1.5rem;
+  
+  i {
+    margin-right: 0.5rem;
+  }
+}
+
+.btn {
+  i {
+    margin-right: 0.5rem;
+  }
+}

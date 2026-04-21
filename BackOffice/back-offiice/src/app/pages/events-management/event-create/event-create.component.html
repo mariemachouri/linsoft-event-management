@@ -3,7 +3,7 @@
     <div class="col-md-10 offset-md-1">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">📅 Créer un Nouvel Événement</h3>
+          <h3 class="card-title">📅 Create New Event</h3>
         </div>
         <div class="card-body">
           
@@ -30,7 +30,7 @@
             <!-- Titre -->
             <div class="form-group">
               <label for="title">
-                Titre de l'événement <span class="text-danger">*</span>
+                Event Title <span class="text-danger">*</span>
               </label>
               <input 
                 type="text" 
@@ -41,9 +41,9 @@
                 placeholder="Conférence Tech 2026"
               />
               <div *ngIf="f['title'].invalid && f['title'].touched" class="invalid-feedback">
-                <div *ngIf="f['title'].errors?.['required']">Le titre est requis</div>
-                <div *ngIf="f['title'].errors?.['minlength']">Minimum 3 caractères</div>
-                <div *ngIf="f['title'].errors?.['maxlength']">Maximum 200 caractères</div>
+                <div *ngIf="f['title'].errors?.['required']">Title is required</div>
+                <div *ngIf="f['title'].errors?.['minlength']">Minimum 3 characters</div>
+                <div *ngIf="f['title'].errors?.['maxlength']">Maximum 200 characters</div>
               </div>
             </div>
 
@@ -55,10 +55,10 @@
                 id="description"
                 formControlName="description"
                 rows="4"
-                placeholder="Description détaillée de l'événement..."
+                placeholder="Detailed description of the event..."
               ></textarea>
               <small class="form-text text-muted">
-                Maximum 1000 caractères
+                Maximum 1000 characters
               </small>
             </div>
 
@@ -67,7 +67,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="category">
-                    Catégorie <span class="text-danger">*</span>
+                    Category <span class="text-danger">*</span>
                   </label>
                   <select 
                     class="form-control" 
@@ -83,7 +83,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="status">
-                    Statut <span class="text-danger">*</span>
+                    Status <span class="text-danger">*</span>
                   </label>
                   <select 
                     class="form-control" 
@@ -95,7 +95,7 @@
                     </option>
                   </select>
                   <small class="form-text text-muted">
-                    Brouillon = visible seulement par vous | Publié = visible par tous
+                    Draft = visible only by you | Published = visible to everyone
                   </small>
                 </div>
               </div>
@@ -104,7 +104,7 @@
             <!-- Localisation -->
             <div class="form-group">
               <label for="location">
-                Lieu <span class="text-danger">*</span>
+                Location <span class="text-danger">*</span>
               </label>
               <input 
                 type="text" 
@@ -115,7 +115,7 @@
                 placeholder="Paris, France"
               />
               <div *ngIf="f['location'].invalid && f['location'].touched" class="invalid-feedback">
-                <div *ngIf="f['location'].errors?.['required']">Le lieu est requis</div>
+                <div *ngIf="f['location'].errors?.['required']">Location is required</div>
               </div>
             </div>
 
@@ -124,7 +124,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="startDate">
-                    Date de début <span class="text-danger">*</span>
+                    Start Date <span class="text-danger">*</span>
                   </label>
                   <input 
                     type="datetime-local" 
@@ -134,14 +134,14 @@
                     [class.is-invalid]="f['startDate'].invalid && f['startDate'].touched"
                   />
                   <div *ngIf="f['startDate'].invalid && f['startDate'].touched" class="invalid-feedback">
-                    <div *ngIf="f['startDate'].errors?.['required']">La date de début est requise</div>
+                    <div *ngIf="f['startDate'].errors?.['required']">Start date is required</div>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="endDate">
-                    Date de fin <span class="text-danger">*</span>
+                    End Date <span class="text-danger">*</span>
                   </label>
                   <input 
                     type="datetime-local" 
@@ -151,8 +151,8 @@
                     [class.is-invalid]="f['endDate'].invalid && f['endDate'].touched"
                   />
                   <div *ngIf="f['endDate'].invalid && f['endDate'].touched" class="invalid-feedback">
-                    <div *ngIf="f['endDate'].errors?.['required']">La date de fin est requise</div>
-                    <div *ngIf="f['endDate'].errors?.['dateInvalid']">La date de fin doit être après la date de début</div>
+                    <div *ngIf="f['endDate'].errors?.['required']">End date is required</div>
+                    <div *ngIf="f['endDate'].errors?.['dateInvalid']">End date must be after start date</div>
                   </div>
                 </div>
               </div>
@@ -160,17 +160,17 @@
 
             <!-- Nombre de participants max -->
             <div class="form-group">
-              <label for="maxParticipants">Nombre maximum de participants</label>
+              <label for="maxParticipants">Maximum number of participants</label>
               <input 
                 type="number" 
                 class="form-control" 
                 id="maxParticipants"
                 formControlName="maxParticipants"
                 min="0"
-                placeholder="0 = illimité"
+                placeholder="0 = unlimited"
               />
               <small class="form-text text-muted">
-                Laissez 0 pour un nombre illimité de participants
+                Leave 0 for unlimited participants
               </small>
             </div>
 
@@ -183,7 +183,7 @@
               >
                 <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
-                {{ loading ? 'Création en cours...' : 'Créer l\'événement' }}
+                {{ loading ? 'Creating...' : 'Create Event' }}
               </button>
               <button 
                 type="button" 
@@ -192,7 +192,7 @@
                 [disabled]="loading"
               >
                 <i class="tim-icons icon-simple-remove"></i>
-                Annuler
+                Cancel
               </button>
             </div>
 

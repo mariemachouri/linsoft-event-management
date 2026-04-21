@@ -1,21 +1,22 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+// FORCE REBUILD - Timestamp: 2026-04-18 12:36
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'http://localhost:8081',  // IMPORTANT: Direct microservice access
   tokenKey: 'access_token',
   refreshTokenKey: 'refresh_token',
   
-  // Microservices URLs - All through Gateway
+  // Microservices URLs - Direct access (sans Gateway)
   services: {
-    users: 'http://localhost:8080/api/users',
-    events: 'http://localhost:8080/api/events',
-    registrations: 'http://localhost:8080/api/registrations',
-    notifications: 'http://localhost:8080/api/notifications',
-    dashboard: 'http://localhost:8080/api/dashboard',
-    charges: 'http://localhost:8080/api/charges'
+    users: 'http://localhost:8083/api/users',
+    events: 'http://localhost:8081/api/events',
+    registrations: 'http://localhost:8082/api/registrations',
+    notifications: 'http://localhost:8084/api/notifications',
+    dashboard: 'http://localhost:8085/api/dashboard',
+    charges: 'http://localhost:8086/api/charges'
   },
   
   // Keycloak Configuration
@@ -23,6 +24,17 @@ export const environment = {
     url: 'http://localhost:8180',
     realm: 'event-mgmt',
     clientId: 'backoffice-client'
+  },
+  
+  // Firebase Configuration
+  firebase: {
+    apiKey: "AIzaSyCUfGMXmBKZn67N9QWhJmXX-w01rXtrtSU",
+    authDomain: "event-mgmt-97441.firebaseapp.com",
+    projectId: "event-mgmt-97441",
+    storageBucket: "event-mgmt-97441.firebasestorage.app",
+    messagingSenderId: "1041823417246",
+    appId: "1:1041823417246:web:f274e919715687e56d0c8f",
+    measurementId: "G-L759TT01BS"
   }
 };
 

@@ -32,7 +32,7 @@ export class RegistrationsManagementComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading registrations:', err);
-        this.error = 'Erreur lors du chargement des inscriptions. Veuillez réessayer.';
+        this.error = 'Error loading registrations. Please try again.';
         this.loading = false;
       }
     });
@@ -54,7 +54,7 @@ export class RegistrationsManagementComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error deleting registration:', err);
-          alert('Erreur lors de la suppression de l\'inscription');
+          alert('Error deleting registration');
         }
       });
     }

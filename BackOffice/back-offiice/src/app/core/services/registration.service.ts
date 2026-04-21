@@ -6,9 +6,11 @@ import { environment } from '../../../environments/environment';
 export interface Registration {
   id?: string;
   eventId: string;
-  userId: string;
+  participantId: string;  // Correspond au backend
+  userId?: string;  // Alias pour compatibilité
   status?: string;
   registrationDate?: string;
+  registeredAt?: string;  // Nom du backend
   createdAt?: string;
   updatedAt?: string;
 }

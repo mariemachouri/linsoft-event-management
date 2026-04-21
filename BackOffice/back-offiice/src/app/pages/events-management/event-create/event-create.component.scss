@@ -17,3 +17,8 @@ textarea.form-control {
 input[type="datetime-local"].form-control {
   color-scheme: dark;
 }
+
+select.form-control option {
+  background-color: #27293d;
+  color: #ffffff;
+}

@@ -17,16 +17,16 @@ export class EventCreateComponent implements OnInit {
   
   // Options pour les catégories
   categories = [
-    { value: 'CONFERENCE', label: 'Conférence', icon: 'icon-badge' },
-    { value: 'WORKSHOP', label: 'Atelier', icon: 'icon-settings' },
-    { value: 'MEETUP', label: 'Rencontre', icon: 'icon-chat-33' },
-    { value: 'SEMINAR', label: 'Séminaire', icon: 'icon-book-bookmark' }
+    { value: 'CONFERENCE', label: 'Conference', icon: 'icon-badge' },
+    { value: 'WORKSHOP', label: 'Workshop', icon: 'icon-settings' },
+    { value: 'MEETUP', label: 'Meetup', icon: 'icon-chat-33' },
+    { value: 'SEMINAR', label: 'Seminar', icon: 'icon-book-bookmark' }
   ];
 
-  // Options pour le statut
+  // Status options
   statuses = [
-    { value: 'DRAFT', label: 'Brouillon', color: 'secondary' },
-    { value: 'PUBLISHED', label: 'Publié', color: 'success' }
+    { value: 'DRAFT', label: 'Draft', color: 'secondary' },
+    { value: 'PUBLISHED', label: 'Published', color: 'success' }
   ];
 
   constructor(
@@ -109,7 +109,7 @@ export class EventCreateComponent implements OnInit {
         if (err.status === 400) {
           this.error = 'Données invalides. Vérifiez les champs du formulaire';
         } else {
-          this.error = 'Erreur lors de la création de l\'événement';
+          this.error = 'Error creating event';
         }
       }
     });

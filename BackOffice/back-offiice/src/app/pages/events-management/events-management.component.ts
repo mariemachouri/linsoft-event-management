@@ -32,7 +32,7 @@ export class EventsManagementComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading events:', err);
-        this.error = 'Erreur lors du chargement des événements. Veuillez réessayer.';
+        this.error = 'Error loading events. Please try again.';
         this.loading = false;
       }
     });
@@ -47,8 +47,8 @@ export class EventsManagementComponent implements OnInit {
   }
 
   viewEvent(id: string): void {
-    // Placeholder pour vue détaillée (à implémenter plus tard)
-    console.log('View event:', id);
+    // Naviguer vers la page de détails de l'événement
+    this.router.navigate(['/events/view', id]);
   }
 
   deleteEvent(id: string): void {
@@ -59,7 +59,7 @@ export class EventsManagementComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error deleting event:', err);
-          alert('Erreur lors de la suppression de l\'événement');
+          alert('Error deleting event');
         }
       });
     }
@@ -83,13 +83,13 @@ export class EventsManagementComponent implements OnInit {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'DRAFT':
-        return 'Brouillon';
+        return 'Draft';
       case 'PUBLISHED':
-        return 'Publié';
+        return 'Published';
       case 'CANCELLED':
-        return 'Annulé';
+        return 'Cancelled';
       case 'COMPLETED':
-        return 'Terminé';
+        return 'Completed';
       default:
         return status;
     }
@@ -98,13 +98,13 @@ export class EventsManagementComponent implements OnInit {
   getCategoryLabel(category: string): string {
     switch (category) {
       case 'CONFERENCE':
-        return 'Conférence';
+        return 'Conference';
       case 'WORKSHOP':
-        return 'Atelier';
+        return 'Workshop';
       case 'MEETUP':
-        return 'Rencontre';
+        return 'Meetup';
       case 'SEMINAR':
-        return 'Séminaire';
+        return 'Seminar';
       default:
         return category;
     }

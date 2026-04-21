@@ -53,6 +53,13 @@ export const ROUTES: RouteInfo[] = [
     rtlTitle: "الإخطارات",
     icon: "icon-bell-55",
     class: ""
+  },
+  {
+    path: "/user-profile",
+    title: "User Profile",
+    rtlTitle: "الملف الشخصي",
+    icon: "icon-single-02",
+    class: ""
   }
 ];
 

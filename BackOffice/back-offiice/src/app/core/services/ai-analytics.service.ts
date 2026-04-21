@@ -143,13 +143,13 @@ export class AIAnalyticsService {
       score += 40;
     } else if (registrationRatio > 5) {
       score += 30;
-      recommendations.push('Augmentez la capacité de vos événements pour accueillir plus de participants');
+      recommendations.push('Increase your event capacity to accommodate more participants');
     } else if (registrationRatio > 2) {
       score += 20;
-      recommendations.push('Améliorez vos campagnes marketing pour attirer plus de participants');
+      recommendations.push('Improve your marketing campaigns to attract more participants');
     } else {
       score += 10;
-      recommendations.push('Urgent: Très peu d\'inscriptions par événement');
+      recommendations.push('Urgent: Very few registrations per event');
     }
 
     // Facteur 2: Taux de complétion (30%)
@@ -161,10 +161,10 @@ export class AIAnalyticsService {
       score += 30;
     } else if (completionRate > 0.5) {
       score += 20;
-      recommendations.push('Assurez le suivi des événements pour améliorer le taux de complétion');
+      recommendations.push('Follow up on events to improve the completion rate');
     } else {
       score += 10;
-      recommendations.push('Attention: Taux de complétion des événements faible');
+      recommendations.push('Warning: Low event completion rate');
     }
 
     // Facteur 3: Croissance utilisateurs (30%)
@@ -173,10 +173,10 @@ export class AIAnalyticsService {
       score += 30;
     } else if (userGrowth > 50) {
       score += 20;
-      recommendations.push('Continuez vos efforts pour augmenter votre base d\'utilisateurs');
+      recommendations.push('Keep up your efforts to grow your user base');
     } else {
       score += 10;
-      recommendations.push('Développez votre stratégie d\'acquisition utilisateurs');
+      recommendations.push('Develop your user acquisition strategy');
     }
 
     // Déterminer le statut
@@ -207,21 +207,21 @@ export class AIAnalyticsService {
     // Analyser la tendance des comptes
     const accountsTrend = this.calculateTrend(data.monthlyAccounts);
     if (accountsTrend < -10) {
-      recommendations.push('⚠️ Baisse significative des créations de comptes. Considérez une campagne marketing.');
+      recommendations.push('⚠️ Significant drop in account creations. Consider a marketing campaign.');
     } else if (accountsTrend > 20) {
-      recommendations.push('✅ Excellente croissance des comptes! Assurez un bon onboarding.');
+      recommendations.push('✅ Excellent account growth! Ensure a smooth onboarding experience.');
     }
 
     // Analyser les achats
     const purchasesTrend = this.calculateTrend(data.monthlyPurchases);
     if (purchasesTrend < 0) {
-      recommendations.push('📉 Les achats sont en baisse. Proposez des promotions ou nouveaux événements.');
+      recommendations.push('📉 Purchases are declining. Offer promotions or new events.');
     }
 
     // Analyser l\'engagement (sessions)
     const sessionsTrend = this.calculateTrend(data.monthlySessions);
     if (sessionsTrend < -15) {
-      recommendations.push('👥 L\'engagement utilisateur diminue. Améliorez l\'expérience utilisateur.');
+      recommendations.push('👥 User engagement is declining. Improve the user experience.');
     }
 
     // Comparer comptes vs sessions
@@ -229,12 +229,12 @@ export class AIAnalyticsService {
     const lastMonthSessions = data.monthlySessions[data.monthlySessions.length - 1];
     
     if (lastMonthSessions < lastMonthAccounts * 0.5) {
-      recommendations.push('📱 Beaucoup de comptes inactifs. Envoyez des notifications de réengagement.');
+      recommendations.push('📱 Many inactive accounts. Send re-engagement notifications.');
     }
 
     // Si tout va bien
     if (recommendations.length === 0) {
-      recommendations.push('🎉 Toutes les métriques sont positives! Continuez sur cette lancée.');
+      recommendations.push('🎉 All metrics are positive! Keep up the great work.');
     }
 
     return of(recommendations);

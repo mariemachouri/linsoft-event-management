@@ -1,6 +1,5 @@
 package com.eventmgmt.registrations.kafka;
 
-import com.eventmgmt.registrations.model.RegistrationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class RegistrationMessage {
     private String registrationId;
     private String eventId;
     private String participantId;
-    private RegistrationStatus status;
+    private String status;
     private String registeredAt;
     private String action; // CREATED, CONFIRMED, CANCELLED
     private Instant timestamp;

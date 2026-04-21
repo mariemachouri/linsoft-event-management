@@ -40,6 +40,12 @@ public class EventResource {
         return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
+    @PUT
+    @Path("{id}")
+    public Event update(@PathParam("id") String id, Event event) {
+        return service.update(id, event);
+    }
+
     @DELETE
     @Path("{id}")
     public void delete(@PathParam("id") String id) {

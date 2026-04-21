@@ -28,3 +28,30 @@
   width: 100%;
   overflow-x: auto;
 }
+
+// Table hover styles for better readability
+.table {
+  tbody tr {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      
+      td {
+        color: #ffffff !important;
+        
+        strong {
+          color: #ffffff !important;
+        }
+      }
+    }
+  }
+  
+  td {
+    color: #9a9a9a;
+    
+    strong {
+      color: #ffffff;
+    }
+  }
+}

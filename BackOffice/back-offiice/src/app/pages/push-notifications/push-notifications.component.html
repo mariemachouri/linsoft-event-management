@@ -1,0 +1,136 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">🔔 Notifications Push Firebase</h4>
+          <p class="card-category">Gestion des notifications push en temps réel</p>
+        </div>
+        <div class="card-body">
+          <!-- Permission Status -->
+          <div class="alert alert-warning" *ngIf="!isPermissionGranted">
+            <i class="tim-icons icon-bell-55"></i>
+            Les notifications push ne sont pas activées
+          </div>
+          <div class="alert alert-success" *ngIf="isPermissionGranted">
+            <i class="tim-icons icon-check-2"></i>
+            Notifications push activées avec succès
+          </div>
+
+          <!-- Request Permission Button -->
+          <div class="row mb-4" *ngIf="!isPermissionGranted">
+            <div class="col-md-12 text-center">
+              <button 
+                class="btn btn-primary btn-lg" 
+                (click)="requestPermission()"
+                [disabled]="isLoading">
+                <i class="tim-icons icon-bell-55" *ngIf="!isLoading"></i>
+                <span class="spinner-border spinner-border-sm" *ngIf="isLoading"></span>
+                {{ isLoading ? 'Activation...' : 'Activer les notifications push' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- FCM Token Display -->
+          <div class="row mb-4" *ngIf="fcmToken">
+            <div class="col-md-12">
+              <div class="card card-stats">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-10">
+                      <h5 class="card-title">Token FCM</h5>
+                      <p class="card-text text-muted" style="font-size: 0.8rem; word-break: break-all;">
+                        {{ fcmToken }}
+                      </p>
+                    </div>
+                    <div class="col-2 text-right">
+                      <button class="btn btn-sm btn-info" (click)="copyToken()">
+                        <i class="tim-icons icon-single-copy-04"></i> Copier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="row mb-4" *ngIf="isPermissionGranted">
+            <div class="col-md-12 text-center">
+              <button class="btn btn-success mr-2" (click)="sendTestNotification()">
+                <i class="tim-icons icon-send"></i> Envoyer une notification de test
+              </button>
+              <button class="btn btn-danger" (click)="clearNotifications()" *ngIf="notifications.length > 0">
+                <i class="tim-icons icon-trash-simple"></i> Effacer les notifications
+              </button>
+            </div>
+          </div>
+
+          <!-- Notifications List -->
+          <div class="row" *ngIf="notifications.length > 0">
+            <div class="col-md-12">
+              <h5 class="title">Notifications reçues ({{ notifications.length }})</h5>
+              <div class="table-responsive">
+                <table class="table tablesorter">
+                  <thead class="text-primary">
+                    <tr>
+                      <th>Heure</th>
+                      <th>Titre</th>
+                      <th>Message</th>
+                      <th>Données</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let notif of notifications">
+                      <td>{{ notif.timestamp | date:'HH:mm:ss' }}</td>
+                      <td>{{ notif.title }}</td>
+                      <td>{{ notif.body }}</td>
+                      <td>
+                        <code *ngIf="notif.data">{{ notif.data | json }}</code>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Notifications Message -->
+          <div class="row" *ngIf="isPermissionGranted && notifications.length === 0">
+            <div class="col-md-12 text-center">
+              <p class="text-muted">
+                <i class="tim-icons icon-bell-55"></i><br>
+                Aucune notification reçue pour le moment
+              </p>
+            </div>
+          </div>
+
+          <!-- Instructions -->
+          <div class="row mt-4">
+            <div class="col-md-12">
+              <div class="card card-plain">
+                <div class="card-header">
+                  <h5 class="card-title">📝 Instructions</h5>
+                </div>
+                <div class="card-body">
+                  <ol>
+                    <li>Cliquez sur <strong>"Activer les notifications push"</strong> pour demander la permission</li>
+                    <li>Autorisez les notifications dans votre navigateur</li>
+                    <li>Votre <strong>Token FCM</strong> s'affichera automatiquement</li>
+                    <li>Ce token est envoyé au backend et stocké avec votre profil utilisateur</li>
+                    <li>Testez en cliquant sur <strong>"Envoyer une notification de test"</strong></li>
+                    <li>Les notifications s'afficheront dans le tableau ci-dessous</li>
+                  </ol>
+                  <div class="alert alert-info">
+                    <strong>💡 Note :</strong> Les notifications fonctionnent en temps réel via Kafka.
+                    Lorsqu'un événement est créé, une inscription validée, etc., vous recevrez automatiquement une notification push !
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

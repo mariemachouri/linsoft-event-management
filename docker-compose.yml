@@ -266,6 +266,10 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/notifications_db?authSource=admin
+      - FIREBASE_ENABLED=true
+      - FIREBASE_CREDENTIALS_PATH=config/firebase-credentials.json
+    volumes:
+      - ./services/notifications-service/config:/app/config
     depends_on:
       kafka:
         condition: service_healthy

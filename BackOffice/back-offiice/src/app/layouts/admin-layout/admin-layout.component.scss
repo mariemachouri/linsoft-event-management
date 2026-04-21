@@ -63,7 +63,7 @@
 
 .content {
   flex: 1 0 auto;
-  padding: 20px; // Padding pour l'espace autour
+  padding: 20px 8px; // Padding réduit horizontalement pour maximiser la largeur
   margin-top: 30px;
   background: #1e1e2e;
   width: 100% !important;
@@ -215,8 +215,6 @@
 }
 
 :host ::ng-deep .content > router-outlet + * {
-  max-width: 1600px;
-  margin: 0 auto;
   width: 100%;
 }
 

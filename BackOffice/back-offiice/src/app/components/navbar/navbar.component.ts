@@ -11,7 +11,7 @@ import { AuthService } from "../../core/services/auth.service";
   styleUrls: ["./navbar.component.css"]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  private listTitles: any[];
+  private listTitles: any[] = [];
   location: Location;
   mobile_menu_visible: any = 0;
   private toggleButton: any;
@@ -19,7 +19,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   public isCollapsed = true;
 
-  closeResult: string;
+  closeResult: string = '';
 
   constructor(
     location: Location,
@@ -122,10 +122,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
         return this.listTitles[item].title;
       }
     }
+
+    // Gérer les sous-routes dynamiques (ex: /events/edit/:id)
+    for (var item = 0; item < this.listTitles.length; item++) {
+      const basePath = this.listTitles[item].path;
+      if (basePath !== '/dashboard' && titlee.startsWith(basePath + '/')) {
+        return this.listTitles[item].title;
+      }
+    }
+
     return "Dashboard";
   }
 
-  open(content) {
+  open(content: any) {
     this.modalService.open(content, {windowClass: 'modal-search'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {

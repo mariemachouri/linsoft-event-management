@@ -113,7 +113,7 @@
     <div class="col-12">
       <div class="alert alert-info">
         <i class="tim-icons icon-refresh-01"></i>
-        Chargement des données depuis la base de données...
+        Loading data from the database...
       </div>
     </div>
   </div>
@@ -123,7 +123,7 @@
     <div class="col-12">
       <div class="alert alert-warning">
         <i class="tim-icons icon-alert-circle-exc"></i>
-        {{ error }} - Affichage des données de démonstration
+        {{ error }} - Displaying demo data
       </div>
     </div>
   </div>
@@ -133,40 +133,40 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h4 class="card-title">📊 Sources de données</h4>
+          <h4 class="card-title">📊 Data Sources</h4>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-calendar-60 text-primary"></i>
-                <h5>Événements</h5>
+                <h5>Events</h5>
                 <h3>{{ events?.length || 0 }}</h3>
-                <small>Total des événements</small>
+                <small>Total events</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-single-02 text-info"></i>
-                <h5>Utilisateurs</h5>
+                <h5>Users</h5>
                 <h3>{{ users?.length || 0 }}</h3>
-                <small>Comptes utilisateurs</small>
+                <small>User accounts</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-notes text-success"></i>
-                <h5>Inscriptions</h5>
+                <h5>Registrations</h5>
                 <h3>{{ registrations?.length || 0 }}</h3>
-                <small>Total des inscriptions</small>
+                <small>Total registrations</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-chart-bar-32 text-warning"></i>
-                <h5>Tâches</h5>
+                <h5>Tasks</h5>
                 <h3>{{ completedTasks }}</h3>
-                <small>Événements terminés</small>
+                <small>Completed events</small>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@
       <div class="card card-ai-insights">
         <div class="card-header">
           <h4 class="card-title">
-            <i class="tim-icons icon-atom"></i> Analyse IA - Score de Santé
+            <i class="tim-icons icon-atom"></i> AI Analysis - Health Score
           </h4>
         </div>
         <div class="card-body">
@@ -192,7 +192,7 @@
               <p class="status-text">{{ healthScore.status | uppercase }}</p>
             </div>
             <div class="score-details mt-4">
-              <h5>Recommandations IA:</h5>
+              <h5>AI Recommendations:</h5>
               <ul class="recommendation-list">
                 <li *ngFor="let rec of healthScore.recommendations">
                   <i class="tim-icons icon-bulb-63"></i> {{ rec }}
@@ -208,12 +208,12 @@
       <div class="card card-ai-insights">
         <div class="card-header">
           <h4 class="card-title">
-            <i class="tim-icons icon-chart-pie-36"></i> Insights Intelligents
+            <i class="tim-icons icon-chart-pie-36"></i> Smart Insights
           </h4>
         </div>
         <div class="card-body">
           <div class="insights-container">
-            <h5>Analyses Prédictives:</h5>
+            <h5>Predictive Analytics:</h5>
             <div class="insight-item" *ngFor="let recommendation of aiRecommendations">
               <div class="insight-icon">
                 <i class="tim-icons icon-bulb-63"></i>
@@ -224,10 +224,10 @@
             </div>
 
             <div class="mt-4" *ngIf="predictions && predictions.length > 0">
-              <h5>Prédictions (3 prochains mois):</h5>
+              <h5>Predictions (next 3 months):</h5>
               <div class="predictions-box">
                 <span class="badge badge-primary" *ngFor="let pred of predictions; let i = index">
-                  Mois {{ i + 1 }}: {{ pred }}
+                  Month {{ i + 1 }}: {{ pred }}
                 </span>
               </div>
             </div>

@@ -18,6 +18,7 @@ import { UserEditComponent } from "../../pages/users-list/user-edit/user-edit.co
 import { EventsManagementComponent } from "../../pages/events-management/events-management.component";
 import { EventCreateComponent } from "../../pages/events-management/event-create/event-create.component";
 import { EventEditComponent } from "../../pages/events-management/event-edit/event-edit.component";
+import { EventDetailComponent } from "../../pages/events-management/event-detail/event-detail.component";
 import { RegistrationsManagementComponent } from "../../pages/registrations-management/registrations-management.component";
 import { RegistrationCreateComponent } from "../../pages/registrations-management/registration-create/registration-create.component";
 import { RegistrationEditComponent } from "../../pages/registrations-management/registration-edit/registration-edit.component";
@@ -51,6 +52,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     UserEditComponent,
     EventsManagementComponent,
     EventCreateComponent,
+    EventDetailComponent,
     EventEditComponent,
     RegistrationsManagementComponent,
     RegistrationCreateComponent,

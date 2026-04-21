@@ -1,0 +1,45 @@
+.notifications-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  border-left: 3px solid #1d8cf8;
+  padding-left: 15px;
+  margin-bottom: 15px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.token-display {
+  background-color: #27293d;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.card-stats {
+  background: linear-gradient(to bottom, #1d8cf8 0%, #3358f4 100%);
+  color: white;
+}
+
+.card-stats .card-title {
+  color: white;
+  font-weight: 600;
+}
+
+.card-stats .card-text {
+  color: rgba(255, 255, 255, 0.8);
+}

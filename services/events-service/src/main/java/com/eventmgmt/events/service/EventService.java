@@ -37,6 +37,67 @@ public class EventService {
         return event;
     }
 
+    public Event update(String id, Event event) {
+        Event existingEvent = repository.findByIdOptional(new ObjectId(id))
+            .orElseThrow(() -> new RuntimeException("Event not found"));
+        
+        // Update fields - handle both old and new naming conventions
+        if (event.title != null) {
+            existingEvent.title = event.title;
+            existingEvent.name = event.title;  // Sync alias
+        } else if (event.name != null) {
+            existingEvent.name = event.name;
+            existingEvent.title = event.name;  // Sync alias
+        }
+        
+        if (event.description != null) {
+            existingEvent.description = event.description;
+        }
+        
+        if (event.location != null) {
+            existingEvent.location = event.location;
+        }
+        
+        if (event.startAt != null) {
+            existingEvent.startAt = event.startAt;
+            existingEvent.startDate = event.startAt;  // Sync alias
+        } else if (event.startDate != null) {
+            existingEvent.startDate = event.startDate;
+            existingEvent.startAt = event.startDate;  // Sync alias
+        }
+        
+        if (event.endAt != null) {
+            existingEvent.endAt = event.endAt;
+            existingEvent.endDate = event.endAt;  // Sync alias
+        } else if (event.endDate != null) {
+            existingEvent.endDate = event.endDate;
+            existingEvent.endAt = event.endDate;  // Sync alias
+        }
+        
+        if (event.maxParticipants != null) {
+            existingEvent.maxParticipants = event.maxParticipants;
+        }
+        
+        if (event.status != null) {
+            existingEvent.status = event.status;
+        }
+        
+        if (event.category != null) {
+            existingEvent.category = event.category;
+        }
+        
+        if (event.organizerId != null) {
+            existingEvent.organizerId = event.organizerId;
+        }
+        
+        repository.update(existingEvent);
+        
+        // Publish event update to Kafka
+        eventPublisher.publishEventUpdated(existingEvent);
+        
+        return existingEvent;
+    }
+
     public Event addCharge(String eventId, String chargeId) {
         Event event = repository.findByIdOptional(new ObjectId(eventId))
             .orElseThrow(() -> new RuntimeException("Event not found"));

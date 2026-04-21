@@ -2,7 +2,6 @@ package com.eventmgmt.registrations.service;
 
 import com.eventmgmt.registrations.kafka.RegistrationPublisher;
 import com.eventmgmt.registrations.model.Registration;
-import com.eventmgmt.registrations.model.RegistrationStatus;
 import com.eventmgmt.registrations.repository.RegistrationRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -39,7 +38,7 @@ public class RegistrationService {
         Registration registration = repository.findByIdOptional(new ObjectId(id))
             .orElseThrow(() -> new RuntimeException("Registration not found"));
         
-        registration.status = RegistrationStatus.CONFIRMED;
+        registration.status = "CONFIRMED";
         repository.update(registration);
         
         // Publish confirmation to Kafka
@@ -55,7 +54,7 @@ public class RegistrationService {
         
         if (deleted && registrationOpt.isPresent()) {
             Registration registration = registrationOpt.get();
-            registration.status = RegistrationStatus.CANCELLED;
+            registration.status = "CANCELLED";
             
             // Publish cancellation to Kafka
             registrationPublisher.publishRegistrationCancelled(registration);

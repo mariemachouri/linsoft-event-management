@@ -8,6 +8,7 @@ export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
 
 export interface Event {
   id?: string;
+  title?: string;
   name: string;
   description?: string;
   location?: string;

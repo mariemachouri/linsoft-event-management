@@ -1,15 +1,26 @@
-import { async, ComponentFixture, TestBed } from "@angular/core/testing";
-
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { RouterTestingModule } from "@angular/router/testing";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { AuthService } from "../../core/services/auth.service";
 import { NavbarComponent } from "./navbar.component";
 
 describe("NavbarComponent", () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
+    const authSpy = jasmine.createSpyObj('AuthService', ['logout']);
+
     TestBed.configureTestingModule({
-      declarations: [NavbarComponent]
+      declarations: [NavbarComponent],
+      imports: [RouterTestingModule, NgbModule],
+      providers: [
+        { provide: AuthService, useValue: authSpy }
+      ]
     }).compileComponents();
+
+    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   }));
 
   beforeEach(() => {

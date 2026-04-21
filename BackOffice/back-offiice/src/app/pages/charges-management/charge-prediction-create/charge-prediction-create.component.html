@@ -4,7 +4,7 @@
       <div class="card">
         <div class="card-header">
           <h4 class="card-title">
-            {{ currentStep === 1 ? 'Nouvelle Prédiction de Charges (IA)' : 'Résultat de la Prédiction IA' }}
+            {{ currentStep === 1 ? 'New Charge Prediction (AI)' : 'AI Prediction Result' }}
           </h4>
         </div>
         <div class="card-body">
@@ -15,15 +15,15 @@
                 <!-- Sélection de l'événement -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Événement <span class="text-danger">*</span></label>
+                    <label>Event <span class="text-danger">*</span></label>
                     <select class="form-control" formControlName="eventId">
-                      <option value="">-- Sélectionner un événement --</option>
+                      <option value="">-- Select an event --</option>
                       <option *ngFor="let event of events" [value]="event.id">
                         {{ event.title }} ({{ event.startDate | date:'short' }})
                       </option>
                     </select>
                     <small class="text-danger" *ngIf="predictionForm.get('eventId')?.touched && predictionForm.get('eventId')?.invalid">
-                      L'événement est requis
+                      Event is required
                     </small>
                   </div>
                 </div>
@@ -31,7 +31,7 @@
                 <!-- Type d'événement -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Type d'événement <span class="text-danger">*</span></label>
+                    <label>Event Type <span class="text-danger">*</span></label>
                     <select class="form-control" formControlName="eventType">
                       <option *ngFor="let category of eventCategories" [value]="category">
                         {{ category }}
@@ -45,11 +45,11 @@
                 <!-- Nombre de participants attendus -->
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Participants attendus <span class="text-danger">*</span></label>
+                    <label>Expected Attendees <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" formControlName="expectedAttendees" 
-                           placeholder="Ex: 50">
+                           placeholder="e.g. 50">
                     <small class="text-danger" *ngIf="predictionForm.get('expectedAttendees')?.touched && predictionForm.get('expectedAttendees')?.invalid">
-                      Minimum 1 participant
+                      Minimum 1 attendee
                     </small>
                   </div>
                 </div>
@@ -57,11 +57,11 @@
                 <!-- Durée en heures -->
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Durée (heures) <span class="text-danger">*</span></label>
+                    <label>Duration (hours) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" formControlName="durationHours" 
-                           placeholder="Ex: 2">
+                           placeholder="e.g. 2">
                     <small class="text-danger" *ngIf="predictionForm.get('durationHours')?.touched && predictionForm.get('durationHours')?.invalid">
-                      Minimum 1 heure
+                      Minimum 1 hour
                     </small>
                   </div>
                 </div>
@@ -69,11 +69,11 @@
                 <!-- Taille du lieu -->
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Taille du lieu (m²) <span class="text-danger">*</span></label>
+                    <label>Venue Size (m²) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" formControlName="venueSize" 
-                           placeholder="Ex: 100">
+                           placeholder="e.g. 100">
                     <small class="text-danger" *ngIf="predictionForm.get('venueSize')?.touched && predictionForm.get('venueSize')?.invalid">
-                      Taille requise
+                      Venue size is required
                     </small>
                   </div>
                 </div>
@@ -83,10 +83,10 @@
                 <!-- Localisation -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Localisation <span class="text-danger">*</span></label>
+                    <label>Location <span class="text-danger">*</span></label>
                     <select class="form-control" formControlName="location">
                       <option *ngFor="let loc of locationOptions" [value]="loc">
-                        {{ loc === 'online' ? 'En ligne' : 'Sur site' }}
+                        {{ loc === 'online' ? 'Online' : 'On-site' }}
                       </option>
                     </select>
                   </div>
@@ -95,11 +95,11 @@
                 <!-- Ville -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Ville <span class="text-danger">*</span></label>
+                    <label>City <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" formControlName="city" 
-                           placeholder="Ex: Paris">
+                           placeholder="e.g. Paris">
                     <small class="text-danger" *ngIf="predictionForm.get('city')?.touched && predictionForm.get('city')?.invalid">
-                      La ville est requise
+                      City is required
                     </small>
                   </div>
                 </div>
@@ -112,7 +112,7 @@
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" formControlName="cateringRequired" id="catering">
                       <label class="form-check-label" for="catering">
-                        Restauration requise
+                        Catering Required
                       </label>
                     </div>
                   </div>
@@ -123,7 +123,7 @@
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" formControlName="equipmentRequired" id="equipment">
                       <label class="form-check-label" for="equipment">
-                        Équipement requis
+                        Equipment Required
                       </label>
                     </div>
                   </div>
@@ -141,10 +141,10 @@
                   <button type="submit" class="btn btn-primary" [disabled]="loading">
                     <i class="tim-icons icon-chart-bar-32" *ngIf="!loading"></i>
                     <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
-                    {{ loading ? 'Analyse en cours...' : 'Lancer la prédiction IA' }}
+                    {{ loading ? 'Analyzing...' : 'Run AI Prediction' }}
                   </button>
                   <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">
-                    Annuler
+                    Cancel
                   </button>
                 </div>
               </div>
@@ -159,11 +159,11 @@
                 <div class="alert alert-success">
                   <h5>
                     <i class="tim-icons icon-check-2"></i>
-                    Prédiction générée avec succès !
+                    Prediction generated successfully!
                   </h5>
                   <p class="mb-0">
-                    Modèle IA utilisé: <strong>{{ predictionResult.predictionResult?.aiModel }}</strong> 
-                    - Confiance: <strong>{{ getConfidencePercentage() }}%</strong>
+                    AI Model used: <strong>{{ predictionResult.predictionResult?.aiModel }}</strong> 
+                    - Confidence: <strong>{{ getConfidencePercentage() }}%</strong>
                   </p>
                 </div>
               </div>
@@ -177,7 +177,7 @@
                     <div class="row">
                       <div class="col-12">
                         <div class="numbers text-center">
-                          <p class="card-category">Coût Total Prédit</p>
+                          <p class="card-category">Total Predicted Cost</p>
                           <h2 class="card-title">{{ getTotalCost() | number:'1.2-2' }} €</h2>
                         </div>
                       </div>
@@ -190,14 +190,14 @@
             <!-- Répartition des coûts -->
             <div class="row">
               <div class="col-md-12">
-                <h5>Répartition des coûts</h5>
+                <h5>Cost Breakdown</h5>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>Catégorie</th>
-                        <th class="text-right">Montant</th>
-                        <th class="text-right">Pourcentage</th>
+                        <th>Category</th>
+                        <th class="text-right">Amount</th>
+                        <th class="text-right">Percentage</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -221,7 +221,7 @@
             <!-- Recommandations IA -->
             <div class="row" *ngIf="predictionResult.predictionResult?.recommendations && predictionResult.predictionResult.recommendations.length > 0">
               <div class="col-md-6">
-                <h5>Recommandations</h5>
+                <h5>Recommendations</h5>
                 <ul class="list-group">
                   <li class="list-group-item" *ngFor="let rec of predictionResult.predictionResult.recommendations">
                     <i class="tim-icons icon-bulb-63 text-info"></i> {{ rec }}
@@ -231,7 +231,7 @@
 
               <!-- Facteurs de risque -->
               <div class="col-md-6" *ngIf="predictionResult.predictionResult?.riskFactors && predictionResult.predictionResult.riskFactors.length > 0">
-                <h5>Facteurs de risque</h5>
+                <h5>Risk Factors</h5>
                 <ul class="list-group">
                   <li class="list-group-item" *ngFor="let risk of predictionResult.predictionResult.riskFactors">
                     <i class="tim-icons icon-alert-circle-exc text-warning"></i> {{ risk }}
@@ -243,14 +243,14 @@
             <!-- Recommandations d'articles -->
             <div class="row mt-3" *ngIf="predictionResult.predictionResult?.itemRecommendations && predictionResult.predictionResult.itemRecommendations.length > 0">
               <div class="col-md-12">
-                <h5>Articles recommandés</h5>
+                <h5>Recommended Items</h5>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>Article</th>
-                        <th class="text-center">Quantité suggérée</th>
-                        <th>Raison</th>
+                        <th>Item</th>
+                        <th class="text-center">Suggested Quantity</th>
+                        <th>Reason</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -270,14 +270,14 @@
               <div class="col-md-12">
                 <button type="button" class="btn btn-success" (click)="goToPaymentDecision()">
                   <i class="tim-icons icon-coins"></i>
-                  Décision de paiement
+                  Payment Decision
                 </button>
                 <button type="button" class="btn btn-info ml-2" (click)="backToForm()">
                   <i class="tim-icons icon-refresh-01"></i>
-                  Nouvelle prédiction
+                  New Prediction
                 </button>
                 <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">
-                  Retour à la liste
+                  Back to List
                 </button>
               </div>
             </div>
