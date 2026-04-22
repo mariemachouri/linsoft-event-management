@@ -1,32 +1,44 @@
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
+
+// Roles autorisés à accéder au BackOffice
+const ALLOWED_ROLES = ['admin', 'organizer', 'event-organizer'];
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard extends KeycloakAuthGuard {
 
   constructor(
-    private authService: AuthService,
-    private router: Router
-  ) { }
+    protected readonly router: Router,
+    protected readonly keycloak: KeycloakService
+  ) {
+    super(router, keycloak);
+  }
 
-  canActivate(
+  async isAccessAllowed(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
+  ): Promise<boolean> {
+    // Rediriger vers Keycloak si non authentifié
+    if (!this.authenticated) {
+      await this.keycloak.login({
+        redirectUri: window.location.origin + '/#' + state.url,
+      });
+      return false;
     }
 
-    // Mode développement: créer un utilisateur fictif
-    localStorage.setItem('dev_mode_user', 'true');
-    localStorage.setItem('current_user', JSON.stringify({ 
-      username: 'dev-user', 
-      email: 'dev@test.com',
-      roles: ['admin', 'user']
-    }));
+    // Récupérer tous les rôles (realm + resource)
+    const userRoles = this.keycloak.getUserRoles(true);
+    const hasAccess = ALLOWED_ROLES.some(role => userRoles.includes(role));
+
+    if (!hasAccess) {
+      this.router.navigate(['/unauthorized']);
+      return false;
+    }
+
     return true;
   }
 }
+

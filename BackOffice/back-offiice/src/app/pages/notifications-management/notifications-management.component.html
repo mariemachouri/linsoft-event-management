@@ -31,28 +31,29 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let notification of notifications" [class.table-active]="!notification.read">
-                  <td>{{ notification.userId }}</td>
+                <tr *ngFor="let notification of notifications">
+                  <td>{{ notification.recipientId }}</td>
                   <td>{{ notification.message }}</td>
                   <td>
-                    <span class="badge" [class.badge-info]="notification.type === 'info'" 
-                          [class.badge-success]="notification.type === 'success'"
-                          [class.badge-warning]="notification.type === 'warning'"
-                          [class.badge-danger]="notification.type === 'error'">
-                      {{ notification.type || 'info' }}
+                    <span class="badge" [class.badge-info]="notification.type === 'EMAIL'" 
+                          [class.badge-warning]="notification.type === 'SMS'"
+                          [class.badge-primary]="notification.type === 'PUSH'">
+                      {{ notification.type }}
                     </span>
                   </td>
                   <td>
-                    <span class="badge" [class.badge-success]="notification.read" 
-                          [class.badge-secondary]="!notification.read">
-                      {{ notification.read ? 'Read' : 'Unread' }}
+                    <span class="badge" 
+                          [class.badge-success]="notification.status === 'SENT'" 
+                          [class.badge-warning]="notification.status === 'PENDING'"
+                          [class.badge-danger]="notification.status === 'FAILED'">
+                      {{ notification.status }}
                     </span>
                   </td>
-                  <td>{{ notification.createdAt | date:'short' }}</td>
+                  <td>{{ notification.sendAt | date:'short' }}</td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-primary" *ngIf="!notification.read" 
-                            (click)="markAsRead(notification.id!)" title="Mark as read">
-                      <i class="tim-icons icon-check-2"></i>
+                    <button class="btn btn-sm btn-warning" *ngIf="notification.status === 'FAILED'" 
+                            (click)="retryNotification(notification.id!)" title="Retry">
+                      <i class="tim-icons icon-refresh-01"></i>
                     </button>
                     <button class="btn btn-sm btn-danger" (click)="deleteNotification(notification.id!)" title="Delete">
                       <i class="tim-icons icon-trash-simple"></i>

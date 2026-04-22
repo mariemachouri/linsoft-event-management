@@ -1,0 +1,23 @@
+<div class="wrapper">
+  <div class="main-panel" style="width: 100%; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="content text-center" style="padding: 40px;">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card card-plain">
+            <div class="card-body">
+              <i class="tim-icons icon-lock-circle" style="font-size: 80px; color: #e14eca;"></i>
+              <h1 class="title" style="margin-top: 20px;">Accès refusé</h1>
+              <p class="description" style="font-size: 1.2em; color: #9A9A9A;">
+                Vous n'avez pas les permissions nécessaires pour accéder au BackOffice.<br/>
+                Seuls les utilisateurs avec les rôles <strong>admin</strong> ou <strong>organizer</strong> sont autorisés.
+              </p>
+              <button class="btn btn-round btn-danger" (click)="logout()">
+                <i class="tim-icons icon-button-power"></i> Se déconnecter
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,12 +5,11 @@ import { environment } from '../../../environments/environment';
 
 export interface Notification {
   id?: string;
-  userId: string;
+  recipientId: string;
   message: string;
-  type?: string;
-  read?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  type?: 'EMAIL' | 'SMS' | 'PUSH';
+  status?: 'SENT' | 'PENDING' | 'FAILED';
+  sendAt?: string;
 }
 
 @Injectable({
@@ -53,8 +52,8 @@ export class NotificationService {
   /**
    * Marquer une notification comme lue
    */
-  markAsRead(id: string): Observable<Notification> {
-    return this.http.put<Notification>(`${this.notificationsApiUrl}/${id}/read`, {});
+  retryNotification(id: string): Observable<any> {
+    return this.http.put<any>(`${this.notificationsApiUrl}/${id}/retry`, {});
   }
 
   /**

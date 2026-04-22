@@ -48,13 +48,13 @@ export class NotificationsManagementComponent implements OnInit {
     }
   }
 
-  markAsRead(id: string): void {
-    this.notificationService.markAsRead(id).subscribe({
+  retryNotification(id: string): void {
+    this.notificationService.retryNotification(id).subscribe({
       next: () => {
         this.loadNotifications();
       },
       error: (err) => {
-        console.error('Error marking notification as read:', err);
+        console.error('Error retrying notification:', err);
       }
     });
   }

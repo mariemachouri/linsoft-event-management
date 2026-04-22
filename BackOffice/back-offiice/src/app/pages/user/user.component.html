@@ -16,24 +16,9 @@
         </div>
         <div class="card-body">
           <form class="profile-form">
-            <!-- Ligne 1: Company, Username, Email -->
+            <!-- Ligne 1: Username, Email -->
             <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-briefcase-2"></i> Company
-                  </label>
-                  <input
-                    class="form-control"
-                    disabled
-                    placeholder="Company"
-                    type="text"
-                    value="Creative Code Inc."
-                  />
-                  <small class="form-text-muted">Read only</small>
-                </div>
-              </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <label class="form-label">
                     <i class="tim-icons icon-single-02"></i> Username
@@ -42,11 +27,12 @@
                     class="form-control"
                     placeholder="Username"
                     type="text"
-                    value="michael23"
+                    [value]="currentUser?.username || ''"
+                    readonly
                   />
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <label class="form-label">
                     <i class="tim-icons icon-email-85"></i> Email
@@ -55,7 +41,8 @@
                     class="form-control"
                     placeholder="Email"
                     type="email"
-                    value="mike@email.com"
+                    [value]="currentUser?.email || ''"
+                    readonly
                   />
                 </div>
               </div>
@@ -72,7 +59,8 @@
                     class="form-control"
                     placeholder="First Name"
                     type="text"
-                    value="Mike"
+                    [value]="currentUser?.firstName || ''"
+                    readonly
                   />
                 </div>
               </div>
@@ -85,92 +73,45 @@
                     class="form-control"
                     placeholder="Last Name"
                     type="text"
-                    value="Andrew"
+                    [value]="currentUser?.lastName || ''"
+                    readonly
                   />
                 </div>
               </div>
             </div>
 
-            <!-- Address -->
+            <!-- Roles -->
             <div class="form-group">
               <label class="form-label">
-                <i class="tim-icons icon-pin"></i> Address
+                <i class="tim-icons icon-badge"></i> Roles
+              </label>
+              <div class="roles-display">
+                <span
+                  *ngFor="let role of currentUser?.roles"
+                  class="badge badge-primary mr-1"
+                  style="font-size: 0.85rem; padding: 6px 12px;"
+                >
+                  {{ role }}
+                </span>
+                <span *ngIf="!currentUser?.roles?.length" class="text-muted">No roles assigned</span>
+              </div>
+            </div>
+
+            <!-- User ID -->
+            <div class="form-group">
+              <label class="form-label">
+                <i class="tim-icons icon-key-25"></i> User ID
               </label>
               <input
                 class="form-control"
-                placeholder="Address"
+                placeholder="User ID"
                 type="text"
-                value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+                [value]="currentUser?.id || ''"
+                readonly
               />
-            </div>
-
-            <!-- Ligne 3: Ville, Pays, Code Postal -->
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-pin"></i> Address
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Address"
-                    type="text"
-                    value="RomaniaBucharest"
-                  />
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-world"></i> Country
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Country"
-                    type="text"
-                    value="Romania"
-                  />
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-bulb-63"></i> Postal Code
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Postal Code"
-                    type="text"
-                    value="011111"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- À propos -->
-            <div class="form-group">
-              <label class="form-label">
-                <i class="tim-icons icon-notes"></i> À propos de moi
-              </label>
-              <textarea
-                class="form-control"
-                placeholder="Décrivez-vous..."
-                rows="4"
-              >
-Je suis un développeur passionné avec plus de 5 ans d'expérience dans le développement web.
-              </textarea>
+              <small class="form-text-muted">Keycloak user identifier (read only)</small>
             </div>
           </form>
-        </div>
-        <div class="card-footer">
-          <div class="button-group">
-            <button class="btn btn-secondary" type="button">
-              <i class="tim-icons icon-simple-remove"></i> Cancel
-            </button>
-            <button class="btn btn-primary" type="submit">
-              <i class="tim-icons icon-check-2"></i> Save Changes
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -181,65 +122,38 @@ Je suis un développeur passionné avec plus de 5 ans d'expérience dans le dév
       <div class="card avatar-card">
         <div class="card-body">
           <div class="avatar-wrapper">
-            <img alt="Avatar" class="profile-avatar" src="assets/img/emilyz.jpg" />
+            <img alt="Avatar" class="profile-avatar" src="assets/img/anime3.png" />
             <div class="avatar-status">
               <span class="status-badge online"></span>
               <span class="status-text">Online</span>
             </div>
           </div>
-          <h4 class="profile-name">Mike Andrew</h4>
-          <p class="profile-role">CEO/Co-Founder</p>
+          <h4 class="profile-name">{{ getDisplayName() }}</h4>
+          <p class="profile-role">{{ getPrimaryRole() }}</p>
           <div class="profile-badges">
-            <span class="badge badge-primary">Administrator</span>
+            <span class="badge badge-primary">{{ getPrimaryRole() }}</span>
             <span class="badge badge-success">Verified</span>
           </div>
         </div>
       </div>
 
-      <!-- Statistiques -->
+      <!-- Infos Keycloak -->
       <div class="card stats-card">
         <div class="card-header">
-          <h5 class="card-title">📊 Statistics</h5>
+          <h5 class="card-title">🔐 Account Info</h5>
         </div>
         <div class="card-body">
           <div class="stat-item">
-            <span class="stat-label">Events Created</span>
-            <span class="stat-value">12</span>
+            <span class="stat-label">Username</span>
+            <span class="stat-value">{{ currentUser?.username || '-' }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Users Managed</span>
-            <span class="stat-value">45</span>
+            <span class="stat-label">Email</span>
+            <span class="stat-value" style="font-size: 0.8rem; word-break: break-all;">{{ currentUser?.email || '-' }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Registrations Processed</span>
-            <span class="stat-value">128</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Member Since</span>
-            <span class="stat-value">2022</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Réseaux Sociaux -->
-      <div class="card social-card">
-        <div class="card-header">
-          <h5 class="card-title">🔗 Social Networks</h5>
-        </div>
-        <div class="card-body">
-          <div class="social-buttons">
-            <button class="btn btn-social facebook" title="Facebook">
-              <i class="fab fa-facebook-f"></i>
-            </button>
-            <button class="btn btn-social twitter" title="Twitter">
-              <i class="fab fa-twitter"></i>
-            </button>
-            <button class="btn btn-social linkedin" title="LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </button>
-            <button class="btn btn-social github" title="GitHub">
-              <i class="fab fa-github"></i>
-            </button>
+            <span class="stat-label">Role</span>
+            <span class="stat-value">{{ getPrimaryRole() }}</span>
           </div>
         </div>
       </div>

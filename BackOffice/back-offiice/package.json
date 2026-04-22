@@ -75,6 +75,8 @@
     "chart.js": "2.9.4",
     "core-js": "3.15.2",
     "firebase": "^9.23.0",
+    "keycloak-angular": "^9.3.0",
+    "keycloak-js": "^18.0.0",
     "ngx-toastr": "14.0.0",
     "rxjs": "7.2.0",
     "tslib": "2.3.0",

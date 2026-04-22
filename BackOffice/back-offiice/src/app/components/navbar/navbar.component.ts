@@ -159,6 +159,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/settings']);
   }
 
+  openKeycloak(): void {
+    window.open('http://localhost:8180/admin/master/console/#/event-mgmt', '_blank');
+  }
+
+  isAdmin(): boolean {
+    return this.authService.hasRole('admin');
+  }
+
   logout(): void {
     this.authService.logout();
   }

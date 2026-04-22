@@ -6,13 +6,17 @@ import { Routes, RouterModule } from "@angular/router";
 import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { LoginComponent } from './pages/login/login.component';
+import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
 import { AuthGuard } from './core/guards/auth.guard';
-import { RoleGuard } from './core/guards/role.guard';
 
 const routes: Routes = [
   {
     path: "login",
     component: LoginComponent
+  },
+  {
+    path: "unauthorized",
+    component: UnauthorizedComponent
   },
   {
     path: "",
@@ -37,7 +41,7 @@ const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "login"
+    redirectTo: ""
   }
 ];
 
