@@ -3,98 +3,171 @@ package com.eventmgmt.notifications.kafka;
 import com.eventmgmt.notifications.dto.EventMessage;
 import com.eventmgmt.notifications.dto.RegistrationMessage;
 import com.eventmgmt.notifications.dto.UserMessage;
+import com.eventmgmt.notifications.model.Notification;
+import com.eventmgmt.notifications.model.NotificationType;
+import com.eventmgmt.notifications.service.NotificationService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jboss.logging.Logger;
 
 /**
- * Kafka consumer for handling events and sending notifications
+ * Kafka consumer for handling events and sending notifications.
+ * Each handler persists a Notification record in MongoDB and triggers
+ * the real email delivery via NotificationService → EmailSender (SMTP).
+ *
+ * NOTE: recipientId is expected to be a valid email address.
+ * - For event/registration messages the Kafka producer must embed the
+ *   organizer/participant email in the organizerId / participantId field,
+ *   OR a user-lookup step must be added here to resolve the ID to an email.
+ * - For user-created messages the email field is used directly.
  */
 @ApplicationScoped
 public class NotificationConsumer {
     private static final Logger LOG = Logger.getLogger(NotificationConsumer.class);
 
-    /**
-     * Listen to event creation messages and send notifications
-     */
+    @Inject
+    NotificationService notificationService;
+
+    // ---------------------------------------------------------------
+    // Helper: build and persist a Notification, then send it
+    // ---------------------------------------------------------------
+    private void createAndSend(String recipientEmail, String message) {
+        Notification n = new Notification();
+        n.recipientId = recipientEmail;
+        n.type        = NotificationType.EMAIL;
+        n.message     = message;
+        // NotificationService.create() persists the record and sends the email
+        notificationService.create(n);
+    }
+
+    // ---------------------------------------------------------------
+    // Event created → email to organizer
+    // ---------------------------------------------------------------
     @Incoming("event-created")
     public void onEventCreated(EventMessage message) {
         try {
-            LOG.infof("Received event-created message: %s - %s", message.getEventId(), message.getTitle());
-            
-            // TODO: Send email notification to organizer
-            String notificationText = String.format(
-                "Your event '%s' has been created successfully. It will start on %s at %s.",
-                message.getTitle(), message.getStartAt(), message.getLocation()
+            LOG.infof("Received event-created: eventId=%s title='%s'",
+                    message.getEventId(), message.getTitle());
+
+            String body = String.format(
+                "Bonjour,\n\n" +
+                "Votre événement '%s' a été créé avec succès.\n" +
+                "  • Lieu    : %s\n" +
+                "  • Début   : %s\n" +
+                "  • Fin     : %s\n\n" +
+                "Référence : %s\n\n" +
+                "Cordialement,\nL'équipe Event Management",
+                message.getTitle(),
+                message.getLocation(),
+                message.getStartAt(),
+                message.getEndAt(),
+                message.getEventId()
             );
-            
-            LOG.infof("Notification would be sent: %s", notificationText);
-            // emailService.send(organizerEmail, "Event Created", notificationText);
-            
+
+            // organizerId should be the organizer's email address
+            createAndSend(message.getOrganizerId(), body);
+
+            LOG.infof("Email notification triggered for event %s → %s",
+                    message.getEventId(), message.getOrganizerId());
+
         } catch (Exception e) {
             LOG.errorf(e, "Error processing event-created message: %s", message.getEventId());
         }
     }
 
-    /**
-     * Listen to registration creation messages
-     */
+    // ---------------------------------------------------------------
+    // Registration created → confirmation email to participant
+    // ---------------------------------------------------------------
     @Incoming("registration-created")
     public void onRegistrationCreated(RegistrationMessage message) {
         try {
-            LOG.infof("Received registration-created message: %s for event %s", 
-                message.getRegistrationId(), message.getEventId());
-            
-            // TODO: Send notification to participant
-            String notificationText = String.format(
-                "You have successfully registered for the event. Registration ID: %s",
-                message.getRegistrationId()
+            LOG.infof("Received registration-created: registrationId=%s eventId=%s",
+                    message.getRegistrationId(), message.getEventId());
+
+            String body = String.format(
+                "Bonjour,\n\n" +
+                "Votre inscription a bien été enregistrée.\n" +
+                "  • Numéro d'inscription : %s\n" +
+                "  • Événement            : %s\n" +
+                "  • Date d'inscription   : %s\n\n" +
+                "Votre inscription est en attente de confirmation.\n\n" +
+                "Cordialement,\nL'équipe Event Management",
+                message.getRegistrationId(),
+                message.getEventId(),
+                message.getRegisteredAt()
             );
-            
-            LOG.infof("Notification would be sent: %s", notificationText);
-            // emailService.send(participantEmail, "Registration Confirmed", notificationText);
-            
+
+            // participantId should be the participant's email address
+            createAndSend(message.getParticipantId(), body);
+
+            LOG.infof("Email notification triggered for registration %s → %s",
+                    message.getRegistrationId(), message.getParticipantId());
+
         } catch (Exception e) {
             LOG.errorf(e, "Error processing registration-created message: %s", message.getRegistrationId());
         }
     }
 
-    /**
-     * Listen to registration confirmation messages
-     */
+    // ---------------------------------------------------------------
+    // Registration confirmed → confirmation email to participant
+    // ---------------------------------------------------------------
     @Incoming("registration-confirmed")
     public void onRegistrationConfirmed(RegistrationMessage message) {
         try {
-            LOG.infof("Received registration-confirmed message: %s", message.getRegistrationId());
-            
-            // TODO: Send confirmation email
-            String notificationText = "Your registration has been confirmed! See you at the event.";
-            
-            LOG.infof("Confirmation notification would be sent: %s", notificationText);
-            // emailService.send(participantEmail, "Registration Confirmed", notificationText);
-            
+            LOG.infof("Received registration-confirmed: registrationId=%s",
+                    message.getRegistrationId());
+
+            String body = String.format(
+                "Bonjour,\n\n" +
+                "Votre inscription a été CONFIRMÉE !\n" +
+                "  • Numéro d'inscription : %s\n" +
+                "  • Événement            : %s\n\n" +
+                "Nous avons hâte de vous voir à l'événement.\n\n" +
+                "Cordialement,\nL'équipe Event Management",
+                message.getRegistrationId(),
+                message.getEventId()
+            );
+
+            createAndSend(message.getParticipantId(), body);
+
+            LOG.infof("Confirmation email triggered for registration %s → %s",
+                    message.getRegistrationId(), message.getParticipantId());
+
         } catch (Exception e) {
             LOG.errorf(e, "Error processing registration-confirmed message: %s", message.getRegistrationId());
         }
     }
 
-    /**
-     * Listen to user creation messages (welcome emails)
-     */
+    // ---------------------------------------------------------------
+    // User created → welcome email (email field is directly available)
+    // ---------------------------------------------------------------
     @Incoming("user-created")
     public void onUserCreated(UserMessage message) {
         try {
-            LOG.infof("Received user-created message: %s - %s", message.getUserId(), message.getUsername());
-            
-            // TODO: Send welcome email
-            String notificationText = String.format(
-                "Welcome %s %s! Your account has been created successfully. Username: %s",
-                message.getFirstName(), message.getLastName(), message.getUsername()
+            LOG.infof("Received user-created: userId=%s username=%s email=%s",
+                    message.getUserId(), message.getUsername(), message.getEmail());
+
+            String body = String.format(
+                "Bonjour %s %s,\n\n" +
+                "Bienvenue sur la plateforme Event Management !\n" +
+                "  • Nom d'utilisateur : %s\n" +
+                "  • Email             : %s\n\n" +
+                "Votre compte est maintenant actif. Vous pouvez dès à présent\n" +
+                "vous connecter et parcourir les événements disponibles.\n\n" +
+                "Cordialement,\nL'équipe Event Management",
+                message.getFirstName(),
+                message.getLastName(),
+                message.getUsername(),
+                message.getEmail()
             );
-            
-            LOG.infof("Welcome email would be sent to: %s", message.getEmail());
-            // emailService.send(message.getEmail(), "Welcome to Event Management", notificationText);
-            
+
+            // email field is directly available for user messages
+            createAndSend(message.getEmail(), body);
+
+            LOG.infof("Welcome email triggered for user %s → %s",
+                    message.getUserId(), message.getEmail());
+
         } catch (Exception e) {
             LOG.errorf(e, "Error processing user-created message: %s", message.getUserId());
         }

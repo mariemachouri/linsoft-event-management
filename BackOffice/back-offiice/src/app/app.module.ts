@@ -30,8 +30,12 @@ function initializeKeycloak(keycloak: KeycloakService) {
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
         pkceMethod: 'S256',
+        checkLoginIframe: false,
       },
       bearerExcludedUrls: []
+    }).catch(() => {
+      console.warn('Keycloak not available – running without authentication.');
+      return false;
     });
 }
 

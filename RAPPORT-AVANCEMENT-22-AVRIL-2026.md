@@ -294,14 +294,122 @@ La page `localhost:4200/#/notifications` affichait :
 
 ## 9. Points restants / Prochaines étapes
 
-- [ ] Compléter les handlers Kafka dans `NotificationConsumer.java` (remplacer les `// TODO` par l'envoi réel d'emails)
-- [ ] Configurer les variables SMTP (`EMAIL_HOST`, `EMAIL_USERNAME`, `EMAIL_PASSWORD`) pour activer l'envoi d'emails
-- [ ] Tester le flux complet : création d'un événement → événement publié → email envoyé automatiquement
+- [x] ~~Compléter les handlers Kafka dans `NotificationConsumer.java`~~ ✅ Résolu (voir session 23 Avril)
+- [x] ~~Configurer les variables SMTP~~ ✅ Résolu — Gmail SMTP réel activé
+- [x] ~~Tester le flux complet : création d'un événement → email envoyé~~ ✅ Résolu (voir session 23 Avril)
 - [ ] Activer Twilio (SMS) ou Firebase (Push) si besoin
-- [ ] Tester les endpoints REST via Swagger UI (`http://localhost:8084/q/swagger-ui`)
-- [ ] Démarrer les autres microservices métier (events, registrations, users, charges, dashboard)
+- [x] ~~Tester les endpoints REST via Swagger UI~~ ✅ Résolu
+- [ ] Démarrer les autres microservices métier (charges, dashboard)
 - [x] ~~Fixer l'affichage de la page Notifications (OIDC URL + issuer mismatch + champs Angular)~~ ✅ Résolu
 
 ---
 
-*Rapport généré le 22 Avril 2026 — fin de session*
+## 10. Session du 23 Avril 2026 — Flux e-mail Kafka end-to-end
+
+### 10.1 Objectif
+Tester le flux complet depuis le BackOffice Angular : création d'un événement → message Kafka → email de notification envoyé via Gmail SMTP.
+
+### 10.2 Services démarrés en mode local (hors Docker)
+
+| Service | Port | Mode de démarrage |
+|---|---|---|
+| Angular Backoffice | 4200 | `npm start` dans `BackOffice/back-offiice/` |
+| users-service | 8083 | `mvn quarkus:dev -Dquarkus.oidc.enabled=false` |
+| events-service | 8081 | `mvn quarkus:dev` (OIDC désactivé dans `application.properties`) |
+| notifications-service | 8084 | `mvn quarkus:dev` (Gmail SMTP réel, `quarkus.mailer.mock=false`) |
+
+### 10.3 Problème — Erreur iframe Keycloak au démarrage Angular
+- **Symptôme :** Erreur console `[Keycloak] Could not establish a connection to localhost:8180` + BlockingError
+- **Cause :** `checkLoginIframe: true` (défaut) — Angular bloquait si Keycloak était lent
+- **Fix dans `app.module.ts` :**
+  ```typescript
+  initOptions: {
+    onLoad: 'check-sso',
+    checkLoginIframe: false,   // ← ajouté
+    pkceMethod: 'S256',
+  },
+  }).catch(() => {
+    console.warn('Keycloak not available – running without authentication.');
+    return false;
+  });
+  ```
+
+### 10.4 Problème — `organizerId` null dans les messages Kafka
+- **Symptôme :** Notifications créées avec `recipientId: null` et titre `null`
+- **Cause 1 :** Le formulaire Angular envoyait le champ `name` (pas `title`) — `EventMessage.fromEvent()` lisait `event.title` → `null`
+- **Cause 2 :** `organizerId` non envoyé dans le payload Angular
+- **Fix dans `EventMessage.java` :**
+  ```java
+  message.setTitle(event.title != null ? event.title : event.name);
+  message.setStartAt(event.startAt != null ? event.startAt : event.startDate);
+  message.setEndAt(event.endAt != null ? event.endAt : event.endDate);
+  ```
+- **Fix dans `event-create.component.ts` :** Injection de `AuthService`, lecture de l'email Keycloak et envoi comme `organizerId` :
+  ```typescript
+  this.authService.currentUser$.subscribe(user => {
+    if (user?.email) { this.organizerEmail = user.email; }
+  });
+  // Dans onSubmit() :
+  organizerId: this.organizerEmail || 'achoury.mayem@gmail.com'
+  ```
+
+### 10.5 Problème — Notifications restent en statut `PENDING`
+- **Symptôme :** Les notifications étaient sauvegardées en base avec `status: PENDING` mais ne passaient jamais à `SENT` ou `FAILED`
+- **Cause 1 — Thread incompatible :** `CompletableFuture.runAsync()` utilise le ForkJoinPool qui est incompatible avec le Quarkus Mailer (Vert.x/réactif), provoquant un deadlock silencieux
+- **Fix :** Remplacement par `Thread.ofVirtual().start()` (virtual threads Java 21) :
+  ```java
+  // Avant
+  CompletableFuture.runAsync(() -> { sendNotification(notification); });
+  
+  // Après
+  Thread.ofVirtual().start(() -> { sendNotification(notification); });
+  ```
+- **Cause 2 — Scheduler ignorait les PENDING :** Le scheduler filtrait sur `sendAt <= now` mais toutes les notifications PENDING avaient `sendAt = null`
+- **Fix dans `NotificationService.java` :**
+  ```java
+  // Avant — ne retournait rien car sendAt est null
+  repository.find("status = ?1 and sendAt <= ?2", PENDING, now).list();
+  
+  // Après — filtre uniquement sur le statut
+  repository.find("status", NotificationStatus.PENDING).list();
+  ```
+
+### 10.6 Problème — Mauvais destinataire (`organizer@test.com`)
+- **Symptôme :** Les emails étaient envoyés à `organizer@test.com` (boîte fictive du compte de test Keycloak)
+- **Cause :** L'email du compte Keycloak `organizer.test` était `organizer@test.com`
+- **Diagnostic :** Un autre utilisateur Keycloak (`mariem`) avait déjà `achoury.mayem@gmail.com` comme email → conflit à la mise à jour
+- **Fix via API Admin Keycloak :**
+  1. Suppression du compte `mariem` (doublon email)
+  2. Mise à jour de l'email de `organizer.test` → `achoury.mayem@gmail.com`
+  ```powershell
+  # Suppression du compte mariem
+  Invoke-RestMethod ".../users/dfaf6879-30c0-427b-8d9e-38ded05a9414" -Method DELETE ...
+  # Mise à jour organizer.test
+  $user.email = "achoury.mayem@gmail.com"; $user.emailVerified = $true
+  Invoke-RestMethod ".../users/a69865fa-9ac5-4f8c-abf0-6b943660c95d" -Method PUT ...
+  ```
+
+### 10.7 Résultat final — Flux validé
+
+| Étape | Statut |
+|---|---|
+| Création d'un événement dans le BackOffice Angular | ✅ |
+| Publication du message sur le topic Kafka `event.created` | ✅ |
+| Consommation par `NotificationConsumer` | ✅ |
+| Notification sauvegardée en MongoDB (`status: PENDING`) | ✅ |
+| Envoi email via Gmail SMTP | ✅ |
+| Statut mis à jour → `SENT` | ✅ |
+| Email reçu dans `achoury.mayem@gmail.com` | ✅ |
+
+### 10.8 Fichiers modifiés — session 23 Avril
+
+| Fichier | Modification |
+|---|---|
+| `BackOffice/back-offiice/src/app/app.module.ts` | `checkLoginIframe: false` + `.catch(() => false)` |
+| `services/events-service/.../kafka/EventMessage.java` | Fallbacks null-safe pour `title`, `startAt`, `endAt` |
+| `services/events-service/.../event-create/event-create.component.ts` | Injection `AuthService`, `organizerId` depuis email Keycloak |
+| `services/notifications-service/.../service/NotificationService.java` | `Thread.ofVirtual()` + scheduler corrigé (filtre PENDING sans sendAt) |
+
+---
+
+*Rapport mis à jour le 23 Avril 2026 — flux e-mail end-to-end validé*

@@ -29,10 +29,10 @@ public class EventMessage {
     public static EventMessage fromEvent(com.eventmgmt.events.model.Event event, String action) {
         EventMessage message = new EventMessage();
         message.setEventId(event.id.toString());
-        message.setTitle(event.title);
+        message.setTitle(event.title != null ? event.title : event.name);
         message.setLocation(event.location);
-        message.setStartAt(event.startAt);
-        message.setEndAt(event.endAt);
+        message.setStartAt(event.startAt != null ? event.startAt : event.startDate);
+        message.setEndAt(event.endAt != null ? event.endAt : event.endDate);
         message.setOrganizerId(event.organizerId);
         message.setCategory(event.category);
         message.setStatus(event.status);

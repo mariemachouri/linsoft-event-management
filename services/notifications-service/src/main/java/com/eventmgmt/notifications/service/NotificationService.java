@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @ApplicationScoped
 public class NotificationService {
@@ -65,7 +64,7 @@ public class NotificationService {
      * Send notification asynchronously
      */
     private void sendNotificationAsync(Notification notification) {
-        CompletableFuture.runAsync(() -> {
+        Thread.ofVirtual().start(() -> {
             try {
                 sendNotification(notification);
             } catch (Exception e) {
@@ -130,9 +129,7 @@ public class NotificationService {
         LOG.debug("Processing pending notifications...");
         
         List<Notification> pendingNotifications = repository.find(
-            "status = ?1 and sendAt <= ?2", 
-            NotificationStatus.PENDING,
-            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            "status", NotificationStatus.PENDING
         ).list();
         
         if (!pendingNotifications.isEmpty()) {

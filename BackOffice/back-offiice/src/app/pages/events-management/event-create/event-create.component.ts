@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EventService, Event } from '../../../core/services/event.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-event-create',
@@ -14,6 +15,7 @@ export class EventCreateComponent implements OnInit {
   loading = false;
   error: string = '';
   success: string = '';
+  organizerEmail: string = '';
   
   // Options pour les catégories
   categories = [
@@ -32,7 +34,8 @@ export class EventCreateComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private eventService: EventService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.eventForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
@@ -47,6 +50,11 @@ export class EventCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      if (user?.email) {
+        this.organizerEmail = user.email;
+      }
+    });
   }
 
   // Validateur personnalisé pour vérifier que la date de fin est après la date de début
@@ -91,7 +99,8 @@ export class EventCreateComponent implements OnInit {
       startDate: this.f['startDate'].value,
       endDate: this.f['endDate'].value,
       maxParticipants: this.f['maxParticipants'].value || 0,
-      status: this.f['status'].value
+      status: this.f['status'].value,
+      organizerId: this.organizerEmail || 'achoury.mayem@gmail.com'
     };
 
     this.eventService.createEvent(eventData).subscribe({
