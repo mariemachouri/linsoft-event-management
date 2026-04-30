@@ -11,6 +11,21 @@ export class NotificationsManagementComponent implements OnInit {
   notifications: Notification[] = [];
   loading = false;
   error: string | null = null;
+  searchQuery = '';
+  filterType = '';
+  filterStatus = '';
+
+  get filteredNotifications(): Notification[] {
+    const q = this.searchQuery.toLowerCase();
+    return this.notifications.filter(n => {
+      const matchSearch = !q ||
+        (n.recipientId || '').toLowerCase().includes(q) ||
+        (n.message || '').toLowerCase().includes(q);
+      const matchType = !this.filterType || n.type === this.filterType;
+      const matchStatus = !this.filterStatus || n.status === this.filterStatus;
+      return matchSearch && matchType && matchStatus;
+    });
+  }
 
   constructor(private notificationService: NotificationService) { }
 

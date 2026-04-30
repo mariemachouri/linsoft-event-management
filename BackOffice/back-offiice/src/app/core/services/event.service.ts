@@ -20,6 +20,7 @@ export interface Event {
   status: EventStatus;
   category?: EventCategory;
   organizerId?: string;
+  imageUrl?: string;
   chargeIds?: string[];
   chargePredictionId?: string;
   eventStatisticsId?: string;

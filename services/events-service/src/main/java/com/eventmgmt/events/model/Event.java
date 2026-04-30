@@ -18,6 +18,7 @@ public class Event extends PanacheMongoEntity {
     public Integer maxParticipants;
     public Integer currentParticipants;
     public String organizerId;
+    public String imageUrl;
     public EventCategory category;
     public EventStatus status = EventStatus.DRAFT;
     public List<String> chargeIds = new ArrayList<>();

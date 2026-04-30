@@ -174,6 +174,28 @@
               </small>
             </div>
 
+            <!-- Photo de l'événement -->
+            <div class="form-group">
+              <label>Photo de l'événement</label>
+              <div class="img-upload-zone" (click)="fileInput.click()" [class.has-preview]="imagePreview">
+                <ng-container *ngIf="!imagePreview">
+                  <i class="tim-icons icon-image-02 upload-icon"></i>
+                  <span class="upload-label">Cliquez pour choisir une photo</span>
+                  <span class="upload-hint">JPG, PNG, WEBP — max 5 MB</span>
+                </ng-container>
+                <ng-container *ngIf="imagePreview">
+                  <img [src]="imagePreview" alt="Aperçu" class="upload-preview" />
+                  <button type="button" class="btn-clear-img" (click)="$event.stopPropagation(); clearImage()">
+                    <i class="tim-icons icon-simple-remove"></i>
+                  </button>
+                </ng-container>
+              </div>
+              <input #fileInput type="file" accept="image/*" class="d-none" (change)="onFileSelected($any($event))" />
+              <small class="form-text text-muted">
+                Si aucune photo n'est choisie, une image par défaut sera utilisée.
+              </small>
+            </div>
+
             <!-- Boutons d'action -->
             <div class="form-group mt-4">
               <button 

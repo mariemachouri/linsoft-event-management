@@ -29,6 +29,7 @@ export const environment = {
     storageBucket: "event-mgmt-97441.firebasestorage.app",
     messagingSenderId: "1041823417246",
     appId: "1:1041823417246:web:f274e919715687e56d0c8f",
-    measurementId: "G-L759TT01BS"
+    measurementId: "G-L759TT01BS",
+    vapidKey: "BDtvF_7VmvU7Ce9TiKkK4USnU8H6-mEBg4KFg-6NPIj_rg_M7yS-KSEAhe_gVVuc3kUHrgNsSDlqlMVf7dkEuyQ"
   }
 };

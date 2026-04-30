@@ -3,6 +3,7 @@ package com.eventmgmt.events.resource;
 import com.eventmgmt.events.model.Event;
 import com.eventmgmt.events.service.EventService;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -48,9 +49,18 @@ public class EventResource {
 
     @DELETE
     @Path("{id}")
-    public void delete(@PathParam("id") String id) {
-        if (!service.delete(id)) {
-            throw new NotFoundException();
+    public Response delete(@PathParam("id") String id) {
+        try {
+            if (!service.delete(id)) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\":\"Event not found: " + id + "\"}")
+                    .build();
+            }
+            return Response.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity("{\"message\":\"Invalid event ID format: " + id + "\"}")
+                .build();
         }
     }
 

@@ -55,127 +55,126 @@ $border-radius: $linsoft-border-radius-lg;
 }
 
 body {
-  background: $linsoft-background;
+  background: $linsoft-background;  // #f5f7fa — fond clair comme www.linsoft.xyz
   min-height: 100vh;
   font-family: $linsoft-font-family;
   color: $linsoft-gray-dark;
   font-size: $linsoft-font-size-base;
 }
 
-.content {
-  animation: fadeIn 0.5s ease-in-out;
-  padding: 30px 15px; // Ajustement du padding horizontal
+/* ===== MAIN PANEL — FOND CLAIR ===== */
+.main-panel {
+  background: $linsoft-background !important;
 }
 
-/* ===== CARTES LINSOFT ===== */
+.content {
+  animation: fadeIn 0.5s ease-in-out;
+  padding: 30px 15px;
+  background: $linsoft-background;
+}
+
+/* ===== CARTES LINSOFT — BLANCHES AVEC OMBRE LÉGÈRE ===== */
 .card {
-  @include linsoft-card;
   border: none;
   overflow: hidden;
-  background: $linsoft-white;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(42, 54, 82, 0.1);
+  margin-bottom: 20px;
 
   .card-header {
-    background: $linsoft-gradient-primary;
+    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
     color: $linsoft-white;
     border: none;
-    padding: $linsoft-spacing-2xl;
-    border-radius: $border-radius $border-radius 0 0;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
-      pointer-events: none;
-    }
+    padding: 20px 24px;
+    border-radius: 8px 8px 0 0;
 
     .card-title {
       color: $linsoft-white;
       font-weight: 700;
-      font-size: $linsoft-font-size-xl;
+      font-size: 18px;
       margin: 0;
-      letter-spacing: -0.5px;
     }
 
     .card-category {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: $linsoft-font-size-base;
-      font-weight: 500;
-      margin-top: $linsoft-spacing-xs;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 13px;
+      font-weight: 400;
+      margin-top: 4px;
     }
   }
 
   .card-body {
-    padding: $linsoft-spacing-2xl;
+    padding: 24px;
+    color: $linsoft-gray-dark;
   }
 
   .card-footer {
-    background-color: $linsoft-gray-light;
-    border-top: 1px solid rgba(0, 102, 204, 0.1);
-    padding: $linsoft-spacing-lg;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 16px 24px;
     display: flex;
-    gap: $linsoft-spacing-md;
+    gap: 12px;
     justify-content: flex-end;
   }
 }
 
+// Texte sombre dans les cartes en mode white-content
+.white-content .card .card-body,
+.white-content h1, .white-content h2, .white-content h3,
+.white-content h4, .white-content h5, .white-content h6,
+.white-content p, .white-content td, .white-content th,
+.white-content label {
+  color: $linsoft-gray-dark !important;
+}
+
 /* ===== BOUTONS LINSOFT ===== */
 .btn {
-  @include linsoft-button;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
 
   &.btn-primary {
-    background: $linsoft-gradient-primary;
+    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
     color: $linsoft-white;
-    box-shadow: $linsoft-shadow-sm;
+    box-shadow: 0 2px 8px rgba(42, 54, 82, 0.3);
 
     &:hover:not(:disabled) {
-      box-shadow: $linsoft-shadow-md;
+      box-shadow: 0 4px 16px rgba(42, 54, 82, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.btn-danger, &.btn-coral {
+    background: linear-gradient(135deg, $linsoft-accent-alt 0%, $linsoft-accent 100%);
+    color: $linsoft-white;
+    box-shadow: 0 2px 8px rgba(255, 82, 118, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 16px rgba(255, 82, 118, 0.45);
+      transform: translateY(-1px);
     }
   }
 
   &.btn-success {
-    background: linear-gradient(135deg, $linsoft-success 0%, darken($linsoft-success, 10%) 100%);
+    background: linear-gradient(135deg, darken($linsoft-success, 10%) 0%, $linsoft-success 100%);
     color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba($linsoft-success, 0.3);
-
-    &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba($linsoft-success, 0.4);
-    }
-  }
-
-  &.btn-danger {
-    background: $linsoft-gradient-accent;
-    color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba($linsoft-danger, 0.3);
-
-    &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba($linsoft-danger, 0.4);
-    }
   }
 
   &.btn-info {
-    background: linear-gradient(135deg, $linsoft-info 0%, lighten($linsoft-info, 10%) 100%);
+    background: linear-gradient(135deg, darken($linsoft-info, 10%) 0%, $linsoft-info 100%);
     color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba($linsoft-info, 0.3);
-
-    &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba($linsoft-info, 0.4);
-    }
   }
 
   &.btn-warning {
-    background: linear-gradient(135deg, $linsoft-warning 0%, darken($linsoft-warning, 5%) 100%);
+    background: linear-gradient(135deg, darken($linsoft-warning, 5%) 0%, $linsoft-warning 100%);
     color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba($linsoft-warning, 0.3);
-
-    &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba($linsoft-warning, 0.4);
-    }
   }
 
   &.btn-outline-primary {
@@ -189,53 +188,59 @@ body {
     }
   }
 
-  i {
-    font-size: 16px;
-  }
+  i { font-size: 15px; }
 }
 
-/* ===== FORMULAIRES LINSOFT ===== */
+/* ===== FORMULAIRES ===== */
 .form-group {
-  margin-bottom: $linsoft-spacing-lg;
+  margin-bottom: 20px;
 
   label {
     font-weight: 600;
     color: $linsoft-gray-dark;
-    margin-bottom: $linsoft-spacing-sm;
+    margin-bottom: 8px;
     display: block;
-    font-size: $linsoft-font-size-base;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 }
 
 .form-control {
-  @include linsoft-input;
+  border: 1px solid #dde2ec;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  background: #ffffff;
+  color: $linsoft-gray-dark;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:focus {
+    border-color: $linsoft-primary;
+    box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.12);
+    outline: none;
+  }
 
   &:disabled {
-    background-color: $linsoft-gray-light;
+    background-color: #f8f9fa;
     cursor: not-allowed;
   }
 }
 
-textarea.form-control {
-  resize: vertical;
-  min-height: 120px;
-}
-
-/* ===== TABLEAUX AMÉLIORÉS ===== */
+/* ===== TABLEAUX ===== */
 .table {
   border-collapse: collapse;
   margin: 0;
+  background: #ffffff;
 
   thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
 
     th {
-      color: white;
+      color: #ffffff;
       font-weight: 600;
       border: none;
-      padding: 15px;
+      padding: 14px 16px;
       text-align: left;
       text-transform: uppercase;
       font-size: 12px;
@@ -246,115 +251,311 @@ textarea.form-control {
   tbody {
     tr {
       border-bottom: 1px solid #e9ecef;
-      transition: background-color $transition-speed ease;
+      transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: #f8f9fa;
+        background-color: #f4f6fb;
       }
 
       td {
-        padding: 15px;
+        padding: 14px 16px;
         vertical-align: middle;
+        color: $linsoft-gray-dark;
       }
     }
   }
 }
 
-/* ===== ALERTES AMÉLIORÉES ===== */
+/* ===== ALERTES ===== */
 .alert {
-  border-radius: $border-radius;
+  border-radius: 8px;
   border: none;
-  padding: 15px 20px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   animation: slideInLeft 0.4s ease-out;
 
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 4px;
-    height: 40px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-
-  &.alert-danger {
-    background-color: #fee;
-    color: #c33;
-    border-left: 4px solid #c33;
-  }
-
-  &.alert-success {
-    background-color: #efe;
-    color: #3c3;
-    border-left: 4px solid #3c3;
-  }
-
-  &.alert-info {
-    background-color: #eef;
-    color: #33c;
-    border-left: 4px solid #33c;
-  }
-
-  &.alert-warning {
-    background-color: #ffe;
-    color: #cc3;
-    border-left: 4px solid #cc3;
-  }
+  &.alert-danger  { background-color: #fef0f0; color: #c0392b; border-left: 4px solid #c0392b; }
+  &.alert-success { background-color: #edfaf4; color: #1e8449;  border-left: 4px solid #1e8449; }
+  &.alert-info    { background-color: #eaf4fc; color: #1a6fa8;  border-left: 4px solid #1a6fa8; }
+  &.alert-warning { background-color: #fef9ec; color: #b7770d;  border-left: 4px solid #b7770d; }
 }
 
-/* ===== BADGES AMÉLIORÉS ===== */
+/* ===== BADGES ===== */
 .badge {
   border-radius: 20px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   font-weight: 600;
-  font-size: 12px;
-  display: inline-block;
+  font-size: 11px;
 
-  &.badge-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  &.badge-success {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-  }
-
-  &.badge-danger {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: white;
-  }
+  &.badge-primary { background: $linsoft-primary; color: #fff; }
+  &.badge-success { background: $linsoft-success;  color: #fff; }
+  &.badge-danger  { background: $linsoft-accent;   color: #fff; }
+  &.badge-info    { background: $linsoft-info;     color: #fff; }
+  &.badge-warning { background: $linsoft-warning;  color: #fff; }
 }
 
-/* ===== SPINNER DE CHARGEMENT ===== */
+/* ===== SPINNER ===== */
 .spinner-border {
   border-width: 3px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
+  to { transform: rotate(360deg); }
+}
+
+/* ===== SIDEBAR MINI ===== */
+body.sidebar-mini {
+  .wrapper {
+    .sidebar {
+      transform: translateX(-260px);
+
+      .sidebar-wrapper {
+        .nav {
+          li a p {
+            opacity: 0;
+            transform: translateX(-25px);
+            position: absolute;
+            width: 0;
+          }
+        }
+
+        .logo .logo-normal {
+          opacity: 0;
+          transform: translateX(-25px);
+        }
+      }
+    }
+
+    .main-panel {
+      margin-left: 0;
+      width: 100%;
+    }
   }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .card {
-    margin-bottom: 20px;
+  .card { margin-bottom: 20px; }
+  .btn-group { flex-direction: column; }
+  .table { font-size: 12px; td, th { padding: 10px; } }
+}
+
+/* =====================================================
+   SEARCH & FILTER BAR — Shared component style
+   ===================================================== */
+.search-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 20px;
+  flex-wrap: wrap;
+
+  .search-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+
+    i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .search-input {
+      padding-left: 38px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid #e4e9f0;
+      background: #ffffff;
+      color: #2c3e50;
+      font-size: 14px;
+
+      &:focus {
+        border-color: #2A3652;
+        box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.08);
+        outline: none;
+      }
+
+      &::placeholder { color: #adb5bd; }
+    }
   }
 
-  .btn-group {
-    flex-direction: column;
+  .filter-select {
+    width: auto;
+    min-width: 150px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #e4e9f0;
+    background: #ffffff;
+    color: #2c3e50;
+    font-size: 13px;
+    padding: 0 12px;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #2A3652;
+      box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.08);
+      outline: none;
+    }
   }
 
+  .results-count {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: auto;
+    padding: 0 4px;
+  }
+}
+
+/* =====================================================
+   FORCE LIGHT THEME — OVERRIDE DARK COMPONENTS
+   Neutralise tous les dark backgrounds codés en dur
+   dans les composants Angular (matching linsoft.xyz)
+   ===================================================== */
+.white-content {
+
+  // ── Fond général ──────────────────────────────────
+  background: #f5f7fa !important;
+
+  .main-panel {
+    background: #f5f7fa !important;
+  }
+
+  .content {
+    background: #f5f7fa !important;
+  }
+
+  // ── Cards : toutes blanches ────────────────────────
+  .card,
+  .card:not(.card-white) {
+    background: #ffffff !important;
+    box-shadow: 0 2px 12px rgba(42, 54, 82, 0.1) !important;
+    border: none !important;
+  }
+
+  .card .card-body {
+    background: #ffffff !important;
+    color: #2c3e50 !important;
+  }
+
+  // card-footer clair
+  .card .card-footer {
+    background: #f8f9fa !important;
+    border-top: 1px solid #e9ecef !important;
+  }
+
+  // ── Tableaux : texte sombre ────────────────────────
   .table {
-    font-size: 12px;
+    background: #ffffff !important;
 
     td, th {
-      padding: 10px;
+      color: #2c3e50 !important;
+    }
+
+    td strong,
+    td span,
+    td a {
+      color: #2c3e50 !important;
+    }
+
+    tbody tr:hover {
+      background-color: #f4f6fb !important;
+
+      td, td strong, td span {
+        color: #2c3e50 !important;
+      }
+    }
+  }
+
+  // ── Stats boxes ────────────────────────────────────
+  .stats-box {
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    box-shadow: 0 2px 8px rgba(42, 54, 82, 0.08) !important;
+
+    h5 { color: #6c757d !important; }
+    h3 { color: #2c3e50 !important; }
+    small { color: #adb5bd !important; }
+  }
+
+  // ── Titres généraux ────────────────────────────────
+  h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50 !important;
+  }
+
+  p, span, label, li {
+    color: #4a5568;
+  }
+
+  // card-header : garde le gradient navy + texte blanc
+  .card .card-header {
+    h5.card-category {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+    h2.card-title,
+    h3.card-title,
+    .card-title {
+      color: #ffffff !important;
+    }
+  }
+
+  // ── Formulaires ────────────────────────────────────
+  .form-control {
+    background: #ffffff !important;
+    color: #2c3e50 !important;
+    border-color: #dde2ec !important;
+
+    &::placeholder {
+      color: #adb5bd !important;
+    }
+  }
+
+  // ── Navbar ─────────────────────────────────────────
+  .navbar {
+    background: #ffffff !important;
+    box-shadow: 0 1px 8px rgba(42, 54, 82, 0.08) !important;
+
+    .navbar-brand,
+    .nav-link,
+    i,
+    .navbar-minimize button i {
+      color: #2c3e50 !important;
+    }
+  }
+
+  // ── Dropdown menus ─────────────────────────────────
+  .dropdown-menu {
+    background: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(42, 54, 82, 0.15) !important;
+    border: 1px solid #e9ecef !important;
+
+    .dropdown-item {
+      color: #2c3e50 !important;
+
+      &:hover {
+        background: #f4f6fb !important;
+        color: #2A3652 !important;
+      }
+    }
+  }
+
+  // ── Badge-group buttons (dashboard tabs) ───────────
+  .btn-group-toggle .btn:not(.active) {
+    border-color: rgba(42, 54, 82, 0.25) !important;
+    color: #2c3e50 !important;
+    background: transparent !important;
+
+    &:hover {
+      background: rgba(42, 54, 82, 0.06) !important;
     }
   }
 }

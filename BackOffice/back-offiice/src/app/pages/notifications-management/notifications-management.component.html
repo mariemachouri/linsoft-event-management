@@ -18,6 +18,28 @@
             </button>
           </div>
 
+          <div class="search-filter-bar" *ngIf="!loading">
+            <div class="search-input-wrapper">
+              <i class="tim-icons icon-zoom-split"></i>
+              <input type="text" class="form-control search-input"
+                placeholder="Search by user ID, message..."
+                [(ngModel)]="searchQuery" />
+            </div>
+            <select class="form-control filter-select" [(ngModel)]="filterType">
+              <option value="">All types</option>
+              <option value="EMAIL">Email</option>
+              <option value="SMS">SMS</option>
+              <option value="PUSH">Push</option>
+            </select>
+            <select class="form-control filter-select" [(ngModel)]="filterStatus">
+              <option value="">All statuses</option>
+              <option value="SENT">Sent</option>
+              <option value="PENDING">Pending</option>
+              <option value="FAILED">Failed</option>
+            </select>
+            <span class="results-count">{{ filteredNotifications.length }} result(s)</span>
+          </div>
+
           <div class="table-responsive" *ngIf="!loading">
             <table class="table tablesorter">
               <thead class="text-primary">
@@ -31,7 +53,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let notification of notifications">
+                <tr *ngFor="let notification of filteredNotifications">
                   <td>{{ notification.recipientId }}</td>
                   <td>{{ notification.message }}</td>
                   <td>

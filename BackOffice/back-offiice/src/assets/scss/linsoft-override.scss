@@ -1,39 +1,35 @@
 // ========================================
 // SURCHARGE DES VARIABLES BLACK DASHBOARD
-// Avec les couleurs de la charte Linsoft
-// IMPORTANT: Sans !default pour FORCER l'écrasement
-// Force rebuild
+// Palette LinSoft : Navy #2A3652 + Corail #FF5276
+// Site de référence : www.linsoft.xyz/fr
 // ========================================
 
-// Surcharge des couleurs de base Black Dashboard
-$blue: $linsoft-primary;
-$indigo: darken($linsoft-primary, 10%);
-$purple: $linsoft-primary;
-$cyan: $linsoft-secondary;
-$green: $linsoft-success;
-$red: $linsoft-danger;
+// Couleurs de base Black Dashboard → palette LinSoft
+$blue:   #3498db;
+$indigo: $linsoft-primary;
+$purple: $linsoft-primary-dark;
+$cyan:   $linsoft-accent;
+$green:  $linsoft-success;
+$red:    $linsoft-accent;         // Corail pour les accents "rouge"
 $orange: $linsoft-warning;
 
-// Surcharge des couleurs principales du thème
-$default: $linsoft-dark;
-$primary: $linsoft-primary;               // #0066cc au lieu de #e14eca  
-$primary-states: darken($linsoft-primary, 10%); // Plus foncé pour le gradient sidebar
-$secondary: $linsoft-secondary;
-$success: $linsoft-success;
-$info: $linsoft-info;
-$warning: $linsoft-warning;
-$danger: $linsoft-danger;
-$black: $linsoft-dark;
+// Couleurs principales → sidebar = Navy LinSoft
+$default:        $linsoft-dark;
+$primary:        $linsoft-primary;        // #2A3652 Navy → couleur sidebar
+$primary-states: $linsoft-primary-dark;   // #1e2d45 navy foncé → gradient sidebar start
+$secondary:      $linsoft-secondary;
+$success:        $linsoft-success;
+$info:           $linsoft-info;
+$warning:        $linsoft-warning;
+$danger:         $linsoft-danger;
+$black:          #1a2238;
 
-// Surcharge des états (utilisés pour les gradients)
-$success-states: darken($linsoft-success, 10%);
-$info-states: lighten($linsoft-info, 5%);
-$warning-states: darken($linsoft-warning, 10%);
-$danger-states: darken($linsoft-danger, 10%);
+// Fond de page → blanc/clair comme le site LinSoft
+$background-black:        $linsoft-background;   // #f5f7fa fond clair
+$background-states-black: #eef0f4;               // légèrement plus sombre
 
-// Surcharge des couleurs de fond
-$background-black: $linsoft-dark;
-$background-states-black: darken($linsoft-dark, 5%);
+// Liens → corail LinSoft
+$link-color: $linsoft-accent;  // #FF5276
 
-// Surcharge des couleurs des liens
-$link-color: $linsoft-primary;
+// Fond clair pour white-content
+$light-bg: $linsoft-background;  // #f5f7fa

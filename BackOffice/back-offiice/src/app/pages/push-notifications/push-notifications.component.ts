@@ -25,11 +25,17 @@ export class PushNotificationsComponent implements OnInit {
   }
 
   /**
-   * Check notification permission status
+   * Check notification permission status — if already granted, fetch token silently
    */
-  checkPermission(): void {
+  async checkPermission(): Promise<void> {
     if ('Notification' in window) {
       this.isPermissionGranted = Notification.permission === 'granted';
+      if (this.isPermissionGranted) {
+        const token = await this.firebaseMessaging.requestPermission();
+        if (token) {
+          this.fcmToken = token;
+        }
+      }
     }
   }
 

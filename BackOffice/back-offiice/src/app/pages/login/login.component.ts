@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 
 @Component({
@@ -6,14 +7,23 @@ import { KeycloakService } from 'keycloak-angular';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
-  constructor(private keycloakService: KeycloakService) { }
+  isLoading = false;
 
-  ngOnInit(): void {
-    // Redirect to Keycloak login automatically
+  constructor(
+    private keycloakService: KeycloakService,
+    private router: Router
+  ) {}
+
+  login(): void {
+    this.isLoading = true;
     this.keycloakService.login({
       redirectUri: window.location.origin + '/#/'
     });
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 }

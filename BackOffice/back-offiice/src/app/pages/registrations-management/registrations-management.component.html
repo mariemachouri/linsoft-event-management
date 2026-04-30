@@ -30,11 +30,29 @@
         </button>
       </div>
 
+      <!-- Search & Filter Bar -->
+      <div class="search-filter-bar" *ngIf="!loading">
+        <div class="search-input-wrapper">
+          <i class="tim-icons icon-zoom-split"></i>
+          <input type="text" class="form-control search-input"
+            placeholder="Search by event ID, participant ID..."
+            [(ngModel)]="searchQuery" />
+        </div>
+        <select class="form-control filter-select" [(ngModel)]="filterStatus">
+          <option value="">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="WAITLISTED">Waitlisted</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+        <span class="results-count">{{ filteredRegistrations.length }} result(s)</span>
+      </div>
+
       <div class="table-responsive" *ngIf="!loading">
         <table class="table tablesorter">
           <thead class="text-primary">
             <tr>
-              <th>Registration ID</th>
+              <th>ID</th>
               <th>Event ID</th>
               <th>Participant ID</th>
               <th>Status</th>
@@ -43,7 +61,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let registration of registrations">
+            <tr *ngFor="let registration of filteredRegistrations">
               <td>
                 <code class="small">{{ registration.id || 'N/A' }}</code>
               </td>

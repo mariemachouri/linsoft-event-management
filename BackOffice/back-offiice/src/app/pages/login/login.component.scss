@@ -1,17 +1,191 @@
 /* ===== LOGIN PAGE STYLES ===== */
 
-.login-container {
+.login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 30px 20px;
   position: relative;
   overflow: hidden;
 }
 
-/* Wrapper */
+.bg-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(225, 78, 202, 0.07);
+    animation: float 9s infinite ease-in-out;
+
+    &:nth-child(1) { width: 280px; height: 280px; top: -80px; left: -80px; animation-delay: 0s; }
+    &:nth-child(2) { width: 180px; height: 180px; bottom: -60px; right: -30px; animation-delay: 2s; }
+    &:nth-child(3) { width: 120px; height: 120px; top: 60%; left: 15%; animation-delay: 4s; background: rgba(29, 140, 248, 0.07); }
+    &:nth-child(4) { width: 90px; height: 90px; top: 15%; right: 15%; animation-delay: 1.5s; background: rgba(29, 140, 248, 0.06); }
+    &:nth-child(5) { width: 200px; height: 200px; bottom: 10%; left: 40%; animation-delay: 3s; }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-18px) scale(1.04); }
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  z-index: 10;
+  animation: fadeInUp 0.7s ease-out;
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 32px;
+  color: #fff;
+
+  .brand-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    filter: drop-shadow(0 0 16px rgba(225, 78, 202, 0.5));
+    animation: scaleIn 0.6s ease-out;
+  }
+
+  .brand-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #e14eca, #1d8cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .brand-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0;
+  }
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin: 0 0 6px;
+  }
+
+  .card-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin: 0 0 28px;
+  }
+}
+
+.signin-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #e14eca, #1d8cf8);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: 24px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(225, 78, 202, 0.4);
+    filter: brightness(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.register-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: rgba(225, 78, 202, 0.6);
+    color: #e14eca;
+    background: rgba(225, 78, 202, 0.08);
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .divider-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+  }
+}
+
+.info-note {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.25);
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Wrapper (kept for backward compat) */
 .login-wrapper {
   width: 100%;
   max-width: 420px;

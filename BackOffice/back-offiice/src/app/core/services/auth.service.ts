@@ -75,6 +75,20 @@ export class AuthService {
     return from(this.keycloakService.getToken());
   }
 
+  login(idpHint?: string): void {
+    this.keycloakService.login({
+      redirectUri: window.location.origin + '/#/',
+      ...(idpHint && { idpHint })
+    });
+  }
+
+  register(idpHint?: string): void {
+    this.keycloakService.register({
+      redirectUri: window.location.origin + '/#/',
+      ...(idpHint && { idpHint })
+    });
+  }
+
   logout(): void {
     this.keycloakService.logout(window.location.origin + '/#/login');
   }

@@ -21,6 +21,7 @@ import { ChargesManagementComponent } from "../../pages/charges-management/charg
 import { ChargePredictionCreateComponent } from "../../pages/charges-management/charge-prediction-create/charge-prediction-create.component";
 import { ChargePaymentDecisionComponent } from "../../pages/charges-management/charge-payment-decision/charge-payment-decision.component";
 import { NotificationsManagementComponent } from "../../pages/notifications-management/notifications-management.component";
+import { PushNotificationsComponent } from "../../pages/push-notifications/push-notifications.component";
 import { RoleGuard } from "../../core/guards/role.guard";
 
 export const AdminLayoutRoutes: Routes = [
@@ -69,6 +70,7 @@ export const AdminLayoutRoutes: Routes = [
     // data: { roles: ['admin', 'event-organizer'] }
   },
   { path: "notifications", component: NotificationsManagementComponent },
+  { path: "push-notifications", component: PushNotificationsComponent },
   { 
     path: "users", 
     component: UsersListComponent,

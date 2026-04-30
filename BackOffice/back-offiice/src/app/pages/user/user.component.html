@@ -1,162 +1,168 @@
 
 <div class="content user-profile-container">
-  <!-- En-tête -->
-  <div class="profile-header mb-5">
-    <h1 class="profile-title">⚙️ Edit My Profile</h1>
-    <p class="profile-subtitle">Update your personal information</p>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h4 class="page-title">User Profile</h4>
+    </div>
   </div>
 
   <div class="row">
-    <!-- Formulaire Profil -->
-    <div class="col-lg-8">
-      <div class="card profile-card">
-        <div class="card-header">
-          <h5 class="card-title">📝 Personal Information</h5>
-          <p class="card-subtitle">Edit your personal details</p>
+
+    <!-- Left Column: Identity Card -->
+    <div class="col-xl-3 col-lg-4">
+      <div class="card identity-card">
+        <!-- Avatar Banner -->
+        <div class="identity-banner">
+          <div class="avatar-initials">
+            {{ (currentUser?.firstName?.[0] || '') + (currentUser?.lastName?.[0] || '') || (currentUser?.username?.[0] || 'U') | uppercase }}
+          </div>
+          <div class="online-indicator">
+            <span class="dot-online"></span> Active
+          </div>
         </div>
-        <div class="card-body">
-          <form class="profile-form">
-            <!-- Ligne 1: Username, Email -->
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-single-02"></i> Username
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Username"
-                    type="text"
-                    [value]="currentUser?.username || ''"
-                    readonly
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-email-85"></i> Email
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Email"
-                    type="email"
-                    [value]="currentUser?.email || ''"
-                    readonly
-                  />
-                </div>
-              </div>
-            </div>
 
-            <!-- Ligne 2: Prénom et Nom -->
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-single-copy-04"></i> First Name
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="First Name"
-                    type="text"
-                    [value]="currentUser?.firstName || ''"
-                    readonly
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="tim-icons icon-single-copy-04"></i> Last Name
-                  </label>
-                  <input
-                    class="form-control"
-                    placeholder="Last Name"
-                    type="text"
-                    [value]="currentUser?.lastName || ''"
-                    readonly
-                  />
-                </div>
-              </div>
-            </div>
+        <!-- Identity Info -->
+        <div class="identity-body">
+          <h5 class="identity-name">{{ getDisplayName() }}</h5>
+          <span class="identity-role-badge">{{ getPrimaryRole() }}</span>
 
-            <!-- Roles -->
-            <div class="form-group">
-              <label class="form-label">
-                <i class="tim-icons icon-badge"></i> Roles
-              </label>
-              <div class="roles-display">
-                <span
-                  *ngFor="let role of currentUser?.roles"
-                  class="badge badge-primary mr-1"
-                  style="font-size: 0.85rem; padding: 6px 12px;"
-                >
-                  {{ role }}
-                </span>
-                <span *ngIf="!currentUser?.roles?.length" class="text-muted">No roles assigned</span>
-              </div>
-            </div>
+          <div class="identity-divider"></div>
 
-            <!-- User ID -->
-            <div class="form-group">
-              <label class="form-label">
-                <i class="tim-icons icon-key-25"></i> User ID
-              </label>
-              <input
-                class="form-control"
-                placeholder="User ID"
-                type="text"
-                [value]="currentUser?.id || ''"
-                readonly
-              />
-              <small class="form-text-muted">Keycloak user identifier (read only)</small>
-            </div>
-          </form>
+          <ul class="identity-meta">
+            <li>
+              <span class="meta-label">Email</span>
+              <span class="meta-value">{{ currentUser?.email || '—' }}</span>
+            </li>
+            <li>
+              <span class="meta-label">Username</span>
+              <span class="meta-value">{{ currentUser?.username || '—' }}</span>
+            </li>
+            <li>
+              <span class="meta-label">Account</span>
+              <span class="meta-value verified-tag">
+                <i class="tim-icons icon-check-2"></i> Verified
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <!-- Sidebar Profil -->
-    <div class="col-lg-4">
-      <!-- Carte Avatar -->
-      <div class="card avatar-card">
-        <div class="card-body">
-          <div class="avatar-wrapper">
-            <img alt="Avatar" class="profile-avatar" src="assets/img/anime3.png" />
-            <div class="avatar-status">
-              <span class="status-badge online"></span>
-              <span class="status-text">Online</span>
+    <!-- Right Column: Profile Form -->
+    <div class="col-xl-9 col-lg-8">
+
+      <!-- Personal Information -->
+      <div class="card form-card">
+        <div class="card-header form-card-header">
+          <div class="header-left">
+            <span class="header-icon">
+              <i class="tim-icons icon-single-02"></i>
+            </span>
+            <div>
+              <h5 class="card-title mb-0">Personal Information</h5>
+              <p class="card-subtitle mb-0">Account details and assigned roles</p>
             </div>
           </div>
-          <h4 class="profile-name">{{ getDisplayName() }}</h4>
-          <p class="profile-role">{{ getPrimaryRole() }}</p>
-          <div class="profile-badges">
-            <span class="badge badge-primary">{{ getPrimaryRole() }}</span>
-            <span class="badge badge-success">Verified</span>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="field-label">Username</label>
+                <div class="field-input-wrapper">
+                  <i class="tim-icons icon-single-02 field-icon"></i>
+                  <input class="form-control field-input" type="text"
+                    [value]="currentUser?.username || ''" readonly />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="field-label">Email Address</label>
+                <div class="field-input-wrapper">
+                  <i class="tim-icons icon-email-85 field-icon"></i>
+                  <input class="form-control field-input" type="email"
+                    [value]="currentUser?.email || ''" readonly />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="field-label">First Name</label>
+                <div class="field-input-wrapper">
+                  <i class="tim-icons icon-single-copy-04 field-icon"></i>
+                  <input class="form-control field-input" type="text"
+                    [value]="currentUser?.firstName || ''" readonly />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="field-label">Last Name</label>
+                <div class="field-input-wrapper">
+                  <i class="tim-icons icon-single-copy-04 field-icon"></i>
+                  <input class="form-control field-input" type="text"
+                    [value]="currentUser?.lastName || ''" readonly />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group mb-0">
+                <label class="field-label">Assigned Roles</label>
+                <div class="roles-container">
+                  <span *ngFor="let role of currentUser?.roles" class="role-chip">
+                    {{ role }}
+                  </span>
+                  <span *ngIf="!currentUser?.roles?.length" class="text-muted">No roles assigned</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Infos Keycloak -->
-      <div class="card stats-card">
-        <div class="card-header">
-          <h5 class="card-title">🔐 Account Info</h5>
+      <!-- Account Security -->
+      <div class="card form-card">
+        <div class="card-header form-card-header">
+          <div class="header-left">
+            <span class="header-icon header-icon-secondary">
+              <i class="tim-icons icon-lock-circle"></i>
+            </span>
+            <div>
+              <h5 class="card-title mb-0">Account Security</h5>
+              <p class="card-subtitle mb-0">Keycloak identity and access credentials</p>
+            </div>
+          </div>
         </div>
+
         <div class="card-body">
-          <div class="stat-item">
-            <span class="stat-label">Username</span>
-            <span class="stat-value">{{ currentUser?.username || '-' }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Email</span>
-            <span class="stat-value" style="font-size: 0.8rem; word-break: break-all;">{{ currentUser?.email || '-' }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Role</span>
-            <span class="stat-value">{{ getPrimaryRole() }}</span>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group mb-0">
+                <label class="field-label">User ID
+                  <span class="readonly-tag">Read only</span>
+                </label>
+                <div class="field-input-wrapper">
+                  <i class="tim-icons icon-key-25 field-icon"></i>
+                  <input class="form-control field-input field-input-mono" type="text"
+                    [value]="currentUser?.id || ''" readonly />
+                </div>
+                <p class="field-hint">Unique Keycloak identifier — cannot be changed.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>

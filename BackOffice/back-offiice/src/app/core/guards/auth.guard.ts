@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/ro
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 
 // Roles autorisés à accéder au BackOffice
-const ALLOWED_ROLES = ['admin', 'organizer', 'event-organizer'];
+const ALLOWED_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer'];
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +34,14 @@ export class AuthGuard extends KeycloakAuthGuard {
     const hasAccess = ALLOWED_ROLES.some(role => userRoles.includes(role));
 
     if (!hasAccess) {
-      this.router.navigate(['/unauthorized']);
+      // Si l'utilisateur vient d'une connexion sociale (participant), rediriger vers register-success
+      // Sinon, afficher la page unauthorized
+      const isParticipant = userRoles.includes('participant');
+      if (isParticipant) {
+        this.router.navigate(['/register-success']);
+      } else {
+        this.router.navigate(['/unauthorized']);
+      }
       return false;
     }
 

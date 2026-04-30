@@ -12,6 +12,20 @@ export class RegistrationsManagementComponent implements OnInit {
   registrations: Registration[] = [];
   loading = false;
   error: string | null = null;
+  searchQuery = '';
+  filterStatus = '';
+
+  get filteredRegistrations(): Registration[] {
+    const q = this.searchQuery.toLowerCase();
+    return this.registrations.filter(r => {
+      const matchSearch = !q ||
+        (r.eventId || '').toLowerCase().includes(q) ||
+        (r.userId || '').toLowerCase().includes(q) ||
+        (r.id || '').toLowerCase().includes(q);
+      const matchStatus = !this.filterStatus || (r.status || '').toUpperCase() === this.filterStatus;
+      return matchSearch && matchStatus;
+    });
+  }
 
   constructor(
     private registrationService: RegistrationService,

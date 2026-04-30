@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -15,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 @ApplicationScoped
+@Startup
 public class PushSender {
     private static final Logger LOG = Logger.getLogger(PushSender.class);
 

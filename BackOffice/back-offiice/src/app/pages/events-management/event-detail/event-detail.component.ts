@@ -46,6 +46,13 @@ export class EventDetailComponent implements OnInit {
     this.router.navigate(['/events']);
   }
 
+  getEventImageUrl(): string {
+    if (!this.event) return '';
+    if (this.event.imageUrl) return this.event.imageUrl;
+    const seed = encodeURIComponent(this.event.id || this.event.name || 'event');
+    return `https://picsum.photos/seed/${seed}/600/240`;
+  }
+
   editEvent(): void {
     this.router.navigate(['/events/edit', this.eventId]);
   }

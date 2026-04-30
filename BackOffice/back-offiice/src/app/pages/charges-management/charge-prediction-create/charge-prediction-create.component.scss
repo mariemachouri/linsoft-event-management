@@ -1,33 +1,33 @@
 // Styles spécifiques au composant de création de prédiction
 .card-stats {
-  background: linear-gradient(to bottom right, #1e1e2e, #27293d);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #e9ecef;
 }
 
 .progress {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #e9ecef;
 }
 
 .list-group-item {
-  background-color: transparent;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background-color: #ffffff;
+  border-color: #dee2e6;
+  color: #2c3e50;
 }
 
 .alert-success {
-  background-color: rgba(0, 209, 178, 0.1);
+  background-color: rgba(0, 209, 178, 0.08);
   border-color: #00d1b2;
 }
 
 select.form-control,
 select.form-control option {
-  background-color: #27293d;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #2c3e50;
 }
 
 select.form-control option:hover,
 select.form-control option:focus,
 select.form-control option:checked {
-  background-color: #3a3f5c;
-  color: #ffffff;
+  background-color: #f4f6fb;
+  color: #2c3e50;
 }

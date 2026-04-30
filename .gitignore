@@ -28,3 +28,7 @@ Thumbs.db
 
 # Compiled class files
 *.class
+
+# Credentials
+.env
+*.env

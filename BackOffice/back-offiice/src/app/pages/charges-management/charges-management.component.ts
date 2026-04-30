@@ -17,6 +17,19 @@ export class ChargesManagementComponent implements OnInit {
   loading = false;
   errorMessage = '';
   isAdmin = false;
+  searchQuery = '';
+  filterStatus = '';
+
+  get filteredPredictions(): ChargePrediction[] {
+    const q = this.searchQuery.toLowerCase();
+    return this.predictions.filter(p => {
+      const matchSearch = !q ||
+        (p.eventId || '').toLowerCase().includes(q) ||
+        (p.organizerId || '').toLowerCase().includes(q);
+      const matchStatus = !this.filterStatus || p.status === this.filterStatus;
+      return matchSearch && matchStatus;
+    });
+  }
 
   constructor(
     private chargePredictionService: ChargePredictionService,

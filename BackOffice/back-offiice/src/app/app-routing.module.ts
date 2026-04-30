@@ -6,7 +6,9 @@ import { Routes, RouterModule } from "@angular/router";
 import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
+import { RegisterSuccessComponent } from './pages/register-success/register-success.component';
 import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
@@ -15,8 +17,16 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
+    path: "register",
+    component: RegisterComponent
+  },
+  {
     path: "unauthorized",
     component: UnauthorizedComponent
+  },
+  {
+    path: "register-success",
+    component: RegisterSuccessComponent
   },
   {
     path: "",

@@ -83,57 +83,7 @@
   margin-top: auto; // Pousse le footer en bas
 }
 
-// Styles pour la sidebar réduite (mini)
-:host ::ng-deep body.sidebar-mini {
-  .wrapper {
-    .sidebar {
-      transform: translateX(-260px);
-      
-      .sidebar-wrapper {
-        overflow: visible;
-        
-        .nav {
-          li {
-            a {
-              p {
-                opacity: 0;
-                transform: translateX(-25px);
-                position: absolute;
-                width: 0;
-              }
-            }
-          }
-        }
-        
-        .logo {
-          .logo-normal {
-            opacity: 0;
-            transform: translateX(-25px);
-          }
-        }
-        
-        .sidebar-footer {
-          button {
-            overflow: hidden;
-            
-            span {
-              opacity: 0;
-            }
-            
-            i {
-              margin: 0 !important;
-            }
-          }
-        }
-      }
-    }
-    
-    .main-panel {
-      margin-left: 0;
-      width: 100%;
-    }
-  }
-}
+// Styles pour la sidebar réduite (mini) — définis dans styles.scss global
 
 // Animation d'entrée
 @keyframes fadeIn {
@@ -154,7 +104,7 @@
   left: 20px;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #E31E24 0%, #B71820 100%);
+  background: linear-gradient(135deg, #CC1F24 0%, #a01820 100%);
   border: none;
   border-radius: 12px;
   display: flex;
@@ -162,7 +112,7 @@
   justify-content: center;
   cursor: pointer;
   z-index: 1020;
-  box-shadow: 0 4px 15px rgba(225, 30, 36, 0.4);
+  box-shadow: 0 4px 15px rgba(204, 31, 36, 0.4);
   opacity: 0;
   transform: translateX(-100px);
   pointer-events: none;
@@ -180,8 +130,8 @@
   }
 
   &:hover {
-    background: linear-gradient(135deg, #FF5158 0%, #E31E24 100%);
-    box-shadow: 0 6px 20px rgba(225, 30, 36, 0.6);
+    background: linear-gradient(135deg, #e8373d 0%, #CC1F24 100%);
+    box-shadow: 0 6px 20px rgba(204, 31, 36, 0.6);
     transform: translateX(0) scale(1.05);
   }
 

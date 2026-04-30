@@ -53,6 +53,18 @@
 
       <!-- Tableau Utilisateurs -->
       <div *ngIf="!loading && users.length > 0" class="table-wrapper">
+
+        <!-- Search Bar -->
+        <div class="search-filter-bar">
+          <div class="search-input-wrapper">
+            <i class="tim-icons icon-zoom-split"></i>
+            <input type="text" class="form-control search-input"
+              placeholder="Search by username, email, name..."
+              [(ngModel)]="searchQuery" />
+          </div>
+          <span class="results-count">{{ filteredUsers.length }} result(s)</span>
+        </div>
+
         <div class="table-responsive">
           <table class="table table-hover users-table">
             <thead>
@@ -68,7 +80,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of users" class="user-row">
+              <tr *ngFor="let user of filteredUsers" class="user-row">
                 <td class="text-center">
                   <input type="checkbox" class="form-check-input" />
                 </td>

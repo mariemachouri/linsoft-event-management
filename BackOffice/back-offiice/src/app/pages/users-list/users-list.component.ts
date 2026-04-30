@@ -12,6 +12,18 @@ export class UsersListComponent implements OnInit {
   loading = false;
   error: string = '';
   displayedColumns: string[] = ['id', 'username', 'email', 'firstName', 'lastName', 'actions'];
+  searchQuery = '';
+
+  get filteredUsers(): UserResponse[] {
+    const q = this.searchQuery.toLowerCase();
+    if (!q) return this.users;
+    return this.users.filter(u =>
+      (u.username || '').toLowerCase().includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      (u.firstName || '').toLowerCase().includes(q) ||
+      (u.lastName || '').toLowerCase().includes(q)
+    );
+  }
 
   constructor(private userService: UserService) { }
 

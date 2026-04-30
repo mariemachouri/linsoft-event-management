@@ -1,24 +1,24 @@
 /* ========================================
    🎨 CHARTE GRAPHIQUE LINSOFT
-   Inspirée du site officiel www.linsoft.com
+   Couleurs extraites du site officiel www.linsoft.xyz/fr
    ======================================== */
 
 /* ===== COULEURS PRINCIPALES LINSOFT ===== */
-$linsoft-primary: #E31E24;        // Rouge corporate principal Linsoft
-$linsoft-primary-dark: #B71820;   // Rouge foncé
-$linsoft-primary-light: #FF5158;  // Rouge clair
+$linsoft-primary: #2A3652;        // Navy principal LinSoft
+$linsoft-primary-dark: #1e2d45;   // Navy foncé
+$linsoft-primary-light: #3a4f70;  // Navy clair
 $linsoft-secondary: #2B2B2B;      // Gris foncé (navigation)
-$linsoft-accent: #0066cc;         // Bleu accent
-$linsoft-accent-alt: #ff6b35;     // Orange accent
+$linsoft-accent: #FF5276;         // Corail principal LinSoft
+$linsoft-accent-alt: #ED4368;     // Corail foncé
 
 /* ===== COULEURS NEUTRES ===== */
-$linsoft-dark: #1a1a2e;          // Fond sombre principal
-$linsoft-dark-secondary: #16213e; // Fond sombre secondaire
+$linsoft-dark: #1a2238;          // Fond sombre navy (hero du site)
+$linsoft-dark-secondary: #162040; // Fond sombre secondaire
 $linsoft-gray-dark: #2c3e50;     // Gris texte foncé
 $linsoft-gray: #7f8c8d;          // Gris neutre
-$linsoft-gray-light: #ecf0f1;    // Gris clair
+$linsoft-gray-light: #f0f0f0;    // Gris clair (nav bg du site)
 $linsoft-white: #ffffff;         // Blanc pur
-$linsoft-background: #f5f7fa;    // Fond clair
+$linsoft-background: #f5f7fa;    // Fond de page
 
 /* ===== COULEURS DE STATUT ===== */
 $linsoft-success: #27ae60;       // Vert succès
@@ -27,17 +27,17 @@ $linsoft-danger: #e74c3c;        // Rouge danger
 $linsoft-info: #3498db;          // Bleu info
 
 /* ===== GRADIENTS LINSOFT ===== */
-$linsoft-gradient-primary: linear-gradient(135deg, #E31E24 0%, #FF5158 100%);
-$linsoft-gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-$linsoft-gradient-accent: linear-gradient(135deg, #B71820 0%, #E31E24 100%);
-$linsoft-gradient-hero: linear-gradient(135deg, #B71820 0%, #E31E24 50%, #FF5158 100%);
-$linsoft-gradient-subtle: linear-gradient(180deg, rgba(227, 30, 36, 0.05) 0%, rgba(255, 81, 88, 0.02) 100%);
+$linsoft-gradient-primary: linear-gradient(135deg, #1e2d45 0%, #2A3652 100%);
+$linsoft-gradient-dark: linear-gradient(135deg, #1a2238 0%, #162040 100%);
+$linsoft-gradient-accent: linear-gradient(135deg, #ED4368 0%, #FF5276 100%);
+$linsoft-gradient-hero: linear-gradient(135deg, #1a2238 0%, #2A3652 50%, #3a4f70 100%);
+$linsoft-gradient-subtle: linear-gradient(180deg, rgba(42, 54, 82, 0.05) 0%, rgba(42, 54, 82, 0.02) 100%);
 
 /* ===== OMBRES ===== */
-$linsoft-shadow-sm: 0 2px 8px rgba(227, 30, 36, 0.1);
-$linsoft-shadow-md: 0 4px 16px rgba(227, 30, 36, 0.15);
-$linsoft-shadow-lg: 0 8px 32px rgba(227, 30, 36, 0.2);
-$linsoft-shadow-xl: 0 12px 48px rgba(227, 30, 36, 0.25);
+$linsoft-shadow-sm: 0 2px 8px rgba(42, 54, 82, 0.25);
+$linsoft-shadow-md: 0 4px 16px rgba(42, 54, 82, 0.35);
+$linsoft-shadow-lg: 0 8px 32px rgba(42, 54, 82, 0.4);
+$linsoft-shadow-xl: 0 12px 48px rgba(42, 54, 82, 0.45);
 
 /* ===== TYPOGRAPHIE ===== */
 $linsoft-font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;

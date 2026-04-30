@@ -1,5 +1,6 @@
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { APP_INITIALIZER, NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { ToastrModule } from 'ngx-toastr';
@@ -15,7 +16,9 @@ import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
 import { AuthInterceptor } from "./core/interceptors/auth.interceptor";
 import { LoginComponent } from "./pages/login/login.component";
+import { RegisterComponent } from "./pages/register/register.component";
 import { UnauthorizedComponent } from "./pages/unauthorized/unauthorized.component";
+import { RegisterSuccessComponent } from "./pages/register-success/register-success.component";
 import { environment } from "../environments/environment";
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -42,6 +45,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
 @NgModule({
   imports: [
     BrowserAnimationsModule,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -56,7 +60,9 @@ function initializeKeycloak(keycloak: KeycloakService) {
     AdminLayoutComponent,
     AuthLayoutComponent,
     LoginComponent,
-    UnauthorizedComponent
+    RegisterComponent,
+    UnauthorizedComponent,
+    RegisterSuccessComponent
   ],
   providers: [
     {

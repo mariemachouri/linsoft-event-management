@@ -1,123 +1,138 @@
 <div class="content">
-  <div class="row">
-    <div class="col-md-12">
-      <!-- Loading state -->
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        <p class="mt-3 text-muted">Loading details...</p>
-      </div>
 
-      <!-- Error state -->
-      <div *ngIf="error" class="alert alert-danger">
-        <i class="tim-icons icon-alert-circle-exc"></i>
-        {{ error }}
-        <button class="btn btn-secondary mt-3" (click)="goBack()">
-          <i class="tim-icons icon-minimal-left"></i>
-          Back to list
+  <!-- Loading -->
+  <div *ngIf="loading" class="detail-loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>Loading event details...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="detail-error">
+    <i class="tim-icons icon-alert-circle-exc"></i>
+    {{ error }}
+    <button class="btn-back" (click)="goBack()">
+      <i class="tim-icons icon-minimal-left"></i> Back to list
+    </button>
+  </div>
+
+  <!-- Event Detail -->
+  <div *ngIf="event && !loading">
+
+    <!-- Back bar -->
+    <div class="detail-back-bar">
+      <button class="btn-back" (click)="goBack()">
+        <i class="tim-icons icon-minimal-left"></i> Back to Events
+      </button>
+      <div class="detail-actions">
+        <button class="btn-action-edit" (click)="editEvent()">
+          <i class="tim-icons icon-pencil"></i> Edit
+        </button>
+        <button class="btn-action-delete" (click)="deleteEvent()">
+          <i class="tim-icons icon-trash-simple"></i> Delete
         </button>
       </div>
+    </div>
 
-      <!-- Event details -->
-      <div *ngIf="event && !loading" class="card">
-        <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col">
-              <h3 class="card-title mb-0">📅 {{ event.name }}</h3>
-              <p class="card-category mb-0">Event details</p>
-            </div>
-            <div class="col-auto">
-              <button class="btn btn-warning mr-2" (click)="editEvent()">
-                <i class="tim-icons icon-pencil"></i>
-                Edit
-              </button>
-              <button class="btn btn-danger mr-2" (click)="deleteEvent()">
-                <i class="tim-icons icon-trash-simple"></i>
-                Delete
-              </button>
-              <button class="btn btn-secondary" (click)="goBack()">
-                <i class="tim-icons icon-minimal-left"></i>
-                Back
-              </button>
-            </div>
-          </div>
+    <!-- Image banner -->
+    <div class="detail-img-banner">
+      <img [src]="getEventImageUrl()" [alt]="event.name" class="detail-banner-img" />
+    </div>
+
+    <!-- Article Header -->
+    <div class="detail-header cat-{{ (event.category || 'default').toLowerCase() }}">
+      <div class="detail-date-badge">
+        <span class="date-day">{{ event.startDate | date:'dd' }}</span>
+        <span class="date-month">{{ event.startDate | date:'MMM' | uppercase }}</span>
+        <span class="date-year">{{ event.startDate | date:'yyyy' }}</span>
+      </div>
+      <div class="detail-header-content">
+        <div class="detail-badges">
+          <span class="cat-chip">{{ getCategoryLabel(event.category || '') }}</span>
+          <span class="status-chip {{ getStatusBadgeClass(event.status) }}">{{ getStatusLabel(event.status) }}</span>
         </div>
-        
-        <div class="card-body">
-          <div class="row">
-            <!-- Colonne gauche -->
-            <div class="col-md-6">
-              <div class="info-group mb-4">
-                <label class="text-muted">📝 Description</label>
-                <p class="text-white">{{ event.description || 'No description' }}</p>
-              </div>
+        <h1 class="detail-title">{{ event.name }}</h1>
+        <p class="detail-location" *ngIf="event.location">
+          <i class="tim-icons icon-square-pin"></i> {{ event.location }}
+        </p>
+      </div>
+    </div>
 
-              <div class="info-group mb-4">
-                <label class="text-muted">📍 Location</label>
-                <p class="text-white">{{ event.location || 'Not specified' }}</p>
-              </div>
+    <!-- Body -->
+    <div class="detail-body">
 
-              <div class="info-group mb-4">
-                <label class="text-muted">🏷️ Category</label>
-                <p>
-                  <span class="badge badge-default badge-lg">
-                    {{ getCategoryLabel(event.category || '') }}
-                  </span>
-                </p>
-              </div>
+      <!-- Left: description + details -->
+      <div class="detail-main">
+        <div class="detail-card">
+          <h4 class="section-title">Description</h4>
+          <p class="detail-description">{{ event.description || 'No description available.' }}</p>
+        </div>
 
-              <div class="info-group mb-4">
-                <label class="text-muted">📊 Status</label>
-                <p>
-                  <span class="badge badge-lg" [ngClass]="getStatusBadgeClass(event.status)">
-                    {{ getStatusLabel(event.status) }}
-                  </span>
-                </p>
-              </div>
+        <div class="detail-card">
+          <h4 class="section-title">Schedule</h4>
+          <div class="schedule-row">
+            <div class="schedule-item">
+              <span class="schedule-label">Start</span>
+              <span class="schedule-value">{{ event.startDate | date:'EEEE, MMMM d, y' }}</span>
+              <span class="schedule-time">{{ event.startDate | date:'HH:mm' }}</span>
             </div>
-
-            <!-- Colonne droite -->
-            <div class="col-md-6">
-              <div class="info-group mb-4">
-                <label class="text-muted">📅 Start Date</label>
-                <p class="text-white">{{ event.startDate | date:'full' }}</p>
-              </div>
-
-              <div class="info-group mb-4">
-                <label class="text-muted">📅 End Date</label>
-                <p class="text-white">{{ event.endDate | date:'full' }}</p>
-              </div>
-
-              <div class="info-group mb-4">
-                <label class="text-muted">👥 Maximum Participants</label>
-                <p class="text-white">{{ event.maxParticipants || 'Unlimited' }}</p>
-              </div>
-
-              <div class="info-group mb-4">
-                <label class="text-muted">📈 Current Participants</label>
-                <p class="text-white">{{ event.currentParticipants || 0 }}</p>
-              </div>
+            <div class="schedule-divider">
+              <i class="tim-icons icon-minimal-right"></i>
             </div>
-          </div>
-
-          <!-- Métadonnées -->
-          <div class="row mt-4 pt-4 border-top">
-            <div class="col-md-6">
-              <div class="info-group mb-3">
-                <label class="text-muted small">🆔 ID</label>
-                <p class="text-white small font-monospace">{{ event.id }}</p>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="info-group mb-3">
-                <label class="text-muted small">🕐 Created at</label>
-                <p class="text-white small">{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-              </div>
+            <div class="schedule-item">
+              <span class="schedule-label">End</span>
+              <span class="schedule-value">{{ event.endDate | date:'EEEE, MMMM d, y' }}</span>
+              <span class="schedule-time">{{ event.endDate | date:'HH:mm' }}</span>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Right: quick facts -->
+      <div class="detail-sidebar">
+        <div class="detail-card">
+          <h4 class="section-title">Details</h4>
+
+          <div class="fact-row">
+            <span class="fact-label">Category</span>
+            <span class="fact-value cat-badge">{{ getCategoryLabel(event.category || '') }}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-label">Status</span>
+            <span class="badge {{ getStatusBadgeClass(event.status) }}">{{ getStatusLabel(event.status) }}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-label">Location</span>
+            <span class="fact-value">{{ event.location || 'N/A' }}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-label">Max participants</span>
+            <span class="fact-value">{{ event.maxParticipants || 'Unlimited' }}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-label">Registered</span>
+            <span class="fact-value accent">{{ event.currentParticipants || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card meta-card">
+          <h4 class="section-title">Metadata</h4>
+          <div class="fact-row">
+            <span class="fact-label">ID</span>
+            <span class="fact-value mono">{{ event.id }}</span>
+          </div>
+          <div class="fact-row" *ngIf="event.createdAt">
+            <span class="fact-label">Created</span>
+            <span class="fact-value">{{ event.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="fact-row" *ngIf="event.organizerId">
+            <span class="fact-label">Organizer ID</span>
+            <span class="fact-value mono">{{ event.organizerId }}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

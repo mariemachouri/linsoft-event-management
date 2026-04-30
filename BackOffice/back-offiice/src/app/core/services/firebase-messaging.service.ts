@@ -44,10 +44,19 @@ export class FirebaseMessagingService {
       
       if (permission === 'granted') {
         console.log('✅ Notification permission granted');
-        
+
+        // Ensure service worker is registered before getting token
+        let swRegistration: ServiceWorkerRegistration | undefined;
+        if ('serviceWorker' in navigator) {
+          swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          await navigator.serviceWorker.ready;
+          console.log('✅ Service Worker registered');
+        }
+
         // Get FCM token
         const token = await getToken(this.messaging, {
-          vapidKey: 'BHJvqEoG4HlhtNv7DQPyEDp0hbRlWGqwOZ3W2jBE0ShOpYbXFdhzA7u4QHDAzDewPkHDCQu74EiSmbMEHKSE9ck'
+          vapidKey: environment.firebase.vapidKey,
+          serviceWorkerRegistration: swRegistration
         });
         
         if (token) {
@@ -85,7 +94,7 @@ export class FirebaseMessagingService {
   }
 
   /**
-   * Display browser notification
+   * Display browser notification via Service Worker (works in foreground and background)
    */
   private showNotification(payload: any): void {
     const notificationTitle = payload.notification?.title || 'Nouvelle notification';
@@ -93,11 +102,14 @@ export class FirebaseMessagingService {
       body: payload.notification?.body || '',
       icon: '/assets/img/brand/favicon.png',
       badge: '/assets/img/brand/favicon.png',
-      data: payload.data
+      data: payload.data,
+      requireInteraction: true
     };
 
-    if (Notification.permission === 'granted') {
-      new Notification(notificationTitle, notificationOptions);
+    if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification(notificationTitle, notificationOptions);
+      });
     }
   }
 

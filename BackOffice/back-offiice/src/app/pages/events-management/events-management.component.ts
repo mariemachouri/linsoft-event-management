@@ -12,6 +12,32 @@ export class EventsManagementComponent implements OnInit {
   events: Event[] = [];
   loading = false;
   error: string | null = null;
+  searchQuery = '';
+  filterStatus = '';
+  filterCategory = '';
+
+  get upcomingEvents(): Event[] {
+    const now = new Date().getTime();
+    const q = this.searchQuery.toLowerCase();
+    return this.events
+      .filter(e => {
+        const isFuture = new Date(e.endDate || e.startDate).getTime() >= now;
+        const matchSearch = !q ||
+          (e.name || '').toLowerCase().includes(q) ||
+          (e.location || '').toLowerCase().includes(q) ||
+          (e.description || '').toLowerCase().includes(q);
+        const matchStatus = !this.filterStatus || e.status === this.filterStatus;
+        const matchCat = !this.filterCategory || e.category === this.filterCategory;
+        return isFuture && matchSearch && matchStatus && matchCat;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  }
+
+  getEventImageUrl(event: Event): string {
+    if (event.imageUrl) return event.imageUrl;
+    const seed = encodeURIComponent(event.id || event.name || 'event');
+    return `https://picsum.photos/seed/${seed}/600/240`;
+  }
 
   constructor(
     private eventService: EventService,
@@ -52,6 +78,11 @@ export class EventsManagementComponent implements OnInit {
   }
 
   deleteEvent(id: string): void {
+    console.log('deleteEvent called with id:', id, typeof id);
+    if (!id || id === 'undefined') {
+      this.error = 'Impossible de supprimer : ID invalide.';
+      return;
+    }
     if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
       this.eventService.deleteEvent(id).subscribe({
         next: () => {
@@ -59,7 +90,8 @@ export class EventsManagementComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error deleting event:', err);
-          alert('Error deleting event');
+          const msg = err?.error?.message || err?.message || `Erreur ${err?.status || ''}`;
+          this.error = `Erreur lors de la suppression : ${msg}`;
         }
       });
     }

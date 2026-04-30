@@ -55,6 +55,13 @@ export const ROUTES: RouteInfo[] = [
     class: ""
   },
   {
+    path: "/push-notifications",
+    title: "Push Notifications",
+    rtlTitle: "الإشعارات",
+    icon: "icon-mobile",
+    class: ""
+  },
+  {
     path: "/user-profile",
     title: "User Profile",
     rtlTitle: "الملف الشخصي",
