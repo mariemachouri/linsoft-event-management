@@ -1,0 +1,124 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Charge Catalog</h4>
+            <button class="btn btn-primary btn-sm" (click)="openAdd()">
+              <i class="tim-icons icon-simple-add"></i> Add charge type
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
+          <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+          <!-- Formulaire ajout / modification -->
+          <div class="card border mb-4" *ngIf="showForm">
+            <div class="card-body">
+              <h5>{{ editMode ? 'Edit' : 'Add' }} item</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.name" placeholder="e.g. HD Projector" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Category</label>
+                    <select class="form-control" [(ngModel)]="form.category">
+                      <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Short description" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Unit</label>
+                    <select class="form-control" [(ngModel)]="form.unit">
+                      <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Default unit price (€)</label>
+                    <input type="number" class="form-control" [(ngModel)]="form.defaultUnitPrice" min="0" step="0.01" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Currency</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.currency" placeholder="EUR" />
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm" (click)="save()">
+                  {{ editMode ? 'Save' : 'Add' }}
+                </button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tableau du catalogue -->
+          <div *ngIf="loading" class="text-center py-4">
+            <i class="tim-icons icon-refresh-02"></i> Loading...
+          </div>
+
+          <div *ngIf="!loading && items.length === 0 && !showForm" class="text-center py-4 text-muted">
+            No items in the catalog. Add charge types to get started.
+          </div>
+
+          <table class="table table-hover" *ngIf="!loading && items.length > 0">
+            <thead class="text-primary">
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Unit price</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items">
+                <td><strong>{{ item.name }}</strong><br /><small class="text-muted">{{ item.description }}</small></td>
+                <td><span class="badge badge-info">{{ item.category }}</span></td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.defaultUnitPrice | number:'1.2-2' }} {{ item.currency || 'EUR' }}</td>
+                <td>
+                  <span class="badge" [ngClass]="item.active ? 'badge-success' : 'badge-secondary'">
+                    {{ item.active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(item)">
+                    <i class="tim-icons icon-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(item)">
+                    <i class="tim-icons icon-trash-simple"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

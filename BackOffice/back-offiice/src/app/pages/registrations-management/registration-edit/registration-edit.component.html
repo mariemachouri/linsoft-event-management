@@ -74,6 +74,30 @@
               </small>
             </div>
 
+            <!-- Quick Actions -->
+            <div class="form-group" *ngIf="currentRegistration">
+              <label>Actions rapides</label>
+              <div class="d-flex gap-2" style="gap: 10px; display: flex; flex-wrap: wrap;">
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  *ngIf="currentRegistration.status?.toUpperCase() !== 'CONFIRMED'"
+                  (click)="quickConfirm()"
+                  [disabled]="loading">
+                  <i class="tim-icons icon-check-2"></i> Confirmer
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  *ngIf="currentRegistration.status?.toUpperCase() !== 'CANCELLED'"
+                  (click)="quickCancel()"
+                  [disabled]="loading">
+                  <i class="tim-icons icon-simple-remove"></i> Annuler l'inscription
+                </button>
+              </div>
+              <small class="form-text text-muted">Ou choisissez manuellement un statut ci-dessous.</small>
+            </div>
+
             <!-- Status -->
             <div class="form-group">
               <label for="status">

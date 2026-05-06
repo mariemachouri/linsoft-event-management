@@ -9,11 +9,13 @@ export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
 export interface Event {
   id?: string;
   title?: string;
-  name: string;
+  name?: string;
   description?: string;
   location?: string;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
+  startAt?: string;   // backend alias for startDate
+  endAt?: string;     // backend alias for endDate
   maxParticipants?: number;
   currentParticipants?: number;
   registrationsCount?: number;

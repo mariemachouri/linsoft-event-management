@@ -201,13 +201,39 @@ NG5002: Unexpected closing tag "thead". It may happen when the tag has already b
 
 ---
 
-## 6. Amélioration de la Suppression d'Événement
+## 7. Upload Photo dans l’Édition d’Événement (`event-edit`)
 
-### 6.1 Problème Signalé
+### 7.1 Problème Identifié
+
+Le formulaire d'édition (`event-edit`) ne comportait pas de champ `imageUrl`. Lors d'une mise à jour d'un événement existant avec photo, l'image était écrasée par `undefined`.
+
+### 7.2 Modifications Apportées
+
+**`event-edit.component.ts`** :
+- Ajout de `imagePreview: string | null = null`
+- Ajout de `imageUrl: ['']` dans le `FormGroup`
+- Dans `loadEvent()` : préchargement de l'image existante dans `imagePreview` et dans le formulaire via `patchValue`
+- Ajout des méthodes `onFileSelected()` et `clearImage()` (identiques à `event-create`)
+- Dans `onSubmit()` : inclusion de `imageUrl` dans l'objet `eventData` envoyé au backend
+
+**`event-edit.component.html`** :
+- Ajout de la zone d'upload avec prévisualisation avant le bloc "Informations complémentaires"
+- Message "La photo actuelle sera conservée si vous n'en sélectionnez pas une nouvelle."
+
+**`event-edit.component.scss`** :
+- Ajout des styles identiques à `event-create` (`.img-upload-zone`, `.upload-preview`, `.btn-clear-img`, etc.)
+
+**Résultat :** La photo est chargée depuis MongoDB et affichée dès l'ouverture du formulaire ; elle peut être remplacée ou conservée ✅
+
+---
+
+## 8. Amélioration de la Suppression d’Événement
+
+### 8.1 Problème Signalé
 
 L'utilisateur signale que la suppression d'événement ne fonctionnait pas : le dialogue de confirmation s'affichait, mais l'événement restait en liste.
 
-### 6.2 Diagnostic
+### 8.2 Diagnostic
 
 Tests directs sur l'API backend :
 ```powershell
@@ -218,7 +244,7 @@ $response = Invoke-WebRequest -Uri "http://localhost:8081/api/events/{id}" -Meth
 
 **Conclusion :** Le backend supprime bien les événements. Le problème visuel était dû au filtre `upcomingEvents` qui n'affiche que les événements dont `endDate >= maintenant`. Si l'événement avait une date passée, il n'apparaissait de toute façon pas.
 
-### 6.3 Améliorations Côté Angular
+### 8.3 Améliorations Côté Angular
 
 **`events-management.component.ts`** — Gestion d'erreur améliorée :
 
@@ -242,7 +268,7 @@ deleteEvent(id: string): void {
 }
 ```
 
-### 6.4 Améliorations Côté Backend Java
+### 8.4 Améliorations Côté Backend Java
 
 **`EventResource.java`** — Endpoint DELETE renforcé :
 
@@ -269,7 +295,7 @@ public Response delete(@PathParam("id") String id) {
 
 ---
 
-## 7. Récapitulatif des Fichiers Modifiés
+## 9. Récapitulatif des Fichiers Modifiés
 
 ### Backend — events-service
 
@@ -293,11 +319,14 @@ public Response delete(@PathParam("id") String id) {
 | `event-detail/event-detail.component.ts` | `getEventImageUrl()` |
 | `event-detail/event-detail.component.html` | Bannière image `<div class="detail-img-banner">` |
 | `event-detail/event-detail.component.scss` | Styles bannière (border-radius, object-fit cover) |
+| `event-edit/event-edit.component.ts` | `imagePreview`, `imageUrl` form control, `onFileSelected()`, `clearImage()`, `imageUrl` dans `onSubmit()` |
+| `event-edit/event-edit.component.html` | Zone upload photo avec prévisualisation et préchargement de l'image existante |
+| `event-edit/event-edit.component.scss` | Styles zone upload (identiques à `event-create`) |
 | `registrations-management/registrations-management.component.html` | Fix `<thead><tr>` manquants (erreur NG5002) |
 
 ---
 
-## 8. État des Services — 30 Avril 2026
+## 10. État des Services — 30 Avril 2026
 
 | Service | Port | Statut |
 |---------|------|--------|
@@ -309,11 +338,12 @@ public Response delete(@PathParam("id") String id) {
 
 ---
 
-## 9. Bilan de la Journée
+## 11. Bilan de la Journée
 
 | Tâche | Statut |
 |-------|--------|
 | Refonte liste événements → grille de cartes | ✅ Terminé |
+| Upload photo dans édition événement (préchargement + remplacement) | ✅ Terminé |
 | Upload photo dans création événement (base64 + prévisualisation) | ✅ Terminé |
 | Persistance photo dans MongoDB (fix champ `imageUrl` Java) | ✅ Terminé |
 | Limite requête 10MB pour images base64 | ✅ Terminé |
@@ -321,3 +351,78 @@ public Response delete(@PathParam("id") String id) {
 | Fix erreur de compilation Angular NG5002 (registrations) | ✅ Terminé |
 | Amélioration suppression événement (messages d'erreur précis) | ✅ Terminé |
 | Vérification et test API DELETE backend | ✅ Validé (HTTP 204) |
+
+---
+
+## 12. Session du 3 Mai 2026 — Corrections et Débogage
+
+### 12.1 Résolution du Conflit MongoDB Local vs Docker
+
+**Problème :** Le service `events-service` (Quarkus) retournait systématiquement `AuthenticationFailed` (code 18) malgré des credentials corrects (`admin/admin123`).
+
+**Cause racine :** Un MongoDB installé localement sur Windows (service `MongoDB`, PID 5468) occupait `127.0.0.1:27017` en priorité sur le container Docker. Quarkus se connectait au MongoDB local qui ne possédait aucun utilisateur configuré.
+
+**Diagnostic clé :**
+```powershell
+netstat -ano | Select-String ":27017 .* LISTEN"
+# → Deux PIDs différents = conflit de port
+```
+
+**Solution appliquée :**
+- `docker-compose.yml` : port MongoDB Docker changé de `27017:27017` → `27018:27017`
+- `application.properties` : configuration Quarkus mise à jour sur port 27018
+
+```properties
+quarkus.mongodb.hosts=127.0.0.1:27018
+quarkus.mongodb.credentials.username=admin
+quarkus.mongodb.credentials.password=admin123
+quarkus.mongodb.credentials.auth-source=admin
+```
+
+**Résultat :** `GET /api/events` → `200 []` ✅
+
+**Solution permanente recommandée (nécessite droits Admin) :**
+```powershell
+Stop-Service -Name "MongoDB" -Force
+Set-Service -Name "MongoDB" -StartupType Disabled
+```
+
+---
+
+### 12.2 Fix Visibilité Titre et Description — Cartes Événements
+
+**Problème :** Dans la liste des événements, le titre et la description étaient illisibles — texte sombre sur fond sombre navy.
+
+**Cause :** Le thème global **Black Dashboard** définit `.card { background: #27293d }` qui overridait la valeur `background: $white` définie dans le composant Angular, à cause de l'ordre de chargement CSS.
+
+**Fichiers modifiés :** `events-management/events-management.component.scss`
+
+| Propriété | Avant | Après |
+|-----------|-------|-------|
+| `.event-card` background | `$white` (overridé) | `#ffffff !important` |
+| `.event-title` color | `$navy` (invisible sur fond sombre) | `#2A3652 !important` |
+| `.event-desc` color | `$muted` (trop clair) | `#4a5568 !important` |
+
+**Résultat :** Cartes blanches avec titre navy et description gris foncé — contraste correct ✅
+
+---
+
+### 12.3 État des Services — 3 Mai 2026
+
+| Service | Port | Statut |
+|---------|------|--------|
+| Events Service (Quarkus) | 8081 | ✅ Running |
+| MongoDB Docker | **27018** | ✅ Running |
+| MongoDB Local Windows | 27017 | ⚠️ Actif (non désactivable sans Admin) |
+| BackOffice Angular | 4200 | ✅ Running |
+| Keycloak | 8180 | ✅ Running |
+| Keycloak DB (PostgreSQL) | 5433 | ✅ Running |
+
+### 12.4 Fichiers Modifiés
+
+| Fichier | Modification |
+|---------|-------------|
+| `docker-compose.yml` | Port MongoDB : `27017:27017` → `27018:27017` |
+| `events-service/src/main/resources/application.properties` | MongoDB hosts sur port 27018, credentials explicites |
+| `events-management/events-management.component.scss` | `!important` sur background, couleur titre et description |
+| `TROUBLESHOOTING-MONGODB-PORT-CONFLICT.md` | Nouveau fichier — documentation du conflit et solutions |

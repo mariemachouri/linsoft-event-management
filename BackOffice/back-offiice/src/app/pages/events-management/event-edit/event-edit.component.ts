@@ -17,6 +17,7 @@ export class EventEditComponent implements OnInit {
   success: string = '';
   eventId: string = '';
   currentEvent: Event | null = null;
+  imagePreview: string | null = null;
   
   // Options pour les catégories
   categories = [
@@ -48,7 +49,8 @@ export class EventEditComponent implements OnInit {
       endDate: ['', [Validators.required]],
       maxParticipants: [0, [Validators.min(0)]],
       category: ['CONFERENCE', [Validators.required]],
-      status: ['DRAFT', [Validators.required]]
+      status: ['DRAFT', [Validators.required]],
+      imageUrl: ['']
     }, { validators: this.dateValidator });
   }
 
@@ -70,6 +72,7 @@ export class EventEditComponent implements OnInit {
         const startDate = event.startDate ? this.formatDateForInput(event.startDate) : '';
         const endDate = event.endDate ? this.formatDateForInput(event.endDate) : '';
         
+        this.imagePreview = event.imageUrl || null;
         this.eventForm.patchValue({
           title: event.title || event.name,
           description: event.description || '',
@@ -78,7 +81,8 @@ export class EventEditComponent implements OnInit {
           endDate: endDate,
           maxParticipants: event.maxParticipants || 0,
           category: event.category || 'CONFERENCE',
-          status: event.status
+          status: event.status,
+          imageUrl: event.imageUrl || ''
         });
       },
       error: (err) => {
@@ -121,6 +125,28 @@ export class EventEditComponent implements OnInit {
     return this.eventForm.controls;
   }
 
+  onFileSelected(evt: globalThis.Event): void {
+    const input = evt.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    if (!file.type.startsWith('image/')) {
+      this.error = 'Veuillez sélectionner un fichier image valide.';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      this.imagePreview = result;
+      this.eventForm.patchValue({ imageUrl: result });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearImage(): void {
+    this.imagePreview = null;
+    this.eventForm.patchValue({ imageUrl: '' });
+  }
+
   onSubmit(): void {
     this.error = '';
     this.success = '';
@@ -142,7 +168,8 @@ export class EventEditComponent implements OnInit {
       startDate: this.f['startDate'].value,
       endDate: this.f['endDate'].value,
       maxParticipants: this.f['maxParticipants'].value || 0,
-      status: this.f['status'].value
+      status: this.f['status'].value,
+      imageUrl: this.f['imageUrl'].value || undefined
     };
 
     this.eventService.updateEvent(this.eventId, eventData).subscribe({

@@ -37,22 +37,22 @@
 
     <!-- Image banner -->
     <div class="detail-img-banner">
-      <img [src]="getEventImageUrl()" [alt]="event.name" class="detail-banner-img" />
+      <img [src]="getEventImageUrl()" [alt]="event.name || event.title" class="detail-banner-img" />
     </div>
 
     <!-- Article Header -->
     <div class="detail-header cat-{{ (event.category || 'default').toLowerCase() }}">
       <div class="detail-date-badge">
-        <span class="date-day">{{ event.startDate | date:'dd' }}</span>
-        <span class="date-month">{{ event.startDate | date:'MMM' | uppercase }}</span>
-        <span class="date-year">{{ event.startDate | date:'yyyy' }}</span>
+        <span class="date-day">{{ (event.startDate || event.startAt) | date:'dd' }}</span>
+        <span class="date-month">{{ (event.startDate || event.startAt) | date:'MMM' | uppercase }}</span>
+        <span class="date-year">{{ (event.startDate || event.startAt) | date:'yyyy' }}</span>
       </div>
       <div class="detail-header-content">
         <div class="detail-badges">
           <span class="cat-chip">{{ getCategoryLabel(event.category || '') }}</span>
           <span class="status-chip {{ getStatusBadgeClass(event.status) }}">{{ getStatusLabel(event.status) }}</span>
         </div>
-        <h1 class="detail-title">{{ event.name }}</h1>
+        <h1 class="detail-title">{{ event.name || event.title }}</h1>
         <p class="detail-location" *ngIf="event.location">
           <i class="tim-icons icon-square-pin"></i> {{ event.location }}
         </p>
@@ -74,16 +74,16 @@
           <div class="schedule-row">
             <div class="schedule-item">
               <span class="schedule-label">Start</span>
-              <span class="schedule-value">{{ event.startDate | date:'EEEE, MMMM d, y' }}</span>
-              <span class="schedule-time">{{ event.startDate | date:'HH:mm' }}</span>
+              <span class="schedule-value">{{ (event.startDate || event.startAt) | date:'EEEE, MMMM d, y' }}</span>
+              <span class="schedule-time">{{ (event.startDate || event.startAt) | date:'HH:mm' }}</span>
             </div>
             <div class="schedule-divider">
               <i class="tim-icons icon-minimal-right"></i>
             </div>
             <div class="schedule-item">
               <span class="schedule-label">End</span>
-              <span class="schedule-value">{{ event.endDate | date:'EEEE, MMMM d, y' }}</span>
-              <span class="schedule-time">{{ event.endDate | date:'HH:mm' }}</span>
+              <span class="schedule-value">{{ (event.endDate || event.endAt) | date:'EEEE, MMMM d, y' }}</span>
+              <span class="schedule-time">{{ (event.endDate || event.endAt) | date:'HH:mm' }}</span>
             </div>
           </div>
         </div>

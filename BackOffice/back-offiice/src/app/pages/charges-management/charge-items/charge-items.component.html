@@ -1,0 +1,159 @@
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Charges by Event</h4>
+          <p class="card-category">Manage charges associated with each event</p>
+        </div>
+        <div class="card-body">
+
+          <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
+          <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+          <!-- Sélecteur d'événement -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label><strong>Select an event</strong></label>
+                <select class="form-control" [(ngModel)]="selectedEventId" (change)="onEventChange()">
+                  <option value="">-- Choose an event --</option>
+                  <option *ngFor="let ev of events" [value]="ev.id">
+                    {{ ev.title || ev.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6 d-flex align-items-end" *ngIf="selectedEventId">
+              <button class="btn btn-primary btn-sm mb-3" (click)="openAdd()">
+                <i class="tim-icons icon-simple-add"></i> Add a charge
+              </button>
+            </div>
+          </div>
+
+          <!-- Formulaire ajout / modification -->
+          <div class="card border mb-4" *ngIf="showForm">
+            <div class="card-body">
+              <h5>{{ editMode ? 'Edit charge' : 'New charge for: ' + selectedEventName }}</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Charge type (catalog)</label>
+                    <select class="form-control" [(ngModel)]="form.catalogItemId" (change)="onCatalogChange()">
+                      <option value="">-- Select from catalog --</option>
+                      <option *ngFor="let cat of catalogItems" [value]="cat.id">
+                        {{ cat.name }} — {{ cat.defaultUnitPrice | number:'1.2-2' }} €/{{ cat.unit }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Charge description" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" class="form-control" [(ngModel)]="form.quantity" min="1" (input)="onQuantityChange()" />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Unit price (€)</label>
+                    <input type="number" class="form-control" [(ngModel)]="form.unitPrice" min="0" step="0.01" (input)="onUnitPriceChange()" />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Total amount (auto-calculated)</label>
+                    <input type="number" class="form-control" [value]="autoAmount" readonly style="background:#f5f5f5;" />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" [(ngModel)]="form.status">
+                      <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm" (click)="save()">
+                  {{ editMode ? 'Save' : 'Add' }}
+                </button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message si aucun événement sélectionné -->
+          <div *ngIf="!selectedEventId" class="text-center py-5 text-muted">
+            <i class="tim-icons icon-notes" style="font-size: 3rem;"></i>
+            <p class="mt-2">Select an event to view its charges.</p>
+          </div>
+
+          <!-- Tableau des charges -->
+          <div *ngIf="selectedEventId && loading" class="text-center py-4">
+            Loading...
+          </div>
+
+          <div *ngIf="selectedEventId && !loading && charges.length === 0 && !showForm" class="text-center py-4 text-muted">
+            No charges for this event.
+          </div>
+
+          <div *ngIf="selectedEventId && !loading && charges.length > 0">
+            <table class="table table-hover">
+              <thead class="text-primary">
+                <tr>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Unit price</th>
+                  <th>Total amount</th>
+                  <th>Status</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let charge of charges">
+                  <td>{{ charge.description || '—' }}</td>
+                  <td>{{ charge.quantity || 1 }}</td>
+                  <td>{{ (charge.unitPrice || 0) | number:'1.2-2' }} {{ charge.currency || 'EUR' }}</td>
+                  <td><strong>{{ (charge.amount || 0) | number:'1.2-2' }} {{ charge.currency || 'EUR' }}</strong></td>
+                  <td>
+                    <span class="badge" [ngClass]="statusClass(charge.status || 'PENDING')">
+                      {{ charge.status || 'PENDING' }}
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(charge)">
+                      <i class="tim-icons icon-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success mr-1" title="Approve" (click)="updateStatus(charge, 'APPROVED')"
+                      *ngIf="charge.status === 'PENDING'">
+                      <i class="tim-icons icon-check-2"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(charge)">
+                      <i class="tim-icons icon-trash-simple"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="font-weight-bold">
+                  <td colspan="3" class="text-right">Total:</td>
+                  <td colspan="3">{{ getTotalAmount() | number:'1.2-2' }} EUR</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

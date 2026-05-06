@@ -41,10 +41,24 @@ export const ROUTES: RouteInfo[] = [
     requiredRole: "admin"
   },
   {
-    path: "/charges",
-    title: "Charges",
-    rtlTitle: "الرسوم",
+    path: "/charges/catalog",
+    title: "Charge Catalog",
+    rtlTitle: "كتالوج الرسوم",
+    icon: "icon-book-bookmark",
+    class: ""
+  },
+  {
+    path: "/charges/items",
+    title: "Charges by Event",
+    rtlTitle: "رسوم الأحداث",
     icon: "icon-money-coins",
+    class: ""
+  },
+  {
+    path: "/charges/predictions",
+    title: "AI Predictions",
+    rtlTitle: "تنبؤات الذكاء الاصطناعي",
+    icon: "icon-chart-bar-32",
     class: ""
   },
   {

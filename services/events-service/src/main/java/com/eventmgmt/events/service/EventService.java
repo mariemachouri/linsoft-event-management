@@ -29,6 +29,24 @@ public class EventService {
         if (event.status == null) {
             event.status = com.eventmgmt.events.model.EventStatus.DRAFT;
         }
+        // Sync name/title aliases
+        if (event.name != null && event.title == null) {
+            event.title = event.name;
+        } else if (event.title != null && event.name == null) {
+            event.name = event.title;
+        }
+        // Sync startDate/startAt aliases
+        if (event.startDate != null && event.startAt == null) {
+            event.startAt = event.startDate;
+        } else if (event.startAt != null && event.startDate == null) {
+            event.startDate = event.startAt;
+        }
+        // Sync endDate/endAt aliases
+        if (event.endDate != null && event.endAt == null) {
+            event.endAt = event.endDate;
+        } else if (event.endAt != null && event.endDate == null) {
+            event.endDate = event.endAt;
+        }
         repository.persist(event);
         
         // Publish event creation to Kafka (asynchronous)

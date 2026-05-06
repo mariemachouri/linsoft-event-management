@@ -1,8 +1,172 @@
-// Force full width layout - registrations page
-:host {
-  display: block;
-  width: 100%;
+$navy: #2A3652;
+$coral: #FF5276;
+$bg: #f5f7fa;
+$white: #fff;
+$text: #2c3e50;
+$muted: #6c757d;
+$border: #e4e9f0;
+
+:host { display: block; width: 100%; }
+
+// ── Page Header ───────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 22px 28px;
+  background: $navy;
+  border-radius: 12px;
+  color: $white;
+
+  .page-title {
+    font-size: 1.4rem; font-weight: 700;
+    color: $white; margin: 0;
+  }
+  .page-subtitle {
+    font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 4px 0 0;
+  }
 }
+
+.btn-create {
+  background: $coral; color: $white; border: none;
+  padding: 10px 22px; border-radius: 8px;
+  font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  transition: background 0.2s;
+  &:hover { background: #e83d61; }
+}
+
+// ── Banners ───────────────────────────────────────────────
+.alert-success-banner {
+  background: #eafaf1; border-left: 4px solid #27ae60;
+  padding: 12px 16px; border-radius: 8px; color: #1e7e34;
+  margin-bottom: 16px; font-size: 0.9rem;
+  i { margin-right: 8px; }
+}
+.alert-error-banner {
+  background: #fff2f4; border-left: 4px solid $coral;
+  padding: 12px 16px; border-radius: 8px; color: $text;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+  button { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 18px; color: $muted; }
+}
+
+// ── Loading ───────────────────────────────────────────────
+.loading-state {
+  text-align: center; padding: 60px 0; color: $muted;
+  p { margin-top: 12px; font-size: 0.9rem; }
+  .spinner-border { width: 2.5rem; height: 2.5rem; color: $coral; }
+}
+
+// ── Search & Filter ───────────────────────────────────────
+.search-filter-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+
+  .search-input-wrapper {
+    position: relative; flex: 1; min-width: 200px;
+    i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: $muted; font-size: 14px; }
+    .search-input { padding-left: 36px; border-radius: 8px; border: 1px solid $border; background: $white; color: $text; font-size: 0.88rem; }
+  }
+  .filter-select {
+    width: 180px; border-radius: 8px; border: 1px solid $border;
+    background: $white; color: $text; font-size: 0.88rem;
+  }
+  .results-count {
+    font-size: 0.82rem; color: $muted; white-space: nowrap;
+  }
+}
+
+// ── Table ─────────────────────────────────────────────────
+.registrations-table-wrapper {
+  background: $white;
+  border-radius: 12px;
+  border: 1px solid $border;
+  overflow: hidden;
+  box-shadow: 0 2px 14px rgba(42,54,82,0.06);
+}
+
+.reg-table {
+  width: 100%; border-collapse: collapse;
+
+  thead tr {
+    background: #f8f9fc;
+    th {
+      padding: 14px 16px;
+      font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: $navy;
+      border-bottom: 2px solid $border;
+      &.text-center { text-align: center; }
+    }
+  }
+
+  .reg-row {
+    border-bottom: 1px solid $border;
+    transition: background 0.15s;
+    &:last-child { border-bottom: none; }
+    &:hover { background: #f5f7fa; }
+
+    td { padding: 14px 16px; vertical-align: middle; font-size: 0.88rem; color: $text; }
+  }
+}
+
+// ── Cell: Event ───────────────────────────────────────────
+.cell-event {
+  display: flex; flex-direction: column; gap: 3px;
+  .event-name { font-weight: 600; color: $navy; }
+  .event-id { font-size: 0.72rem; color: $muted; font-family: monospace; }
+}
+
+// ── Cell: Participant ─────────────────────────────────────
+.cell-participant {
+  display: flex; align-items: center; gap: 10px;
+  .participant-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: $navy; color: $white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+  .participant-name { display: block; font-weight: 600; color: $text; }
+  .participant-email { display: block; font-size: 0.75rem; color: $muted; }
+}
+
+// ── Date cell ─────────────────────────────────────────────
+.date-cell { color: $muted; font-size: 0.83rem; white-space: nowrap; }
+
+// ── Status badges ─────────────────────────────────────────
+.status-badge {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3px;
+
+  &.status-pending    { background: #fff8e1; color: #e65100; }
+  &.status-confirmed  { background: #e8f5e9; color: #2e7d32; }
+  &.status-waitlisted { background: #e3f2fd; color: #1565c0; }
+  &.status-cancelled  { background: #fce4ec; color: #b71c1c; }
+}
+
+// ── Actions ───────────────────────────────────────────────
+.actions-cell { text-align: center; white-space: nowrap; }
+
+.action-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px; border: none;
+  cursor: pointer; margin: 0 3px;
+  font-size: 0.82rem; transition: opacity 0.15s, transform 0.15s;
+  &:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  &.confirm-btn  { background: #e8f5e9; color: #2e7d32; }
+  &.cancel-btn   { background: #fff8e1; color: #e65100; }
+  &.edit-btn     { background: #e3f2fd; color: #1565c0; }
+  &.delete-btn   { background: #fce4ec; color: #b71c1c; }
+}
+
+// ── Empty state ───────────────────────────────────────────
+.empty-state {
+  text-align: center; padding: 60px 20px; color: $muted;
+  i { font-size: 3rem; display: block; margin-bottom: 16px; }
+  p { margin-bottom: 20px; font-size: 0.95rem; }
+}
+
 
 .card {
   width: 100% !important;

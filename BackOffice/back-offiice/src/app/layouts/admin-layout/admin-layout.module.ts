@@ -25,6 +25,8 @@ import { RegistrationEditComponent } from "../../pages/registrations-management/
 import { ChargesManagementComponent } from "../../pages/charges-management/charges-management.component";
 import { ChargePredictionCreateComponent } from "../../pages/charges-management/charge-prediction-create/charge-prediction-create.component";
 import { ChargePaymentDecisionComponent } from "../../pages/charges-management/charge-payment-decision/charge-payment-decision.component";
+import { ChargeCatalogComponent } from "../../pages/charges-management/charge-catalog/charge-catalog.component";
+import { ChargeItemsComponent } from "../../pages/charges-management/charge-items/charge-items.component";
 import { NotificationsManagementComponent } from "../../pages/notifications-management/notifications-management.component";
 import { PushNotificationsComponent } from "../../pages/push-notifications/push-notifications.component";
 // import { RtlComponent } from "../../pages/rtl/rtl.component";
@@ -61,6 +63,8 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     ChargesManagementComponent,
     ChargePredictionCreateComponent,
     ChargePaymentDecisionComponent,
+    ChargeCatalogComponent,
+    ChargeItemsComponent,
     NotificationsManagementComponent,
     PushNotificationsComponent,
     // RtlComponent

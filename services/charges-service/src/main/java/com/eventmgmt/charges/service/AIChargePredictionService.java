@@ -70,6 +70,9 @@ public class AIChargePredictionService {
         
         // Recommandations IA
         result.recommendations = generateRecommendations(metrics, breakdown);
+
+        // Articles recommandés basés sur le type d'événement
+        result.itemRecommendations = generateItemRecommendations(metrics);
         
         return result;
     }
@@ -206,5 +209,62 @@ public class AIChargePredictionService {
         }
         
         return methods;
+    }
+
+    /**
+     * Génère des recommandations d'articles basées sur le type d'événement
+     */
+    private java.util.List<ChargePrediction.ItemRecommendation> generateItemRecommendations(
+            ChargePrediction.EventMetrics metrics) {
+        List<ChargePrediction.ItemRecommendation> items = new ArrayList<>();
+
+        // Projecteur toujours recommandé sauf événement en ligne
+        if (!metrics.location.equals("online")) {
+            var proj = new ChargePrediction.ItemRecommendation();
+            proj.item = com.eventmgmt.charges.model.ChargeItemType.PROJECTEUR;
+            proj.suggestedQuantity = Math.max(1, metrics.expectedAttendees / 100);
+            proj.reason = "Required for presentations";
+            items.add(proj);
+        }
+
+        // Microphones selon taille
+        var mic = new ChargePrediction.ItemRecommendation();
+        mic.item = com.eventmgmt.charges.model.ChargeItemType.MICROPHONE;
+        mic.suggestedQuantity = metrics.expectedAttendees > 50 ? 3 : 1;
+        mic.reason = "Essential for audience Q&A";
+        items.add(mic);
+
+        // Tables & chaises selon taille
+        var table = new ChargePrediction.ItemRecommendation();
+        table.item = com.eventmgmt.charges.model.ChargeItemType.TABLE;
+        table.suggestedQuantity = (int) Math.ceil(metrics.expectedAttendees / 6.0);
+        table.reason = "Seating arrangement";
+        items.add(table);
+
+        var chaise = new ChargePrediction.ItemRecommendation();
+        chaise.item = com.eventmgmt.charges.model.ChargeItemType.CHAISE;
+        chaise.suggestedQuantity = (int) Math.ceil(metrics.expectedAttendees * 1.1);
+        chaise.reason = "Seats for all attendees + 10% buffer";
+        items.add(chaise);
+
+        // PC portable pour workshops
+        if (metrics.eventType == EventCategory.WORKSHOP) {
+            var pc = new ChargePrediction.ItemRecommendation();
+            pc.item = com.eventmgmt.charges.model.ChargeItemType.PC_PORTABLE;
+            pc.suggestedQuantity = Math.min(metrics.expectedAttendees, 30);
+            pc.reason = "Hands-on workshop requires individual workstations";
+            items.add(pc);
+        }
+
+        // Câbles HDMI
+        var hdmi = new ChargePrediction.ItemRecommendation();
+        hdmi.item = com.eventmgmt.charges.model.ChargeItemType.CABLE_HDMI;
+        hdmi.suggestedQuantity = items.stream()
+                .filter(i -> i.item == com.eventmgmt.charges.model.ChargeItemType.PROJECTEUR)
+                .mapToInt(i -> i.suggestedQuantity * 2).sum() + 2;
+        hdmi.reason = "One per projector + spares";
+        items.add(hdmi);
+
+        return items;
     }
 }

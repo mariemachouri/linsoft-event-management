@@ -49,7 +49,7 @@ export class EventDetailComponent implements OnInit {
   getEventImageUrl(): string {
     if (!this.event) return '';
     if (this.event.imageUrl) return this.event.imageUrl;
-    const seed = encodeURIComponent(this.event.id || this.event.name || 'event');
+    const seed = encodeURIComponent(this.event.id || this.event.name || this.event.title || 'event');
     return `https://picsum.photos/seed/${seed}/600/240`;
   }
 

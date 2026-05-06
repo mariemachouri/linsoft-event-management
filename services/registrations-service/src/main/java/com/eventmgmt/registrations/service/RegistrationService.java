@@ -47,6 +47,24 @@ public class RegistrationService {
         return registration;
     }
 
+    public Registration updateStatus(String id, String newStatus) {
+        Registration registration = repository.findByIdOptional(new ObjectId(id))
+            .orElseThrow(() -> new RuntimeException("Registration not found"));
+        registration.setStatus(newStatus);
+        repository.update(registration);
+        return registration;
+    }
+
+    public Registration cancelRegistration(String id) {
+        Registration registration = repository.findByIdOptional(new ObjectId(id))
+            .orElseThrow(() -> new RuntimeException("Registration not found"));
+        registration.status = "CANCELLED";
+        repository.update(registration);
+        // Publish cancellation to Kafka
+        registrationPublisher.publishRegistrationCancelled(registration);
+        return registration;
+    }
+
     public boolean delete(String id) {
         // Get registration before deletion for Kafka message
         Optional<Registration> registrationOpt = repository.findByIdOptional(new ObjectId(id));
@@ -55,7 +73,6 @@ public class RegistrationService {
         if (deleted && registrationOpt.isPresent()) {
             Registration registration = registrationOpt.get();
             registration.status = "CANCELLED";
-            
             // Publish cancellation to Kafka
             registrationPublisher.publishRegistrationCancelled(registration);
         }

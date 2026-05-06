@@ -70,7 +70,7 @@ export class RegistrationEditComponent implements OnInit {
         
         this.registrationForm.patchValue({
           eventId: data.registration.eventId,
-          participantId: data.registration.userId,
+          participantId: data.registration.participantId,
           status: data.registration.status || 'PENDING'
         });
         
@@ -111,7 +111,7 @@ export class RegistrationEditComponent implements OnInit {
       registrationDate: this.currentRegistration!.registrationDate
     };
 
-    this.registrationService.updateRegistration(this.registrationId, registrationData).subscribe({
+    this.registrationService.updateStatus(this.registrationId, this.f['status'].value).subscribe({
       next: (registration) => {
         this.success = 'Inscription mise à jour avec succès !';
         this.loading = false;
@@ -136,6 +136,32 @@ export class RegistrationEditComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/registrations']);
+  }
+
+  quickConfirm(): void {
+    this.loading = true;
+    this.registrationService.confirmRegistration(this.registrationId).subscribe({
+      next: (reg) => {
+        this.currentRegistration = reg;
+        this.registrationForm.patchValue({ status: reg.status });
+        this.success = 'Inscription confirmée !';
+        this.loading = false;
+      },
+      error: () => { this.error = 'Erreur lors de la confirmation.'; this.loading = false; }
+    });
+  }
+
+  quickCancel(): void {
+    this.loading = true;
+    this.registrationService.cancelRegistration(this.registrationId).subscribe({
+      next: (reg) => {
+        this.currentRegistration = reg;
+        this.registrationForm.patchValue({ status: reg.status });
+        this.success = 'Inscription annulée.';
+        this.loading = false;
+      },
+      error: () => { this.error = 'Erreur lors de l\'annulation.'; this.loading = false; }
+    });
   }
 
   getEventDisplay(eventId: string): string {

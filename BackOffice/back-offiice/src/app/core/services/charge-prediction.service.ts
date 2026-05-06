@@ -112,7 +112,7 @@ export enum ChargeItemType {
   providedIn: 'root'
 })
 export class ChargePredictionService {
-  private apiUrl = `${environment.apiUrl}/charges-service/api/charge-predictions`;
+  private apiUrl = `${environment.apiUrl}/api/charge-predictions`;
 
   constructor(private http: HttpClient) {}
 

@@ -21,16 +21,22 @@ export class EventsManagementComponent implements OnInit {
     const q = this.searchQuery.toLowerCase();
     return this.events
       .filter(e => {
-        const isFuture = new Date(e.endDate || e.startDate).getTime() >= now;
+        const endDt = e.endDate || e.endAt || e.startDate || e.startAt;
+        const isFuture = endDt ? new Date(endDt).getTime() >= now : false;
+        const name = e.name || e.title || '';
         const matchSearch = !q ||
-          (e.name || '').toLowerCase().includes(q) ||
+          name.toLowerCase().includes(q) ||
           (e.location || '').toLowerCase().includes(q) ||
           (e.description || '').toLowerCase().includes(q);
         const matchStatus = !this.filterStatus || e.status === this.filterStatus;
         const matchCat = !this.filterCategory || e.category === this.filterCategory;
         return isFuture && matchSearch && matchStatus && matchCat;
       })
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+      .sort((a, b) => {
+        const aDate = a.startDate || a.startAt || '';
+        const bDate = b.startDate || b.startAt || '';
+        return new Date(aDate).getTime() - new Date(bDate).getTime();
+      });
   }
 
   getEventImageUrl(event: Event): string {

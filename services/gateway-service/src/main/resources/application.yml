@@ -15,50 +15,55 @@ spring:
       routes:
         # Authentication routes (must be first for priority)
         - id: auth-service
-          uri: http://localhost:8083
+          uri: lb://users-service
           predicates:
             - Path=/api/auth/**
 
         - id: events-service
-          uri: http://localhost:8081
+          uri: lb://events-service
           predicates:
             - Path=/api/events/**
 
         - id: registrations-service
-          uri: http://localhost:8082
+          uri: lb://registrations-service
           predicates:
             - Path=/api/registrations/**
 
         - id: users-service
-          uri: http://localhost:8083
+          uri: lb://users-service
           predicates:
             - Path=/api/users/**
 
         - id: notifications-service
-          uri: http://localhost:8084
+          uri: lb://notifications-service
           predicates:
             - Path=/api/notifications/**
 
         - id: dashboard-service
-          uri: http://localhost:8085
+          uri: lb://dashboard-service
           predicates:
             - Path=/api/dashboard/**
 
         - id: charges-service
-          uri: http://localhost:8086
+          uri: lb://charges-service
           predicates:
             - Path=/api/charges/**
+
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
 
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "*"
+            allowedOrigins:
+              - "http://localhost:4200"
             allowedMethods:
               - GET
               - POST
               - PUT
               - DELETE
               - OPTIONS
+              - PATCH
             allowedHeaders: "*"
             allow-credentials: false
 

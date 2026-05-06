@@ -6,12 +6,15 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 @MongoEntity(collection = "charges")
 public class ChargeItem extends PanacheMongoEntity {
     public String eventId;
-    public String predictionId; // Lien vers ChargePrediction
-    public ChargeItemType item;
+    public String catalogItemId;   // Référence vers ChargeCatalogItem
+    public String predictionId;    // Lien vers ChargePrediction (optionnel)
+    public ChargeItemType item;    // Conservé pour compatibilité
     public ChargeCategory category;
     public String description;
-    public double amount;
-    public String currency;
+    public int quantity = 1;
+    public double unitPrice;       // Prix unitaire (du catalogue ou personnalisé)
+    public double amount;          // = quantity × unitPrice (calculé)
+    public String currency = "EUR";
     public ChargeStatus status = ChargeStatus.PENDING;
     public PaymentInfo paymentInfo;
     public String createdAt;

@@ -6,11 +6,10 @@ import { environment } from '../../../environments/environment';
 export interface Registration {
   id?: string;
   eventId: string;
-  participantId: string;  // Correspond au backend
-  userId?: string;  // Alias pour compatibilité
+  participantId: string;
   status?: string;
   registrationDate?: string;
-  registeredAt?: string;  // Nom du backend
+  registeredAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -57,16 +56,22 @@ export class RegistrationService {
     return this.http.post<Registration>(this.registrationsApiUrl, registration);
   }
 
-  /**
-   * Mettre à jour une inscription
-   */
   updateRegistration(id: string, registration: Registration): Observable<Registration> {
     return this.http.put<Registration>(`${this.registrationsApiUrl}/${id}`, registration);
   }
 
-  /**
-   * Supprimer une inscription
-   */
+  updateStatus(id: string, status: string): Observable<Registration> {
+    return this.http.put<Registration>(`${this.registrationsApiUrl}/${id}/status`, { status });
+  }
+
+  confirmRegistration(id: string): Observable<Registration> {
+    return this.http.post<Registration>(`${this.registrationsApiUrl}/${id}/confirm`, {});
+  }
+
+  cancelRegistration(id: string): Observable<Registration> {
+    return this.http.post<Registration>(`${this.registrationsApiUrl}/${id}/cancel`, {});
+  }
+
   deleteRegistration(id: string): Observable<void> {
     return this.http.delete<void>(`${this.registrationsApiUrl}/${id}`);
   }
