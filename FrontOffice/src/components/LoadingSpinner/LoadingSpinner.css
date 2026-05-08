@@ -1,0 +1,81 @@
+/* ──────────────────────────────────────────────
+   LoadingSpinner — LinSoft Design System
+   ────────────────────────────────────────────── */
+
+.spinner-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 247, 250, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+}
+
+.spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner-wrap--sm .spinner { width: 32px; height: 32px; }
+.spinner-wrap--md .spinner { width: 48px; height: 48px; }
+.spinner-wrap--lg .spinner { width: 64px; height: 64px; }
+
+.spinner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  animation: spin 1.2s linear infinite;
+}
+
+.spinner__ring--1 {
+  border-top-color: #2A3652;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.spinner__ring--2 {
+  inset: 6px;
+  border-top-color: transparent;
+  border-right-color: #FF5276;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  animation-duration: 0.8s;
+  animation-direction: reverse;
+}
+
+.spinner__dot {
+  width: 8px;
+  height: 8px;
+  background: #2A3652;
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.4; }
+}
+
+.spinner__text {
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  font-weight: 500;
+  animation: pulse 1.5s ease-in-out infinite;
+}

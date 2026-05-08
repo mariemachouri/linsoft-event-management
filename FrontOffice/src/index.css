@@ -1,0 +1,147 @@
+/* ──────────────────────────────────────────────
+   Global Styles — EventSphere FrontOffice
+   LinSoft Design System
+   ────────────────────────────────────────────── */
+
+/* ── Design Tokens ── */
+:root {
+  --ls-primary:          #2A3652;
+  --ls-primary-dark:     #1e2d45;
+  --ls-primary-light:    #3a4f70;
+  --ls-accent:           #FF5276;
+  --ls-accent-alt:       #ED4368;
+  --ls-dark:             #1a2238;
+  --ls-bg:               #f5f7fa;
+  --ls-white:            #ffffff;
+  --ls-gray:             #7f8c8d;
+  --ls-gray-light:       #9eaab8;
+  --ls-gray-dark:        #2c3e50;
+  --ls-border:           #f0f2f5;
+  --ls-border-dark:      #e8ecf0;
+  --ls-text:             #1a2238;
+  --ls-text-muted:       #7f8c8d;
+
+  --ls-shadow-sm:  0 2px 8px rgba(42, 54, 82, 0.08);
+  --ls-shadow-md:  0 4px 16px rgba(42, 54, 82, 0.12);
+  --ls-shadow-lg:  0 8px 32px rgba(42, 54, 82, 0.16);
+
+  --ls-gradient-primary: linear-gradient(135deg, #1e2d45 0%, #2A3652 100%);
+  --ls-gradient-hero:    linear-gradient(135deg, #1a2238 0%, #2A3652 50%, #3a4f70 100%);
+  --ls-gradient-accent:  linear-gradient(135deg, #ED4368 0%, #FF5276 100%);
+
+  --ls-radius-sm:  8px;
+  --ls-radius-md:  12px;
+  --ls-radius-lg:  16px;
+  --ls-radius-xl:  24px;
+
+  --navbar-height: 68px;
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ls-text);
+  background: var(--ls-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Offset for fixed navbar */
+main,
+.home,
+.events-page,
+.event-detail,
+.dashboard,
+.profile-page,
+.auth-page {
+  padding-top: var(--navbar-height);
+}
+
+/* Auth pages full viewport */
+.auth-page {
+  padding-top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media (max-width: 860px) {
+  .auth-page {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ls-text);
+}
+
+p { line-height: 1.7; }
+
+a { color: inherit; }
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button { font-family: inherit; }
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f0f2f5; }
+::-webkit-scrollbar-thumb { background: #c5cdd6; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #9eaab8; }
+
+/* ── Selection ── */
+::selection {
+  background: rgba(42, 54, 82, 0.15);
+  color: var(--ls-text);
+}
+
+/* ── Focus Visible ── */
+:focus-visible {
+  outline: 2px solid var(--ls-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Utility ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
