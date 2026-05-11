@@ -66,7 +66,7 @@ export default function EventDetail() {
     try {
       const reg = await registrationsService.create({
         eventId: event.id,
-        userId:  auth.user.id,
+        participantId: auth.user.id,
       });
       setMyRegistration(reg);
       showToast('success', 'Registration successful! Check your dashboard.');

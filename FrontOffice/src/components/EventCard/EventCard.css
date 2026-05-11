@@ -1,16 +1,16 @@
-/* ──────────────────────────────────────────────
-   EventCard — LinSoft Design System
-   ────────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   EventCard â€” LinSoft Design System
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .event-card {
   background: #ffffff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 16px rgba(42, 54, 82, 0.08);
+  box-shadow: 0 2px 16px rgba(17, 17, 17, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(42, 54, 82, 0.07);
+  border: 1px solid rgba(17, 17, 17, 0.07);
   animation: cardIn 0.4s ease both;
 }
 
@@ -21,11 +21,11 @@
 
 .event-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(42, 54, 82, 0.15);
-  border-color: rgba(42, 54, 82, 0.12);
+  box-shadow: 0 12px 40px rgba(17, 17, 17, 0.15);
+  border-color: rgba(17, 17, 17, 0.12);
 }
 
-/* ── Image ── */
+/* â”€â”€ Image â”€â”€ */
 .event-card__img-wrap {
   position: relative;
   height: 180px;
@@ -57,7 +57,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background: rgba(26, 34, 56, 0.75);
+  background: rgba(17, 17, 17, 0.75);
   backdrop-filter: blur(8px);
   border-radius: 20px;
   font-size: 0.7rem;
@@ -84,7 +84,7 @@
 .event-card__badge--neutral  { background: rgba(127, 140, 141, 0.15); color: #7f8c8d; border: 1px solid rgba(127,140,141,0.3); }
 .event-card__badge--danger   { background: rgba(231, 76, 60, 0.12); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
 
-/* ── Body ── */
+/* â”€â”€ Body â”€â”€ */
 .event-card__body {
   padding: 1.25rem;
   display: flex;
@@ -96,7 +96,7 @@
 .event-card__title {
   font-size: 1rem;
   font-weight: 700;
-  color: #1a2238;
+  color: #0a0a0a;
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -111,7 +111,7 @@
   flex: 1;
 }
 
-/* ── Meta ── */
+/* â”€â”€ Meta â”€â”€ */
 .event-card__meta {
   display: flex;
   flex-direction: column;
@@ -128,11 +128,11 @@
 }
 
 .event-card__meta-item svg {
-  color: #FF5276;
+  color: #e31e24;
   flex-shrink: 0;
 }
 
-/* ── Capacity ── */
+/* â”€â”€ Capacity â”€â”€ */
 .event-card__capacity {
   display: flex;
   flex-direction: column;
@@ -155,13 +155,13 @@
 }
 
 .event-card__capacity-label svg {
-  color: #2A3652;
+  color: #111111;
 }
 
 .event-card__capacity-value {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #2A3652;
+  color: #111111;
 }
 
 .event-card__progress {
@@ -173,16 +173,16 @@
 
 .event-card__progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #2A3652, #3a4f70);
+  background: linear-gradient(90deg, #111111, #1a1a1a);
   border-radius: 10px;
   transition: width 0.5s ease;
 }
 
 .event-card__progress-bar--full {
-  background: linear-gradient(90deg, #ED4368, #FF5276);
+  background: linear-gradient(90deg, #b01419, #e31e24);
 }
 
-/* ── Footer ── */
+/* â”€â”€ Footer â”€â”€ */
 .event-card__footer {
   display: flex;
   align-items: center;
@@ -208,19 +208,19 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.45rem 1rem;
-  background: linear-gradient(135deg, #2A3652, #3a4f70);
+  background: linear-gradient(135deg, #111111, #1a1a1a);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 8px;
   text-decoration: none;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(42, 54, 82, 0.25);
+  box-shadow: 0 2px 8px rgba(17, 17, 17, 0.25);
 }
 
 .event-card__cta:hover {
   transform: translateX(2px);
-  box-shadow: 0 4px 14px rgba(42, 54, 82, 0.35);
+  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.35);
 }
 
 .event-card__cta--disabled {

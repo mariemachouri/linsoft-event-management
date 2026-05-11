@@ -1,16 +1,16 @@
-/* ──────────────────────────────────────────────
-   Global Styles — EventSphere FrontOffice
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   Global Styles â€” EventSphere FrontOffice
    LinSoft Design System
-   ────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* ── Design Tokens ── */
+/* â”€â”€ Design Tokens â”€â”€ */
 :root {
-  --ls-primary:          #2A3652;
-  --ls-primary-dark:     #1e2d45;
-  --ls-primary-light:    #3a4f70;
-  --ls-accent:           #FF5276;
-  --ls-accent-alt:       #ED4368;
-  --ls-dark:             #1a2238;
+  --ls-primary:          #111111;
+  --ls-primary-dark:     #0a0a0a;
+  --ls-primary-light:    #1a1a1a;
+  --ls-accent:           #e31e24;
+  --ls-accent-alt:       #ff4d52;
+  --ls-dark:             #111111;
   --ls-bg:               #f5f7fa;
   --ls-white:            #ffffff;
   --ls-gray:             #7f8c8d;
@@ -18,16 +18,16 @@
   --ls-gray-dark:        #2c3e50;
   --ls-border:           #f0f2f5;
   --ls-border-dark:      #e8ecf0;
-  --ls-text:             #1a2238;
+  --ls-text:             #111111;
   --ls-text-muted:       #7f8c8d;
 
-  --ls-shadow-sm:  0 2px 8px rgba(42, 54, 82, 0.08);
-  --ls-shadow-md:  0 4px 16px rgba(42, 54, 82, 0.12);
-  --ls-shadow-lg:  0 8px 32px rgba(42, 54, 82, 0.16);
+  --ls-shadow-sm:  0 2px 8px rgba(227, 30, 36, 0.08);
+  --ls-shadow-md:  0 4px 16px rgba(227, 30, 36, 0.12);
+  --ls-shadow-lg:  0 8px 32px rgba(227, 30, 36, 0.18);
 
-  --ls-gradient-primary: linear-gradient(135deg, #1e2d45 0%, #2A3652 100%);
-  --ls-gradient-hero:    linear-gradient(135deg, #1a2238 0%, #2A3652 50%, #3a4f70 100%);
-  --ls-gradient-accent:  linear-gradient(135deg, #ED4368 0%, #FF5276 100%);
+  --ls-gradient-primary: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+  --ls-gradient-hero:    linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #1a1a1a 100%);
+  --ls-gradient-accent:  linear-gradient(135deg, #b01419 0%, #e31e24 50%, #ff4d52 100%);
 
   --ls-radius-sm:  8px;
   --ls-radius-md:  12px;
@@ -37,7 +37,7 @@
   --navbar-height: 68px;
 }
 
-/* ── Reset ── */
+/* â”€â”€ Reset â”€â”€ */
 *,
 *::before,
 *::after {
@@ -86,7 +86,7 @@ main,
   }
 }
 
-/* ── Typography ── */
+/* â”€â”€ Typography â”€â”€ */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
@@ -109,26 +109,26 @@ input, select, textarea {
   font-size: inherit;
 }
 
-/* ── Scrollbar ── */
+/* â”€â”€ Scrollbar â”€â”€ */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f0f2f5; }
 ::-webkit-scrollbar-thumb { background: #c5cdd6; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #9eaab8; }
 
-/* ── Selection ── */
+/* â”€â”€ Selection â”€â”€ */
 ::selection {
-  background: rgba(42, 54, 82, 0.15);
+  background: rgba(17, 17, 17, 0.15);
   color: var(--ls-text);
 }
 
-/* ── Focus Visible ── */
+/* â”€â”€ Focus Visible â”€â”€ */
 :focus-visible {
   outline: 2px solid var(--ls-accent);
   outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* ── Utility ── */
+/* â”€â”€ Utility â”€â”€ */
 .sr-only {
   position: absolute;
   width: 1px;

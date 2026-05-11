@@ -101,12 +101,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const response = await authService.login(credentials);
     localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('refresh_token', response.refresh_token);
+    // getCurrentUser now reads JWT claims as fallback — always returns a profile
     const user = await authService.getCurrentUser();
     const profile: UserProfile = user ?? {
       id: '',
       username: credentials.username,
       email: '',
-      firstName: credentials.username,
+      firstName: '',
       lastName: '',
     };
     localStorage.setItem('user', JSON.stringify(profile));

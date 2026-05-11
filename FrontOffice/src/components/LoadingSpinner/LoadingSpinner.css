@@ -1,6 +1,6 @@
-/* ──────────────────────────────────────────────
-   LoadingSpinner — LinSoft Design System
-   ────────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   LoadingSpinner â€” LinSoft Design System
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .spinner-page {
   position: fixed;
@@ -40,7 +40,7 @@
 }
 
 .spinner__ring--1 {
-  border-top-color: #2A3652;
+  border-top-color: #111111;
   border-right-color: transparent;
   border-bottom-color: transparent;
   border-left-color: transparent;
@@ -49,7 +49,7 @@
 .spinner__ring--2 {
   inset: 6px;
   border-top-color: transparent;
-  border-right-color: #FF5276;
+  border-right-color: #e31e24;
   border-bottom-color: transparent;
   border-left-color: transparent;
   animation-duration: 0.8s;
@@ -59,7 +59,7 @@
 .spinner__dot {
   width: 8px;
   height: 8px;
-  background: #2A3652;
+  background: #111111;
   border-radius: 50%;
   animation: pulse 1.2s ease-in-out infinite;
 }

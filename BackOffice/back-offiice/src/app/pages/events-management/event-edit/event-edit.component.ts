@@ -168,6 +168,7 @@ export class EventEditComponent implements OnInit {
       startDate: this.f['startDate'].value,
       endDate: this.f['endDate'].value,
       maxParticipants: this.f['maxParticipants'].value || 0,
+      category: this.f['category'].value || undefined,
       status: this.f['status'].value,
       imageUrl: this.f['imageUrl'].value || undefined
     };

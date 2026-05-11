@@ -12,7 +12,7 @@ export const registrationsService = {
     return response.data;
   },
 
-  async create(registration: { eventId: string; userId: string; notes?: string }): Promise<Registration> {
+  async create(registration: { eventId: string; participantId: string; notes?: string }): Promise<Registration> {
     const response = await api.post<Registration>('/registrations', registration);
     return response.data;
   },
@@ -33,7 +33,7 @@ export const registrationsService = {
   },
 
   getUserRegistrations(registrations: Registration[], userId: string): Registration[] {
-    return registrations.filter((r) => r.userId === userId);
+    return registrations.filter((r) => r.participantId === userId);
   },
 
   getStatusLabel(status: string): string {

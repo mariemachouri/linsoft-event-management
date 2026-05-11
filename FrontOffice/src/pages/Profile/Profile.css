@@ -1,15 +1,15 @@
-/* ──────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Profile Page
-   ────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .profile-page {
   min-height: 100vh;
   background: #f5f7fa;
 }
 
-/* ── Hero ── */
+/* â”€â”€ Hero â”€â”€ */
 .profile-hero {
-  background: linear-gradient(135deg, #1e2d45 0%, #2A3652 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
   padding: 5.5rem 1.5rem 3rem;
 }
 
@@ -22,10 +22,10 @@
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF5276, #ED4368);
+  background: linear-gradient(135deg, #e31e24, #ff4d52);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,6 +34,75 @@
   color: #fff;
   flex-shrink: 0;
   border: 3px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.04);
+}
+
+.profile-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-avatar__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+}
+
+.profile-avatar:hover .profile-avatar__overlay {
+  opacity: 1;
+}
+
+.profile-avatar__input {
+  display: none;
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-avatar__remove {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e74c3c;
+  border: 2px solid #0a0a0a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.profile-avatar__remove:hover {
+  background: #c0392b;
+}
+
+.profile-hero__photo-hint {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.25rem;
 }
 
 .profile-hero__name {
@@ -49,20 +118,20 @@
   color: rgba(255,255,255,0.55);
 }
 
-/* ── Body ── */
+/* â”€â”€ Body â”€â”€ */
 .profile-body {
   max-width: 900px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem;
 }
 
-/* ── Card ── */
+/* â”€â”€ Card â”€â”€ */
 .profile-card {
   background: #fff;
   border-radius: 16px;
   border: 1.5px solid #f0f2f5;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(42, 54, 82, 0.06);
+  box-shadow: 0 4px 24px rgba(17, 17, 17, 0.06);
 }
 
 .profile-card__header {
@@ -73,7 +142,7 @@
 .profile-card__header h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a2238;
+  color: #0a0a0a;
   margin-bottom: 0.25rem;
 }
 
@@ -82,7 +151,7 @@
   color: #7f8c8d;
 }
 
-/* ── Form ── */
+/* â”€â”€ Form â”€â”€ */
 .profile-form {
   padding: 2rem;
   display: flex;
@@ -129,16 +198,16 @@
   border-radius: 10px;
   font-size: 0.9rem;
   font-family: inherit;
-  color: #1a2238;
+  color: #0a0a0a;
   background: #f8f9fb;
   outline: none;
   transition: all 0.2s;
 }
 
 .profile-input:focus:not(.profile-input--disabled) {
-  border-color: #2A3652;
+  border-color: #111111;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.07);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.07);
 }
 
 .profile-input--disabled {
@@ -166,7 +235,7 @@
   margin: 0.5rem 0;
 }
 
-/* ── Actions ── */
+/* â”€â”€ Actions â”€â”€ */
 .profile-actions {
   display: flex;
   justify-content: flex-end;
@@ -178,7 +247,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #2A3652, #1e2d45);
+  background: linear-gradient(135deg, #111111, #0a0a0a);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -191,7 +260,7 @@
 
 .profile-save-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(42, 54, 82, 0.3);
+  box-shadow: 0 6px 20px rgba(17, 17, 17, 0.3);
 }
 
 .profile-save-btn:disabled {
@@ -199,7 +268,7 @@
   cursor: not-allowed;
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 600px) {
   .profile-row { grid-template-columns: 1fr; }
   .profile-form { padding: 1.5rem; }

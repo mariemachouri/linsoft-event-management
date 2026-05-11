@@ -37,7 +37,7 @@ export default function Dashboard() {
     try {
       const regs  = await registrationsService.getAll();
       const mine  = auth.user
-        ? regs.filter((r) => r.userId === auth.user!.id)
+        ? regs.filter((r) => r.participantId === auth.user!.id)
         : regs;
 
       // Enrich with event data

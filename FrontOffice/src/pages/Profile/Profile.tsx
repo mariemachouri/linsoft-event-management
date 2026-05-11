@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { CheckCircle, Mail, Phone, Save, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Camera, CheckCircle, Mail, Phone, Save, Trash2, User } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -8,73 +8,157 @@ import './Profile.css';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
-  const auth = { user };
   const { showToast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
-    firstName:   auth.user?.firstName   ?? '',
-    lastName:    auth.user?.lastName    ?? '',
-    phoneNumber: auth.user?.phoneNumber ?? '',
+    firstName:   user?.firstName   ?? '',
+    lastName:    user?.lastName    ?? '',
+    phoneNumber: user?.phoneNumber ?? '',
   });
-  const [loading,  setLoading]  = useState(false);
-  const [saved,    setSaved]    = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatarUrl ?? '');
+  const [loading, setLoading] = useState(false);
+  const [saved,   setSaved]   = useState(false);
+
+  // Refresh user profile from API if stored data is incomplete (e.g. fallback after login)
+  useEffect(() => {
+    if (!user?.email || !user?.firstName) {
+      authService.getCurrentUser().then((fresh) => {
+        if (fresh) {
+          // Preserve locally-stored avatar
+          updateUser({ ...fresh, avatarUrl: user?.avatarUrl });
+        }
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setForm({
-      firstName:   auth.user?.firstName   ?? '',
-      lastName:    auth.user?.lastName    ?? '',
-      phoneNumber: auth.user?.phoneNumber ?? '',
+      firstName:   user?.firstName   ?? '',
+      lastName:    user?.lastName    ?? '',
+      phoneNumber: user?.phoneNumber ?? '',
     });
-  }, [auth.user]);
+    setAvatarUrl(user?.avatarUrl ?? '');
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
     setSaved(false);
   };
 
+  const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('warning', 'Image must be smaller than 2 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setAvatarUrl(base64);
+      setSaved(false);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarUrl('');
+    setSaved(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.user?.id) return;
 
     if (!form.firstName.trim() || !form.lastName.trim()) {
       showToast('warning', 'First name and last name are required.');
       return;
     }
 
-    setLoading(true);
-    try {
-      const updated = await authService.updateProfile(auth.user.id, {
-        firstName:   form.firstName.trim(),
-        lastName:    form.lastName.trim(),
-        phoneNumber: form.phoneNumber.trim() || undefined,
-      });
-      updateUser(updated);
-      setSaved(true);
+    // Always persist avatar + form changes locally first
+    const localUpdate: typeof user = {
+      ...(user as NonNullable<typeof user>),
+      firstName:   form.firstName.trim(),
+      lastName:    form.lastName.trim(),
+      phoneNumber: form.phoneNumber.trim() || undefined,
+      avatarUrl:   avatarUrl || undefined,
+    };
+    updateUser(localUpdate);
+    setSaved(true);
+
+    // If we have a valid id, also push changes to the API
+    if (user?.id) {
+      setLoading(true);
+      try {
+        const updated = await authService.updateProfile(user.id, {
+          firstName:   form.firstName.trim(),
+          lastName:    form.lastName.trim(),
+          phoneNumber: form.phoneNumber.trim() || undefined,
+        });
+        // Merge API response with local avatar
+        updateUser({ ...updated, avatarUrl: avatarUrl || undefined });
+        showToast('success', 'Profile updated successfully!');
+      } catch {
+        showToast('error', 'Could not sync with server, changes saved locally.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
       showToast('success', 'Profile updated successfully!');
-    } catch {
-      showToast('error', 'Error updating your profile.');
-    } finally {
-      setLoading(false);
     }
   };
 
-  const initials = [auth.user?.firstName?.[0], auth.user?.lastName?.[0]]
+  const initials = [user?.firstName?.[0], user?.lastName?.[0]]
     .filter(Boolean)
     .join('')
-    .toUpperCase() || auth.user?.username?.[0]?.toUpperCase() || '?';
+    .toUpperCase() || user?.username?.[0]?.toUpperCase() || '?';
 
   return (
     <main className="profile-page">
       <section className="profile-hero">
         <div className="profile-hero__inner">
-          <div className="profile-avatar">
-            <span>{initials}</span>
+          {/* Avatar with edit overlay */}
+          <div className="profile-avatar-wrapper">
+            <div className="profile-avatar" onClick={handleAvatarClick} title="Change photo">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Profile" className="profile-avatar__img" />
+              ) : (
+                <span>{initials}</span>
+              )}
+              <div className="profile-avatar__overlay">
+                <Camera size={20} />
+              </div>
+            </div>
+            {avatarUrl && (
+              <button
+                type="button"
+                className="profile-avatar__remove"
+                onClick={handleRemoveAvatar}
+                title="Remove photo"
+              >
+                <Trash2 size={13} />
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="profile-avatar__input"
+              onChange={handleFileChange}
+            />
           </div>
+
           <div>
             <h1 className="profile-hero__name">
-              {form.firstName || auth.user?.firstName} {form.lastName || auth.user?.lastName}
+              {form.firstName || user?.firstName} {form.lastName || user?.lastName}
             </h1>
-            <p className="profile-hero__username">@{auth.user?.username}</p>
+            <p className="profile-hero__username">@{user?.username}</p>
+            <p className="profile-hero__photo-hint">Click the photo to change it</p>
           </div>
         </div>
       </section>
@@ -96,7 +180,7 @@ export default function Profile() {
                 <input
                   type="email"
                   className="profile-input profile-input--disabled"
-                  value={auth.user?.email ?? ''}
+                  value={user?.email ?? ''}
                   readOnly
                 />
                 <span className="profile-input-badge">Read-only</span>
@@ -111,7 +195,7 @@ export default function Profile() {
                 <input
                   type="text"
                   className="profile-input profile-input--disabled"
-                  value={auth.user?.username ?? ''}
+                  value={user?.username ?? ''}
                   readOnly
                 />
                 <span className="profile-input-badge">Read-only</span>

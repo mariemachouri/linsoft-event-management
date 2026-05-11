@@ -1,15 +1,15 @@
-/* ──────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Dashboard Page
-   ────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .dashboard {
   min-height: 100vh;
   background: #f5f7fa;
 }
 
-/* ── Hero ── */
+/* â”€â”€ Hero â”€â”€ */
 .dashboard-hero {
-  background: linear-gradient(135deg, #1e2d45 0%, #2A3652 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
   padding: 5.5rem 1.5rem 2.5rem;
 }
 
@@ -65,7 +65,7 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.6rem 1.25rem;
-  background: linear-gradient(135deg, #FF5276, #ED4368);
+  background: linear-gradient(135deg, #e31e24, #ff4d52);
   color: #fff;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -76,10 +76,10 @@
 
 .dashboard-hero__cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(255,82,118,0.4);
+  box-shadow: 0 6px 20px rgba(227, 30, 36,0.4);
 }
 
-/* ── Body ── */
+/* â”€â”€ Body â”€â”€ */
 .dashboard-body {
   max-width: 1280px;
   margin: 0 auto;
@@ -89,7 +89,7 @@
   gap: 1.75rem;
 }
 
-/* ── Stats ── */
+/* â”€â”€ Stats â”€â”€ */
 .dashboard-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -118,7 +118,7 @@
   font-weight: 500;
 }
 
-/* ── Tabs ── */
+/* â”€â”€ Tabs â”€â”€ */
 .dashboard-tabs {
   display: flex;
   gap: 0.5rem;
@@ -146,10 +146,10 @@
   white-space: nowrap;
 }
 
-.dashboard-tab:hover { color: #2A3652; background: #f5f7fa; }
+.dashboard-tab:hover { color: #111111; background: #f5f7fa; }
 
 .dashboard-tab--active {
-  background: #2A3652;
+  background: #111111;
   color: #fff !important;
 }
 
@@ -164,7 +164,7 @@
   background: rgba(255,255,255,0.2);
 }
 
-/* ── Loading / Empty ── */
+/* â”€â”€ Loading / Empty â”€â”€ */
 .dashboard-loading {
   display: flex;
   justify-content: center;
@@ -185,7 +185,7 @@
 .dashboard-empty h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a2238;
+  color: #0a0a0a;
 }
 
 .dashboard-empty p { color: #7f8c8d; font-size: 0.9rem; }
@@ -194,7 +194,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.625rem 1.5rem;
-  background: #2A3652;
+  background: #111111;
   color: #fff;
   border-radius: 8px;
   text-decoration: none;
@@ -204,9 +204,9 @@
   margin-top: 0.5rem;
 }
 
-.dashboard-empty__btn:hover { background: #1e2d45; transform: translateY(-1px); }
+.dashboard-empty__btn:hover { background: #0a0a0a; transform: translateY(-1px); }
 
-/* ── Registration List ── */
+/* â”€â”€ Registration List â”€â”€ */
 .dashboard-list {
   display: flex;
   flex-direction: column;
@@ -226,8 +226,8 @@
 }
 
 .dashboard-item:hover {
-  border-color: rgba(42, 54, 82, 0.15);
-  box-shadow: 0 4px 16px rgba(42, 54, 82, 0.08);
+  border-color: rgba(17, 17, 17, 0.15);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.08);
 }
 
 @keyframes itemFadeIn {
@@ -267,7 +267,7 @@
 .dashboard-item__title {
   font-size: 1rem;
   font-weight: 700;
-  color: #1a2238;
+  color: #0a0a0a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -313,16 +313,16 @@
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #2A3652;
+  color: #111111;
   text-decoration: none;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .dashboard-item__view:hover {
-  background: #2A3652;
+  background: #111111;
   color: #fff;
-  border-color: #2A3652;
+  border-color: #111111;
 }
 
 .dashboard-item__cancel {
@@ -357,7 +357,7 @@
   to   { transform: rotate(360deg); }
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 900px) {
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
 }

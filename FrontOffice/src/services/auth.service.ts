@@ -21,13 +21,44 @@ export const authService = {
     try {
       const token = localStorage.getItem('access_token');
       if (!token) return null;
-      // Decode JWT payload to get sub (username)
+
+      // Decode JWT payload — Keycloak includes email, given_name, family_name
       const payload = JSON.parse(atob(token.split('.')[1]));
       const username: string = payload.preferred_username || payload.sub || '';
       if (!username) return null;
-      const response = await api.get<UserProfile[]>('/users');
-      const users = response.data;
-      return users.find((u) => u.username === username) || null;
+
+      // Build a minimal profile from the JWT claims so we always have data
+      const jwtProfile: UserProfile = {
+        id:          payload.sub ?? '',
+        username,
+        email:       payload.email        ?? '',
+        firstName:   payload.given_name   ?? '',
+        lastName:    payload.family_name  ?? '',
+        phoneNumber: undefined,
+        roles:       payload.realm_access?.roles ?? [],
+      };
+
+      // Try to enrich with MongoDB profile (may contain phoneNumber, avatarUrl, etc.)
+      try {
+        const response = await api.get<UserProfile[]>('/users');
+        const found = response.data.find((u) => u.username === username);
+        if (found) {
+          // Prefer DB data for editable fields, JWT for auth fields
+          return {
+            ...jwtProfile,
+            id:          found.id          || jwtProfile.id,
+            email:       found.email       || jwtProfile.email,
+            firstName:   found.firstName   || jwtProfile.firstName,
+            lastName:    found.lastName    || jwtProfile.lastName,
+            phoneNumber: found.phoneNumber,
+            roles:       found.roles       ?? jwtProfile.roles,
+          };
+        }
+      } catch {
+        // API unavailable — fall back to JWT data
+      }
+
+      return jwtProfile;
     } catch {
       return null;
     }

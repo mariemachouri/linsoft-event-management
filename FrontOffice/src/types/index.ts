@@ -6,12 +6,8 @@ export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
 export type EventCategory =
   | 'CONFERENCE'
   | 'WORKSHOP'
-  | 'CONCERT'
-  | 'SPORT'
-  | 'NETWORKING'
-  | 'FESTIVAL'
-  | 'SEMINAR'
-  | 'OTHER';
+  | 'MEETUP'
+  | 'SEMINAR';
 
 export type RegistrationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'WAITLISTED';
 
@@ -37,7 +33,7 @@ export interface Event {
 export interface Registration {
   id: string;
   eventId: string;
-  userId: string;
+  participantId: string;
   status: RegistrationStatus;
   createdAt?: string;
   confirmedAt?: string;
@@ -53,6 +49,7 @@ export interface UserProfile {
   phoneNumber?: string;
   roles?: string[];
   enabled?: boolean;
+  avatarUrl?: string;
 }
 
 export interface LoginRequest {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   Calendar,
@@ -34,6 +35,7 @@ const CATEGORIES = [
 ];
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
   const [events, setEvents]     = useState<Event[]>([]);
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState('');
@@ -237,15 +239,23 @@ export default function Home() {
       <section className="cta-banner">
         <div className="cta-banner__inner">
           <div className="cta-banner__content">
-          <h2 className="cta-banner__title">Ready for your next experience?</h2>
+            <h2 className="cta-banner__title">Ready for your next experience?</h2>
             <p className="cta-banner__subtitle">
-              Join our community and never miss an important LinSoft event.
+              {isAuthenticated
+                ? 'Welcome back! Discover and register for upcoming LinSoft events.'
+                : 'Join our community and never miss an important LinSoft event.'}
             </p>
           </div>
           <div className="cta-banner__actions">
-            <Link to="/register" className="cta-banner__btn cta-banner__btn--white">
-              Sign up for free
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard" className="cta-banner__btn cta-banner__btn--white">
+                My Dashboard
+              </Link>
+            ) : (
+              <Link to="/register" className="cta-banner__btn cta-banner__btn--white">
+                Sign up for free
+              </Link>
+            )}
             <Link to="/events" className="cta-banner__btn cta-banner__btn--outline">
               Browse events
             </Link>

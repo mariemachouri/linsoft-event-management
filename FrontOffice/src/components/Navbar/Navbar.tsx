@@ -89,7 +89,11 @@ export default function Navbar() {
                   onClick={() => setDropdownOpen((v) => !v)}
                   aria-expanded={dropdownOpen}
                 >
-                  <div className="navbar__avatar">{initials}</div>
+                  <div className="navbar__avatar">
+                    {user?.avatarUrl
+                      ? <img src={user.avatarUrl} alt="avatar" className="navbar__avatar-img" />
+                      : initials}
+                  </div>
                   <span className="navbar__username">{user?.firstName}</span>
                   <ChevronDown
                     size={14}
@@ -99,7 +103,11 @@ export default function Navbar() {
                 {dropdownOpen && (
                   <div className="navbar__dropdown">
                     <div className="navbar__dropdown-header">
-                      <div className="navbar__dropdown-avatar">{initials}</div>
+                      <div className="navbar__dropdown-avatar">
+                        {user?.avatarUrl
+                          ? <img src={user.avatarUrl} alt="avatar" className="navbar__avatar-img" />
+                          : initials}
+                      </div>
                       <div>
                         <div className="navbar__dropdown-name">
                           {user?.firstName} {user?.lastName}

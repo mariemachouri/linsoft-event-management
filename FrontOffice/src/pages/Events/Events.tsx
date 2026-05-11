@@ -9,13 +9,10 @@ import './Events.css';
 
 const CATEGORIES: { key: string; label: string; emoji: string }[] = [
   { key: 'ALL',        label: 'All',          emoji: '✨' },
-  { key: 'CONFERENCE', label: 'Conferences',   emoji: '🎤' },
-  { key: 'WORKSHOP',   label: 'Workshops',     emoji: '🛠️' },
-  { key: 'WEBINAR',    label: 'Webinars',      emoji: '💻' },
-  { key: 'TRAINING',   label: 'Trainings',     emoji: '📚' },
-  { key: 'NETWORKING', label: 'Networking',    emoji: '🤝' },
-  { key: 'SEMINAR',    label: 'Seminars',      emoji: '📊' },
-  { key: 'OTHER',      label: 'Other',         emoji: '❤️' },
+  { key: 'CONFERENCE', label: 'Conferences',  emoji: '🎤' },
+  { key: 'WORKSHOP',   label: 'Workshops',    emoji: '🛠️' },
+  { key: 'MEETUP',     label: 'Meetups',      emoji: '🤝' },
+  { key: 'SEMINAR',    label: 'Seminars',     emoji: '📊' },
 ];
 
 const SORT_OPTIONS = [
@@ -59,7 +56,7 @@ export default function Events() {
 
     // Category
     if (category !== 'ALL') {
-      list = list.filter((e) => e.category === (category as EventCategory));
+      list = list.filter((e) => e.category != null && e.category === (category as EventCategory));
     }
 
     // Search

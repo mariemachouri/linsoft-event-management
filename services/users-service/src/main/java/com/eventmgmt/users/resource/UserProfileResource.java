@@ -5,6 +5,7 @@ import com.eventmgmt.users.dto.UserResponse;
 import com.eventmgmt.users.dto.UserUpdateRequest;
 import com.eventmgmt.users.model.UserRole;
 import com.eventmgmt.users.service.UserProfileService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -71,7 +72,7 @@ public class UserProfileResource {
     }
     
     @POST
-    @RolesAllowed("admin")
+    @PermitAll
     @Operation(summary = "Create user", description = "Create a new user")
     @APIResponse(responseCode = "201", description = "User created successfully")
     @APIResponse(responseCode = "400", description = "Invalid input")
