@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { 
-  ChargePredictionService, 
-  EventMetrics, 
+import {
+  ChargePredictionService,
+  EventMetrics,
   EventCategory,
   ChargePrediction
 } from '../../../core/services/charge-prediction.service';
 import { EventService } from '../../../core/services/event.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-charge-prediction-create',
@@ -34,6 +35,7 @@ export class ChargePredictionCreateComponent implements OnInit {
     private fb: FormBuilder,
     private chargePredictionService: ChargePredictionService,
     private eventService: EventService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.predictionForm = this.fb.group({
@@ -100,7 +102,7 @@ export class ChargePredictionCreateComponent implements OnInit {
 
     const request = {
       eventId: formValue.eventId,
-      organizerId: selectedEvent.organizerId,
+      organizerId: selectedEvent.organizerId || this.authService.getCurrentUserId(),
       eventMetrics: eventMetrics
     };
 

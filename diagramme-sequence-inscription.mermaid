@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    actor Participant as 👤 Participant
+    participant GW as 🔀 API Gateway
+    participant ES as 📅 Events Service
+    participant RS as 📝 Registrations Service
+    participant KF as 📨 Apache Kafka
+    participant NS as 🔔 Notifications Service
+    participant DB as 🗄️ MongoDB
+
+    Participant->>GW: GET /api/events (Bearer Token)
+    GW->>ES: GET /api/events
+    ES->>DB: findAll() events
+    DB-->>ES: Liste des événements
+    ES-->>GW: [Event1, Event2, ...]
+    GW-->>Participant: Liste des événements publiés
+
+    Participant->>GW: POST /api/registrations {eventId, participantId}
+    GW->>RS: POST /api/registrations
+
+    RS->>ES: Vérifier disponibilité (currentParticipants < maxParticipants)
+    ES-->>RS: Événement disponible ✅
+
+    alt Places disponibles
+        RS->>DB: save(Registration{status: PENDING})
+        DB-->>RS: Registration créée avec ID
+        RS->>KF: Publish → topic: registrations.created {eventId, participantId, registrationId}
+        RS-->>GW: 201 Created {registration}
+        GW-->>Participant: Confirmation inscription PENDING
+
+        par Traitement asynchrone
+            KF->>NS: Consume registrations.created
+            NS->>NS: Créer Notification EMAIL
+            NS->>DB: save(Notification)
+            NS-->>Participant: 📧 Email "Inscription en attente de confirmation"
+
+            KF->>ES: Consume registrations.created
+            ES->>DB: Incrémenter currentParticipants
+        end
+
+        Note over RS, KF: L'organisateur valide l'inscription
+        RS->>DB: update(Registration{status: CONFIRMED})
+        RS->>KF: Publish → topic: registrations.confirmed
+        KF->>NS: Consume registrations.confirmed
+        NS-->>Participant: 📧 Email "Inscription confirmée !"
+
+    else Aucune place disponible
+        RS->>DB: save(Registration{status: WAITLISTED})
+        RS->>KF: Publish → topic: registrations.waitlisted
+        RS-->>GW: 201 Created {registration, status: WAITLISTED}
+        GW-->>Participant: Mise en liste d'attente
+        KF->>NS: Consume registrations.waitlisted
+        NS-->>Participant: 📧 Email "Vous êtes sur liste d'attente"
+    end

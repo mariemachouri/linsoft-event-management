@@ -30,14 +30,22 @@ public class NotificationConsumer {
     NotificationService notificationService;
 
     // ---------------------------------------------------------------
-    // Helper: build and persist a Notification, then send it
+    // Helpers: build and persist a Notification, then send it
     // ---------------------------------------------------------------
     private void createAndSend(String recipientEmail, String message) {
         Notification n = new Notification();
         n.recipientId = recipientEmail;
         n.type        = NotificationType.EMAIL;
         n.message     = message;
-        // NotificationService.create() persists the record and sends the email
+        notificationService.create(n);
+    }
+
+    private void createAndSendSms(String phoneNumber, String message) {
+        if (phoneNumber == null || phoneNumber.isBlank()) return;
+        Notification n = new Notification();
+        n.recipientId = phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber;
+        n.type        = NotificationType.SMS;
+        n.message     = message;
         notificationService.create(n);
     }
 
@@ -162,11 +170,23 @@ public class NotificationConsumer {
                 message.getEmail()
             );
 
-            // email field is directly available for user messages
+            // Send welcome email
             createAndSend(message.getEmail(), body);
-
             LOG.infof("Welcome email triggered for user %s → %s",
                     message.getUserId(), message.getEmail());
+
+            // Send welcome SMS if phone number is provided
+            if (message.getPhoneNumber() != null && !message.getPhoneNumber().isBlank()) {
+                String smsBody = String.format(
+                    "Bienvenue %s sur Event Management ! " +
+                    "Votre compte @%s est actif. Bonne découverte !",
+                    message.getFirstName(),
+                    message.getUsername()
+                );
+                createAndSendSms(message.getPhoneNumber(), smsBody);
+                LOG.infof("Welcome SMS triggered for user %s → %s",
+                        message.getUserId(), message.getPhoneNumber());
+            }
 
         } catch (Exception e) {
             LOG.errorf(e, "Error processing user-created message: %s", message.getUserId());

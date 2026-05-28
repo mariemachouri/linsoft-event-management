@@ -6,6 +6,8 @@ spring:
     name: gateway-service
   config:
     import: optional:configserver:http://localhost:8888
+  codec:
+    max-in-memory-size: 10MB
   cloud:
     gateway:
       discovery:
@@ -57,6 +59,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "http://localhost:4200"
+              - "http://localhost:4300"
             allowedMethods:
               - GET
               - POST

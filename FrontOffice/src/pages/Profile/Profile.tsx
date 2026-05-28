@@ -72,12 +72,24 @@ export default function Profile() {
     setSaved(false);
   };
 
+  // Clé de stockage stable liée à l'utilisateur (survit aux déconnexions)
+  const avatarKey = user?.id ? `user_avatar_${user.id}` : null;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.firstName.trim() || !form.lastName.trim()) {
       showToast('warning', 'First name and last name are required.');
       return;
+    }
+
+    // Persister la photo séparément (survit à la déconnexion)
+    if (avatarKey) {
+      if (avatarUrl) {
+        localStorage.setItem(avatarKey, avatarUrl);
+      } else {
+        localStorage.removeItem(avatarKey);
+      }
     }
 
     // Always persist avatar + form changes locally first

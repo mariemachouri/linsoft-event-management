@@ -1,0 +1,231 @@
+classDiagram
+    direction TB
+
+    class UserProfile {
+        +ObjectId id
+        +String keycloakId
+        +String username
+        +String email
+        +String firstName
+        +String lastName
+        +String phoneNumber
+        +Set~UserRole~ roles
+        +Boolean enabled
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +prePersist() void
+        +preUpdate() void
+    }
+
+    class Event {
+        +ObjectId id
+        +String title
+        +String description
+        +String location
+        +String startAt
+        +String endAt
+        +Integer maxParticipants
+        +Integer currentParticipants
+        +String organizerId
+        +String imageUrl
+        +EventCategory category
+        +EventStatus status
+        +List~String~ chargeIds
+        +String chargePredictionId
+    }
+
+    class Registration {
+        +ObjectId id
+        +String eventId
+        +String participantId
+        +String status
+        +String registeredAt
+        +setStatus(String) void
+        +getStatus() String
+    }
+
+    class Notification {
+        +ObjectId id
+        +String recipientId
+        +NotificationType type
+        +String message
+        +NotificationStatus status
+        +String sendAt
+    }
+
+    class ChargeItem {
+        +ObjectId id
+        +String eventId
+        +String catalogItemId
+        +String predictionId
+        +ChargeItemType item
+        +ChargeCategory category
+        +String description
+        +int quantity
+        +double unitPrice
+        +double amount
+        +String currency
+        +ChargeStatus status
+        +PaymentInfo paymentInfo
+        +String createdAt
+        +String updatedAt
+    }
+
+    class PaymentInfo {
+        +PaymentMethod method
+        +PaymentStatus status
+        +String provider
+        +boolean isActual
+        +String paidBy
+        +String paidAt
+        +String transactionId
+    }
+
+    class ChargePrediction {
+        +ObjectId id
+        +String eventId
+        +String organizerId
+        +EventMetrics eventMetrics
+        +PredictionResult predictionResult
+        +PaymentDecision paymentDecision
+        +ChargeStatus status
+        +String createdAt
+    }
+
+    class EventMetrics {
+        +int expectedAttendees
+        +EventCategory eventType
+        +int durationHours
+        +String location
+        +String city
+        +boolean cateringRequired
+        +boolean equipmentRequired
+        +double venueSize
+    }
+
+    class PredictionResult {
+        +double predictedTotalCost
+        +double confidenceScore
+        +CostBreakdown breakdown
+        +String aiModel
+        +List~String~ riskFactors
+        +List~String~ recommendations
+    }
+
+    class CostBreakdown {
+        +double venueCost
+        +double cateringCost
+        +double equipmentCost
+        +double staffingCost
+        +double marketingCost
+        +double insuranceCost
+        +double miscellaneousCost
+    }
+
+    class DashboardSnapshot {
+        +ObjectId id
+        +String organizerId
+        +int totalEvents
+        +int totalRegistrations
+        +double totalCharges
+    }
+
+    class AuditLog {
+        +ObjectId id
+        +String action
+        +String entityType
+        +String entityId
+        +String userId
+        +String timestamp
+    }
+
+    class UserRole {
+        <<enumeration>>
+        ADMIN
+        ORGANIZER
+        PARTICIPANT
+        MODERATOR
+    }
+
+    class EventStatus {
+        <<enumeration>>
+        DRAFT
+        PUBLISHED
+        CANCELLED
+        COMPLETED
+    }
+
+    class EventCategory {
+        <<enumeration>>
+        CONFERENCE
+        WORKSHOP
+        MEETUP
+        SEMINAR
+    }
+
+    class RegistrationStatus {
+        <<enumeration>>
+        CONFIRMED
+        PENDING
+        WAITLISTED
+        CANCELLED
+    }
+
+    class ChargeStatus {
+        <<enumeration>>
+        PENDING
+        APPROVED
+        PAID
+        REJECTED
+    }
+
+    class NotificationStatus {
+        <<enumeration>>
+        PENDING
+        SENT
+        FAILED
+    }
+
+    class NotificationType {
+        <<enumeration>>
+        EMAIL
+        SMS
+        PUSH
+    }
+
+    class PaymentMethod {
+        <<enumeration>>
+        STRIPE
+        PAYPAL
+        CASH
+        BANK_TRANSFER
+    }
+
+    %% Relations principales
+    UserProfile "1" --> "0..*" Event : organise
+    UserProfile "1" --> "0..*" Registration : effectue
+    UserProfile "1" --> "1..*" UserRole : possède
+
+    Event "1" --> "0..*" Registration : reçoit
+    Event "1" --> "0..*" ChargeItem : contient
+    Event "1" --> "0..1" ChargePrediction : associée à
+    Event --> EventStatus : a pour statut
+    Event --> EventCategory : appartient à
+
+    Registration --> RegistrationStatus : a pour statut
+
+    ChargeItem "1" *-- "1" PaymentInfo : contient
+    ChargeItem --> ChargeStatus : a pour statut
+    ChargeItem --> PaymentMethod : payé par
+
+    ChargePrediction "1" *-- "1" EventMetrics : décrit par
+    ChargePrediction "1" *-- "1" PredictionResult : produit
+    PredictionResult "1" *-- "1" CostBreakdown : détaillée par
+
+    Notification --> NotificationStatus : a pour statut
+    Notification --> NotificationType : de type
+    Notification --> UserProfile : envoyée à
+
+    DashboardSnapshot --> UserProfile : appartient à
+
+    AuditLog --> UserProfile : généré par

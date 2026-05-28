@@ -1,268 +1,261 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import Chart from 'chart.js';
-import { DashboardService } from "../../core/services/dashboard.service";
-import { EventService } from "../../core/services/event.service";
-import { UserService, UserResponse } from "../../core/services/user.service";
-import { RegistrationService, Registration } from "../../core/services/registration.service";
-import { AIAnalyticsService } from "../../core/services/ai-analytics.service";
+import { DashboardService } from '../../core/services/dashboard.service';
+import { EventService } from '../../core/services/event.service';
+import { UserService, UserResponse } from '../../core/services/user.service';
+import { RegistrationService, Registration } from '../../core/services/registration.service';
+import {
+  AIAnalyticsService,
+  ForecastResult,
+  AnomalyResult,
+  ClusterResult,
+  CorrelationMatrix,
+  HealthScore
+} from '../../core/services/ai-analytics.service';
 
 @Component({
-  selector: "app-dashboard",
-  templateUrl: "dashboard.component.html",
-  styleUrls: ["dashboard.component.scss"]
+  selector: 'app-dashboard',
+  templateUrl: 'dashboard.component.html',
+  styleUrls: ['dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  // Charts
-  public performanceChart: any;
-  public shipmentsChart: any;
-  public salesChart: any;
-  public tasksChart: any;
 
-  // Donn�es r�elles depuis la BD
-  public dashboardStats: any = {};
-  public events: any[] = [];
-  public users: UserResponse[] = [];
-  public registrations: Registration[] = [];
-  public loading = true;
+  // ── Charts ──────────────────────────────────────────────────
+  private performanceChart: any;
+  private shipmentsChart:   any;
+  private salesChart:       any;
+  private tasksChart:       any;
+  private forecastChart:    any;
+  private anomalyChart:     any;
+  private clusterChart:     any;
+
+  // ── Raw data ─────────────────────────────────────────────────
+  public dashboardStats: any   = {};
+  public events:         any[] = [];
+  public users:          UserResponse[]  = [];
+  public registrations:  Registration[] = [];
+
+  // ── UI state ─────────────────────────────────────────────────
+  public loading  = true;
   public error: string | null = null;
+  public activeTab = 'accounts';
 
-  // Onglets actifs
-  public activeTab: string = 'accounts';
+  // ── KPIs ─────────────────────────────────────────────────────
+  public totalShipments  = 0;
+  public dailySales      = 0;
+  public completedTasks  = 0;
 
-  // M�triques calcul�es
-  public totalShipments: number = 0;
-  public dailySales: number = 0;
-  public completedTasks: number = 0;
-
-  // Donn�es pour les graphiques (bas�es sur donn�es r�elles)
-  public monthlyData: number[] = [];
+  // ── Monthly series ────────────────────────────────────────────
+  public monthlyData:      number[] = [];
   public monthlyPurchases: number[] = [];
-  public monthlySessions: number[] = [];
+  public monthlySessions:  number[] = [];
 
-  // Insights IA
-  public aiRecommendations: string[] = [];
-  public healthScore: any = null;
-  public predictions: number[] = [];
+  // ── AI outputs ────────────────────────────────────────────────
+  public aiRecommendations: string[]          = [];
+  public healthScore:        HealthScore | null = null;
+  public predictions:        number[]          = [];
+
+  // ── New AI outputs ────────────────────────────────────────────
+  public forecastResult:     ForecastResult | null    = null;
+  public anomalies:          AnomalyResult[]          = [];
+  public anomalyCount:       number                   = 0;
+  public clusterResult:      ClusterResult | null     = null;
+  public correlationMatrix:  CorrelationMatrix | null = null;
+
+  // Mois labels for display
+  public readonly MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 
   constructor(
-    private dashboardService: DashboardService,
-    private eventService: EventService,
-    private userService: UserService,
-    private registrationService: RegistrationService,
-    private aiService: AIAnalyticsService
+    private dashboardSvc:    DashboardService,
+    private eventSvc:        EventService,
+    private userSvc:         UserService,
+    private registrationSvc: RegistrationService,
+    public  aiSvc:           AIAnalyticsService
   ) {}
 
-  ngOnInit() {
-    this.loadDashboardData();
-  }
+  ngOnInit()    { this.loadDashboardData(); }
+  ngOnDestroy() { this._destroyAllCharts(); }
 
-  ngOnDestroy() {
-    // Nettoyer les graphiques
-    if (this.performanceChart) this.performanceChart.destroy();
-    if (this.shipmentsChart) this.shipmentsChart.destroy();
-    if (this.salesChart) this.salesChart.destroy();
-    if (this.tasksChart) this.tasksChart.destroy();
-  }
+  // ============================================================
+  // DATA LOADING
+  // ============================================================
 
   loadDashboardData() {
     this.loading = true;
-    this.error = null;
+    this.error   = null;
 
-    // R�cup�rer les statistiques du dashboard
-    this.dashboardService.getDashboardStats().subscribe(
-      (stats) => {
+    this.dashboardSvc.getDashboardStats().subscribe(
+      stats => {
         this.dashboardStats = stats;
-        console.log('Dashboard stats loaded:', stats);
-        this.loading = false;
-        
-        // Initialiser les graphiques apr�s avoir charg� les donn�es
+        this.loading        = false;
         setTimeout(() => this.processDataAndInitCharts(), 300);
       },
-      (error) => {
-        console.error('Error loading dashboard stats:', error);
-        this.error = 'Error loading statistics';
+      () => {
+        this.error   = 'Erreur de chargement — données de démonstration affichées';
         this.loading = false;
-        
-        // Initialiser avec des donn�es par d�faut
         setTimeout(() => this.processDataAndInitCharts(), 300);
       }
     );
 
-    // R�cup�rer les �v�nements
-    this.eventService.getAllEvents().subscribe(
-      (events) => {
-        this.events = events;
-        console.log('Events loaded:', events);
-      },
-      (error) => {
-        console.error('Error loading events:', error);
-        this.events = [];
-      }
+    this.eventSvc.getAllEvents().subscribe(
+      ev  => { this.events = ev; },
+      ()  => { this.events = []; }
     );
 
-    // R�cup�rer les utilisateurs
-    this.userService.getAllUsers().subscribe(
-      (users) => {
-        this.users = users;
-        console.log('Users loaded:', users);
-      },
-      (error) => {
-        console.error('Error loading users:', error);
-        this.users = [];
-      }
+    this.userSvc.getAllUsers().subscribe(
+      us  => { this.users = us; },
+      ()  => { this.users = []; }
     );
 
-    // R�cup�rer les inscriptions
-    this.registrationService.getAllRegistrations().subscribe(
-      (registrations) => {
-        this.registrations = registrations;
-        console.log('Registrations loaded:', registrations);
-      },
-      (error) => {
-        console.error('Error loading registrations:', error);
-        this.registrations = [];
-      }
+    this.registrationSvc.getAllRegistrations().subscribe(
+      reg => { this.registrations = reg; },
+      ()  => { this.registrations = []; }
     );
   }
 
   processDataAndInitCharts() {
-    // Calculer les m�triques � partir des donn�es r�elles
     this.calculateMetrics();
-    
-    // G�n�rer les donn�es mensuelles � partir des �v�nements et inscriptions
     this.generateMonthlyData();
-    
-    // Initialiser tous les graphiques
+
+    // Charts de base
     this.initPerformanceChart();
     this.initShipmentsChart();
     this.initSalesChart();
     this.initTasksChart();
 
-    // G�n�rer les insights IA
+    // Analyses IA
     this.generateAIInsights();
+    this.runAdvancedAI();
   }
 
+  // ============================================================
+  // METRICS
+  // ============================================================
+
   calculateMetrics() {
-    // Total des inscriptions comme "shipments"
     this.totalShipments = this.dashboardStats?.totalRegistrations || this.registrations?.length || 0;
-    
-    // Calculer les ventes quotidiennes (bas� sur les �v�nements du jour)
+
     const today = new Date();
-    const todayEvents = this.events.filter(event => {
-      const eventDate = new Date(event.startDate);
-      return eventDate.toDateString() === today.toDateString();
+    const todayEvts = this.events.filter(e => {
+      const d = new Date(e.startDate);
+      return d.toDateString() === today.toDateString();
     });
-    this.dailySales = todayEvents.length * 350; // Simulation : 350� par �v�nement
-    
-    // T�ches compl�t�es (�v�nements pass�s)
+    this.dailySales = todayEvts.length * 350;
+
     const now = new Date();
-    this.completedTasks = this.events.filter(event => {
-      const eventDate = new Date(event.startDate);
-      return eventDate < now;
-    }).length;
+    this.completedTasks = this.events.filter(e => new Date(e.startDate) < now).length;
   }
 
   generateMonthlyData() {
-    // G�n�rer des donn�es mensuelles bas�es sur les inscriptions et �v�nements
-    const monthlyRegistrations = new Array(12).fill(0);
-    const monthlyEvents = new Array(12).fill(0);
-    const monthlyUsers = new Array(12).fill(0);
+    const mReg   = new Array(12).fill(0);
+    const mEvts  = new Array(12).fill(0);
 
-    // Compter les inscriptions par mois
-    this.registrations.forEach(reg => {
-      if (reg.registrationDate) {
-        const month = new Date(reg.registrationDate).getMonth();
-        monthlyRegistrations[month]++;
-      }
+    this.registrations.forEach(r => {
+      const dateStr = r.registeredAt || r.registrationDate || r.createdAt;
+      if (dateStr) mReg[new Date(dateStr).getMonth()]++;
+    });
+    this.events.forEach(e => {
+      const dateStr = e.startAt || e.startDate;
+      if (dateStr) mEvts[new Date(dateStr).getMonth()]++;
     });
 
-    // Compter les �v�nements par mois
-    this.events.forEach(event => {
-      if (event.startDate) {
-        const month = new Date(event.startDate).getMonth();
-        monthlyEvents[month]++;
-      }
-    });
+    const hasReal = this.registrations.length > 0 || this.events.length > 0;
 
-    // G�n�rer des donn�es avec une tendance r�aliste
-    // Si pas de donn�es r�elles, utiliser des donn�es de d�monstration
-    const hasRealData = this.registrations.length > 0 || this.events.length > 0;
-    
-    if (hasRealData) {
-      // Utiliser les donn�es r�elles avec normalisation
-      const maxReg = Math.max(...monthlyRegistrations, 1);
-      this.monthlyData = monthlyRegistrations.map(val => Math.round((val / maxReg) * 100 + 20));
-      
-      const maxEvents = Math.max(...monthlyEvents, 1);
-      this.monthlyPurchases = monthlyEvents.map(val => Math.round((val / maxEvents) * 100 + 20));
-      
-      // Sessions bas�es sur une combinaison
-      this.monthlySessions = monthlyRegistrations.map((val, i) => 
-        Math.round(((val + monthlyEvents[i]) / 2) + Math.random() * 20)
+    if (hasReal) {
+      const maxR = Math.max(...mReg, 1);
+      const maxE = Math.max(...mEvts, 1);
+      this.monthlyData      = mReg.map(v => Math.round((v / maxR) * 100 + 20));
+      this.monthlyPurchases = mEvts.map(v => Math.round((v / maxE) * 100 + 20));
+      this.monthlySessions  = mReg.map((v, i) =>
+        Math.round(((v + mEvts[i]) / 2) + Math.random() * 20)
       );
     } else {
-      // Donn�es de d�monstration r�alistes
-      this.monthlyData = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
+      this.monthlyData      = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
       this.monthlyPurchases = [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120];
-      this.monthlySessions = [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130];
+      this.monthlySessions  = [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130];
     }
   }
 
+  // ============================================================
+  // AI — BASIC INSIGHTS (health score + smart recs)
+  // ============================================================
+
   generateAIInsights() {
-    // G�n�rer des recommandations intelligentes
-    this.aiService.generateSmartRecommendations({
-      monthlyAccounts: this.monthlyData,
-      monthlyPurchases: this.monthlyPurchases,
-      monthlySessions: this.monthlySessions
-    }).subscribe(recommendations => {
-      this.aiRecommendations = recommendations;
-    });
+    this.aiSvc.generateSmartRecommendations({
+      monthlyAccounts:   this.monthlyData,
+      monthlyPurchases:  this.monthlyPurchases,
+      monthlySessions:   this.monthlySessions
+    }).subscribe(recs => this.aiRecommendations = recs);
 
-    // Calculer le score de sant�
-    this.aiService.calculateHealthScore({
-      events: this.events.length,
-      users: this.users.length,
-      registrations: this.registrations.length,
-      completedTasks: this.completedTasks
-    }).subscribe(score => {
-      this.healthScore = score;
-    });
+    this.aiSvc.calculateHealthScore({
+      events:                this.events.length,
+      users:                 this.users.length,
+      registrations:         this.registrations.length,
+      completedTasks:        this.completedTasks,
+      monthlyRegistrations:  this.monthlyData
+    }).subscribe(score => this.healthScore = score);
 
-    // Pr�dire les tendances futures
-    this.aiService.predictTrends(this.monthlyData).subscribe(predictions => {
-      this.predictions = predictions;
-      console.log('AI Predictions:', predictions);
-    });
+    this.aiSvc.predictTrends(this.monthlyData)
+      .subscribe(p => this.predictions = p);
   }
+
+  // ============================================================
+  // AI — ADVANCED MODELS
+  // ============================================================
+
+  runAdvancedAI() {
+    // 1. Prévision automatique (Holt-Winters vs Polynomiale)
+    this.aiSvc.forecastAuto(this.monthlyData, 3).subscribe(result => {
+      this.forecastResult = result;
+      setTimeout(() => this.initForecastChart(), 100);
+    });
+
+    // 2. Détection d'anomalies (IQR + Z-Score)
+    this.aiSvc.detectAnomalies(this.monthlyData).subscribe(results => {
+      this.anomalies     = results;
+      this.anomalyCount  = results.filter(r => r.isAnomaly).length;
+      setTimeout(() => this.initAnomalyChart(), 100);
+    });
+
+    // 3. K-Means clustering sur les inscriptions mensuelles
+    this.aiSvc.clusterData(this.monthlyData, 3).subscribe(result => {
+      this.clusterResult = result;
+      setTimeout(() => this.initClusterChart(), 100);
+    });
+
+    // 4. Matrice de corrélation de Pearson
+    this.correlationMatrix = this.aiSvc.computeCorrelationMatrix([
+      { label: 'Inscriptions', data: this.monthlyData      },
+      { label: 'Événements',   data: this.monthlyPurchases },
+      { label: 'Sessions',     data: this.monthlySessions  }
+    ]);
+  }
+
+  // ============================================================
+  // CHART INITIALISATION
+  // ============================================================
 
   initPerformanceChart() {
     const canvas = document.getElementById('performanceChart') as HTMLCanvasElement;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    
-    // D�truire le graphique s'il existe d�j�
-    if (this.performanceChart) {
-      this.performanceChart.destroy();
-    }
+    if (this.performanceChart) this.performanceChart.destroy();
 
-    const gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
-    gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(233,32,16,0)');
+    const grad = ctx.createLinearGradient(0, 230, 0, 50);
+    grad.addColorStop(1, 'rgba(233,32,16,0.2)');
+    grad.addColorStop(0.4, 'rgba(233,32,16,0.0)');
+    grad.addColorStop(0, 'rgba(233,32,16,0)');
 
     this.performanceChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        labels: this.MONTHS,
         datasets: [{
           label: this.getActiveDatasetLabel(),
           fill: true,
-          backgroundColor: gradientStroke,
+          backgroundColor: grad,
           borderColor: '#ec250d',
           borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
           pointBackgroundColor: '#ec250d',
           pointBorderColor: 'rgba(255,255,255,0)',
           pointHoverBackgroundColor: '#ec250d',
@@ -275,47 +268,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       options: {
         maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          backgroundColor: '#f5f5f5',
-          titleFontColor: '#333',
-          bodyFontColor: '#666',
-          bodySpacing: 4,
-          xPadding: 12,
-          mode: "nearest",
-          intersect: 0,
-          position: "nearest"
-        },
+        legend: { display: false },
+        tooltips: { backgroundColor: '#f5f5f5', titleFontColor: '#333', bodyFontColor: '#666', mode: 'nearest', intersect: false },
         responsive: true,
         scales: {
-          yAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(29,140,248,0.0)',
-              zeroLineColor: "transparent",
-            },
-            ticks: {
-              suggestedMin: 50,
-              suggestedMax: 150,
-              padding: 20,
-              fontColor: "#9a9a9a"
-            }
-          }],
-          xAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(0,242,195,0.1)',
-              zeroLineColor: "transparent",
-            },
-            ticks: {
-              padding: 20,
-              fontColor: "#9a9a9a"
-            }
-          }]
+          yAxes: [{ gridLines: { drawBorder: false, color: 'transparent', zeroLineColor: 'transparent' }, ticks: { suggestedMin: 50, suggestedMax: 150, padding: 20, fontColor: '#9a9a9a' } }],
+          xAxes: [{ gridLines: { drawBorder: false, color: 'rgba(0,242,195,0.1)', zeroLineColor: 'transparent' }, ticks: { padding: 20, fontColor: '#9a9a9a' } }]
         }
       }
     });
@@ -324,273 +282,296 @@ export class DashboardComponent implements OnInit, OnDestroy {
   initShipmentsChart() {
     const canvas = document.getElementById('shipmentsChart') as HTMLCanvasElement;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    
-    if (this.shipmentsChart) {
-      this.shipmentsChart.destroy();
-    }
+    if (this.shipmentsChart) this.shipmentsChart.destroy();
 
-    const gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, 'rgba(233,32,16,0.2)');
-    gradientStroke.addColorStop(0.4, 'rgba(233,32,16,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(233,32,16,0)');
-
-    // Donn�es simplifi�es pour le mini graphique
-    const miniData = this.monthlyData.map((val, i) => i % 2 === 0 ? val : val * 0.8);
+    const grad = ctx.createLinearGradient(0, 230, 0, 50);
+    grad.addColorStop(1, 'rgba(233,32,16,0.2)');
+    grad.addColorStop(0.4, 'rgba(233,32,16,0.0)');
+    grad.addColorStop(0, 'rgba(233,32,16,0)');
 
     this.shipmentsChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-        datasets: [{
-          label: "Registrations",
-          fill: true,
-          backgroundColor: gradientStroke,
-          borderColor: '#ec250d',
-          borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
-          pointBackgroundColor: '#ec250d',
-          pointBorderColor: 'rgba(255,255,255,0)',
-          pointHoverBackgroundColor: '#ec250d',
-          pointBorderWidth: 20,
-          pointHoverRadius: 4,
-          pointHoverBorderWidth: 15,
-          pointRadius: 0,
-          data: miniData.slice(0, 10)
-        }]
+        labels: ['1','2','3','4','5','6','7','8','9','10'],
+        datasets: [{ label: 'Inscriptions', fill: true, backgroundColor: grad, borderColor: '#ec250d', borderWidth: 2, pointRadius: 0, data: this.monthlyData.slice(0, 10) }]
       },
-      options: {
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
-        },
-        scales: {
-          yAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }],
-          xAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }]
-        }
-      }
+      options: { maintainAspectRatio: false, legend: { display: false }, tooltips: { enabled: false }, scales: { yAxes: [{ display: false }], xAxes: [{ display: false }] } }
     });
   }
 
   initSalesChart() {
     const canvas = document.getElementById('salesChart') as HTMLCanvasElement;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    
-    if (this.salesChart) {
-      this.salesChart.destroy();
-    }
-
-    // Donn�es pour le graphique � barres
-    const barData = [50, 80, 60, 100, 70, 50];
+    if (this.salesChart) this.salesChart.destroy();
 
     this.salesChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['1', '2', '3', '4', '5', '6'],
-        datasets: [{
-          label: "Ventes",
-          backgroundColor: '#1d8cf8',
-          borderColor: '#1d8cf8',
-          borderWidth: 2,
-          data: barData
-        }]
+        labels: ['1','2','3','4','5','6'],
+        datasets: [{ label: 'Ventes', backgroundColor: '#1d8cf8', borderColor: '#1d8cf8', borderWidth: 2, data: [50, 80, 60, 100, 70, 50] }]
       },
-      options: {
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
-        },
-        scales: {
-          yAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }],
-          xAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }]
-        }
-      }
+      options: { maintainAspectRatio: false, legend: { display: false }, tooltips: { enabled: false }, scales: { yAxes: [{ display: false }], xAxes: [{ display: false }] } }
     });
   }
 
   initTasksChart() {
     const canvas = document.getElementById('tasksChart') as HTMLCanvasElement;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    
-    if (this.tasksChart) {
-      this.tasksChart.destroy();
-    }
+    if (this.tasksChart) this.tasksChart.destroy();
 
-    const gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, 'rgba(0,242,195,0.2)');
-    gradientStroke.addColorStop(0.4, 'rgba(0,242,195,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(0,242,195,0)');
-
-    // Donn�es pour t�ches compl�t�es
-    const taskData = [90, 60, 80, 60, 90, 70, 80];
+    const grad = ctx.createLinearGradient(0, 230, 0, 50);
+    grad.addColorStop(1, 'rgba(0,242,195,0.2)');
+    grad.addColorStop(0.4, 'rgba(0,242,195,0.0)');
+    grad.addColorStop(0, 'rgba(0,242,195,0)');
 
     this.tasksChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['1', '2', '3', '4', '5', '6', '7'],
-        datasets: [{
-          label: "T�ches",
-          fill: true,
-          backgroundColor: gradientStroke,
-          borderColor: '#00f2c3',
-          borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
-          pointBackgroundColor: '#00f2c3',
-          pointBorderColor: 'rgba(255,255,255,0)',
-          pointHoverBackgroundColor: '#00f2c3',
-          pointBorderWidth: 20,
-          pointHoverRadius: 4,
-          pointHoverBorderWidth: 15,
-          pointRadius: 0,
-          data: taskData
-        }]
+        labels: ['1','2','3','4','5','6','7'],
+        datasets: [{ label: 'Tâches', fill: true, backgroundColor: grad, borderColor: '#00f2c3', borderWidth: 2, pointRadius: 0, data: [90, 60, 80, 60, 90, 70, 80] }]
+      },
+      options: { maintainAspectRatio: false, legend: { display: false }, tooltips: { enabled: false }, scales: { yAxes: [{ display: false }], xAxes: [{ display: false }] } }
+    });
+  }
+
+  // ── FORECAST CHART (historique + prévision + intervalles) ───
+
+  initForecastChart() {
+    const canvas = document.getElementById('forecastChart') as HTMLCanvasElement;
+    if (!canvas || !this.forecastResult) return;
+    const ctx = canvas.getContext('2d');
+    if (this.forecastChart) this.forecastChart.destroy();
+
+    const fr      = this.forecastResult;
+    const histLen = fr.historical.length;
+    const labels  = [
+      ...this.MONTHS,
+      'M+1', 'M+2', 'M+3'
+    ];
+
+    // Données historiques (avec null pour les mois futurs)
+    const histData: (number | null)[]    = [...fr.historical, null, null, null];
+    // Prévisions (avec null pour les mois passés)
+    const forecastData: (number | null)[] = [...new Array(histLen).fill(null), ...fr.forecast];
+    const upperData: (number | null)[]    = [...new Array(histLen).fill(null), ...fr.upperBound];
+    const lowerData: (number | null)[]    = [...new Array(histLen).fill(null), ...fr.lowerBound];
+
+    this.forecastChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Historique',
+            data: histData,
+            borderColor: '#1d8cf8',
+            backgroundColor: 'rgba(29,140,248,0.08)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#1d8cf8',
+            fill: false
+          } as any,
+          {
+            label: 'Prévision IA',
+            data: forecastData,
+            borderColor: '#e14eca',
+            backgroundColor: 'rgba(225,78,202,0.08)',
+            borderWidth: 2,
+            borderDash: [6, 3],
+            pointRadius: 5,
+            pointBackgroundColor: '#e14eca',
+            fill: false
+          } as any,
+          {
+            label: 'Borne haute (95%)',
+            data: upperData,
+            borderColor: 'rgba(225,78,202,0.3)',
+            backgroundColor: 'rgba(225,78,202,0.12)',
+            borderWidth: 1,
+            borderDash: [3, 3],
+            pointRadius: 0,
+            fill: '+1'
+          } as any,
+          {
+            label: 'Borne basse (95%)',
+            data: lowerData,
+            borderColor: 'rgba(225,78,202,0.3)',
+            backgroundColor: 'rgba(225,78,202,0.12)',
+            borderWidth: 1,
+            borderDash: [3, 3],
+            pointRadius: 0,
+            fill: false
+          } as any
+        ]
       },
       options: {
         maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
-        },
+        legend: { display: true, labels: { fontColor: '#9a9a9a', fontSize: 11 } },
+        tooltips: { mode: 'index', intersect: false, backgroundColor: '#1e1e2f', titleFontColor: '#fff', bodyFontColor: '#ccc' },
         scales: {
-          yAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }],
-          xAxes: [{
-            display: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
-          }]
+          yAxes: [{ gridLines: { color: 'rgba(255,255,255,0.05)', zeroLineColor: 'transparent' }, ticks: { fontColor: '#9a9a9a', padding: 10 } }],
+          xAxes: [{ gridLines: { color: 'rgba(255,255,255,0.05)', zeroLineColor: 'transparent' }, ticks: { fontColor: '#9a9a9a' } }]
         }
       }
     });
   }
 
-  switchTab(tab: string) {
-    this.activeTab = tab;
-    this.updatePerformanceChart();
+  // ── ANOMALY CHART (barres colorées selon anomalie) ───────────
+
+  initAnomalyChart() {
+    const canvas = document.getElementById('anomalyChart') as HTMLCanvasElement;
+    if (!canvas || !this.anomalies.length) return;
+    const ctx = canvas.getContext('2d');
+    if (this.anomalyChart) this.anomalyChart.destroy();
+
+    const colors = this.anomalies.map(a => {
+      if (!a.isAnomaly)            return 'rgba(29,140,248,0.7)';
+      if (a.severity === 'high')   return 'rgba(253,93,147,0.9)';
+      if (a.severity === 'medium') return 'rgba(255,141,114,0.85)';
+      return 'rgba(255,200,100,0.8)';
+    });
+
+    this.anomalyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: this.MONTHS,
+        datasets: [{
+          label: 'Inscriptions mensuelles',
+          data: this.monthlyData,
+          backgroundColor: colors,
+          borderColor: colors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        legend: { display: false },
+        tooltips: {
+          callbacks: {
+            afterLabel: (item: any) => {
+              const a = this.anomalies[item.index];
+              return a.isAnomaly ? `⚠ Anomalie (z=${a.zScore}) — ${a.direction === 'spike' ? 'pic' : 'creux'}` : '';
+            }
+          },
+          backgroundColor: '#1e1e2f', titleFontColor: '#fff', bodyFontColor: '#ccc'
+        },
+        scales: {
+          yAxes: [{ gridLines: { color: 'rgba(255,255,255,0.05)', zeroLineColor: 'transparent' }, ticks: { fontColor: '#9a9a9a' } }],
+          xAxes: [{ gridLines: { display: false }, ticks: { fontColor: '#9a9a9a' } }]
+        }
+      }
+    });
   }
 
-  updatePerformanceChart() {
-    if (!this.performanceChart) return;
+  // ── CLUSTER DONUT CHART ───────────────────────────────────────
 
-    this.performanceChart.data.datasets[0].data = this.getActiveDataset();
-    this.performanceChart.data.datasets[0].label = this.getActiveDatasetLabel();
-    this.performanceChart.update();
+  initClusterChart() {
+    const canvas = document.getElementById('clusterChart') as HTMLCanvasElement;
+    if (!canvas || !this.clusterResult?.clusters?.length) return;
+    const ctx = canvas.getContext('2d');
+    if (this.clusterChart) this.clusterChart.destroy();
+
+    const labels = this.clusterResult.clusters.map(c =>
+      c.label === 'high-performance'   ? '🟢 Haute perf.'   :
+      c.label === 'medium-performance' ? '🟡 Moy. perf.'    : '🔴 Basse perf.'
+    );
+
+    this.clusterChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: this.clusterResult.clusters.map(c => c.size),
+          backgroundColor: this.clusterResult.clusters.map(c => c.color),
+          borderWidth: 2,
+          borderColor: '#27293d'
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        legend: { display: true, position: 'bottom', labels: { fontColor: '#9a9a9a', fontSize: 11 } },
+        cutoutPercentage: 70,
+        tooltips: {
+          callbacks: {
+            label: (item: any, data: any) => {
+              const c = this.clusterResult.clusters[item.index];
+              return ` ${labels[item.index]}: ${c.size} mois (${c.percentage}%)`;
+            }
+          },
+          backgroundColor: '#1e1e2f', titleFontColor: '#fff', bodyFontColor: '#ccc'
+        }
+      }
+    });
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
+    if (this.performanceChart) {
+      this.performanceChart.data.datasets[0].data  = this.getActiveDataset();
+      this.performanceChart.data.datasets[0].label = this.getActiveDatasetLabel();
+      this.performanceChart.update();
+    }
   }
 
   getActiveDataset(): number[] {
-    switch (this.activeTab) {
-      case 'accounts':
-        return this.monthlyData;
-      case 'purchases':
-        return this.monthlyPurchases;
-      case 'sessions':
-        return this.monthlySessions;
-      default:
-        return this.monthlyData;
-    }
+    return this.activeTab === 'purchases' ? this.monthlyPurchases
+         : this.activeTab === 'sessions'  ? this.monthlySessions
+         : this.monthlyData;
   }
 
   getActiveDatasetLabel(): string {
-    switch (this.activeTab) {
-      case 'accounts':
-        return 'Accounts Created';
-      case 'purchases':
-        return 'Purchases / Events';
-      case 'sessions':
-        return 'Active Sessions';
-      default:
-        return 'Comptes';
-    }
+    return this.activeTab === 'purchases' ? 'Événements / Achats'
+         : this.activeTab === 'sessions'  ? 'Sessions actives'
+         : 'Inscriptions';
   }
 
-  formatNumber(num: number): string {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(0) + 'K';
-    }
-    return num.toString();
+  formatNumber(n: number): string {
+    return n >= 1_000_000 ? (n / 1_000_000).toFixed(1) + 'M'
+         : n >= 1_000     ? (n / 1_000).toFixed(0)     + 'K'
+         : String(n);
   }
 
   getHealthScoreClass(): string {
     if (!this.healthScore) return 'text-muted';
-    
-    switch (this.healthScore.status) {
-      case 'excellent': return 'text-success';
-      case 'good': return 'text-info';
-      case 'fair': return 'text-warning';
-      case 'poor': return 'text-danger';
-      default: return 'text-muted';
-    }
+    return { excellent: 'text-success', good: 'text-info', fair: 'text-warning', poor: 'text-danger' }[this.healthScore.status] || 'text-muted';
   }
 
   getHealthScoreIcon(): string {
     if (!this.healthScore) return 'icon-bulb-63';
-    
-    switch (this.healthScore.status) {
-      case 'excellent': return 'icon-check-2';
-      case 'good': return 'icon-trophy';
-      case 'fair': return 'icon-alert-circle-exc';
-      case 'poor': return 'icon-simple-remove';
-      default: return 'icon-bulb-63';
-    }
+    return { excellent: 'icon-check-2', good: 'icon-trophy', fair: 'icon-alert-circle-exc', poor: 'icon-simple-remove' }[this.healthScore.status] || 'icon-bulb-63';
+  }
+
+  getTrendIcon(): string {
+    if (!this.healthScore) return '→';
+    return { improving: '↑', stable: '→', declining: '↓' }[this.healthScore.trend] || '→';
+  }
+
+  getTrendClass(): string {
+    if (!this.healthScore) return '';
+    return { improving: 'trend-up', stable: 'trend-stable', declining: 'trend-down' }[this.healthScore.trend] || '';
+  }
+
+  getCorrelationColor(value: number): string {
+    const abs = Math.abs(value);
+    if (abs >= 0.8) return value > 0 ? '#00f2c3' : '#fd5d93';
+    if (abs >= 0.5) return value > 0 ? '#1d8cf8' : '#ff8d72';
+    return 'rgba(255,255,255,0.1)';
+  }
+
+  getDimensionWidth(value: number, max: number): number {
+    return Math.round((value / max) * 100);
+  }
+
+  private _destroyAllCharts() {
+    [this.performanceChart, this.shipmentsChart, this.salesChart,
+     this.tasksChart, this.forecastChart, this.anomalyChart, this.clusterChart]
+      .forEach(c => { if (c) c.destroy(); });
   }
 }

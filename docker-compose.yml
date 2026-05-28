@@ -15,6 +15,8 @@ services:
       - KC_HOSTNAME_STRICT=false
       - KC_HTTP_ENABLED=true
       - KC_HEALTH_ENABLED=true
+      - KC_HOSTNAME_URL=http://localhost:8180
+      - KC_HOSTNAME_ADMIN_URL=http://localhost:8180
     command: start-dev
     ports:
       - "8180:8080"
@@ -174,6 +176,7 @@ services:
       - "8080:8080"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_CODEC_MAX_IN_MEMORY_SIZE=10MB
       - SPRING_CLOUD_GATEWAY_ROUTES[0]_ID=auth-service
       - SPRING_CLOUD_GATEWAY_ROUTES[0]_URI=http://users-service:8083
       - SPRING_CLOUD_GATEWAY_ROUTES[0]_PREDICATES[0]=Path=/api/auth/**
@@ -260,7 +263,7 @@ services:
       - "8083:8083"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/users_db?authSource=admin
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://admin:admin123@mongodb:27017/?authSource=admin
       - KEYCLOAK_URL=http://keycloak:8080/realms/event-mgmt
       - KEYCLOAK_ADMIN_URL=http://keycloak:8080
       - KEYCLOAK_ADMIN_USERNAME=admin
@@ -268,6 +271,9 @@ services:
       - KEYCLOAK_REALM=event-mgmt
       - KEYCLOAK_CLIENT_SECRET=users-service-secret
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      # Corriger l'URL OIDC pour Docker (localhost:8180 -> keycloak:8080 dans le réseau Docker)
+      - QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/realms/event-mgmt
+      - QUARKUS_OIDC_TOKEN_ISSUER=http://localhost:8180/realms/event-mgmt
     depends_on:
       kafka:
         condition: service_healthy
@@ -297,6 +303,17 @@ services:
       - FIREBASE_CREDENTIALS_PATH=config/firebase-credentials.json
       - KEYCLOAK_URL=http://keycloak:8080/realms/event-mgmt
       - QUARKUS_OIDC_TOKEN_ISSUER=http://localhost:8180/realms/event-mgmt
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=587
+      - EMAIL_USERNAME=achoury.mayem@gmail.com
+      - EMAIL_PASSWORD=aghgcmbgaypmholy
+      - EMAIL_FROM=achoury.mayem@gmail.com
+      # Africa's Talking SMS
+      - AT_ENABLED=true
+      - AT_SANDBOX=true
+      - AT_USERNAME=sandbox
+      - AT_API_KEY=atsk_c28b5f1ff537e80ad0bf12394d8ad3f8fcff4ed80b43f1995b1b4e5492247a8e549b4fd9
+      # AT_SENDER_ID=EventMgmt  # uncomment to set custom sender name
     volumes:
       - ./services/notifications-service/config:/app/config
     depends_on:

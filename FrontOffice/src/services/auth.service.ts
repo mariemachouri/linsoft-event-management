@@ -1,14 +1,17 @@
-import api from './api';
+import api, { publicApi } from './api';
 import type { LoginRequest, LoginResponse, RegisterRequest, UserProfile } from '../types';
 
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>('/auth/login', credentials);
+    // Login sans token (endpoint public)
+    const response = await publicApi.post<LoginResponse>('/auth/login', credentials);
     return response.data;
   },
 
   async register(data: RegisterRequest): Promise<UserProfile> {
-    const response = await api.post<UserProfile>('/users', data);
+    // Inscription sans token — évite que l'intercepteur envoie un token périmé
+    // et déclenche une validation OIDC côté users-service (@PermitAll)
+    const response = await publicApi.post<UserProfile>('/users', data);
     return response.data;
   },
 
@@ -38,27 +41,32 @@ export const authService = {
         roles:       payload.realm_access?.roles ?? [],
       };
 
-      // Try to enrich with MongoDB profile (may contain phoneNumber, avatarUrl, etc.)
+      // Try to enrich with MongoDB profile via username endpoint (phoneNumber, etc.)
       try {
-        const response = await api.get<UserProfile[]>('/users');
-        const found = response.data.find((u) => u.username === username);
+        const response = await api.get<UserProfile>(`/users/username/${username}`);
+        const found = response.data;
         if (found) {
-          // Prefer DB data for editable fields, JWT for auth fields
+          const mongoId = found.id || jwtProfile.id;
+          // Recharger la photo persistée (stockée par clé user_avatar_<id>)
+          const savedAvatar = localStorage.getItem(`user_avatar_${mongoId}`) ?? undefined;
           return {
             ...jwtProfile,
-            id:          found.id          || jwtProfile.id,
+            id:          mongoId,
             email:       found.email       || jwtProfile.email,
             firstName:   found.firstName   || jwtProfile.firstName,
             lastName:    found.lastName    || jwtProfile.lastName,
             phoneNumber: found.phoneNumber,
             roles:       found.roles       ?? jwtProfile.roles,
+            avatarUrl:   savedAvatar,
           };
         }
       } catch {
         // API unavailable — fall back to JWT data
       }
 
-      return jwtProfile;
+      // Même en fallback JWT, essayer de récupérer la photo
+      const savedAvatar = localStorage.getItem(`user_avatar_${jwtProfile.id}`) ?? undefined;
+      return { ...jwtProfile, avatarUrl: savedAvatar };
     } catch {
       return null;
     }

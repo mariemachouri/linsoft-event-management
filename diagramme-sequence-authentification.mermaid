@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 Utilisateur
+    participant Frontend as 🖥️ Frontend (React)
+    participant GW as 🔀 API Gateway
+    participant US as 👤 Users Service
+    participant KC as 🔐 Keycloak
+
+    User->>Frontend: Saisit email + mot de passe
+    Frontend->>GW: POST /api/auth/login {email, password}
+    GW->>US: POST /api/auth/login
+    US->>KC: POST /token {username, password, client_id}
+    KC->>KC: Vérification des credentials
+    alt Credentials valides
+        KC-->>US: Access Token (JWT) + Refresh Token
+        US-->>GW: LoginResponse {accessToken, refreshToken}
+        GW-->>Frontend: 200 OK {accessToken, refreshToken}
+        Frontend->>Frontend: Stocker les tokens (mémoire)
+        User->>Frontend: Accède aux ressources protégées
+        Frontend->>GW: GET /api/events (Bearer: accessToken)
+        GW->>KC: Valider JWT (introspection)
+        KC-->>GW: Token valide + rôles
+        GW->>GW: Router la requête selon les rôles
+        GW-->>Frontend: 200 OK + Données
+    else Credentials invalides
+        KC-->>US: 401 Unauthorized
+        US-->>GW: 401 Unauthorized
+        GW-->>Frontend: 401 {message: "Invalid credentials"}
+        Frontend->>User: Afficher erreur de connexion
+    end
+
+    Note over Frontend, KC: Rafraîchissement du token
+    Frontend->>GW: POST /api/auth/refresh {refreshToken}
+    GW->>US: POST /api/auth/refresh
+    US->>KC: POST /token {grant_type: refresh_token}
+    KC-->>US: Nouveau Access Token
+    US-->>GW: LoginResponse {newAccessToken}
+    GW-->>Frontend: 200 OK {newAccessToken}

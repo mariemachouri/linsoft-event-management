@@ -1,0 +1,91 @@
+graph TB
+    Admin(("👤 Admin"))
+    Organisateur(("👤 Organisateur"))
+    Participant(("👤 Participant"))
+
+    subgraph SYS["🖥️ Système de Gestion d'Événements"]
+        subgraph AUTH["Authentification"]
+            UC0["S'authentifier / Se connecter"]
+            UC00["Rafraîchir le token JWT"]
+        end
+        subgraph USERS["Gestion des Utilisateurs"]
+            UC1["Gérer les utilisateurs"]
+            UC2["Gérer les rôles"]
+            UC3["Activer / Désactiver un compte"]
+        end
+        subgraph EVENTS["Gestion des Événements"]
+            UC4["Créer un événement"]
+            UC5["Modifier un événement"]
+            UC6["Annuler un événement"]
+            UC7["Publier un événement"]
+            UC8["Consulter la liste des événements"]
+            UC9["Consulter les détails d'un événement"]
+        end
+        subgraph REGISTRATIONS["Gestion des Inscriptions"]
+            UC10["S'inscrire à un événement"]
+            UC11["Annuler une inscription"]
+            UC12["Valider une inscription"]
+            UC13["Gérer la liste d'attente"]
+            UC14["Voir mes inscriptions"]
+        end
+        subgraph CHARGES["Gestion des Charges"]
+            UC15["Ajouter une charge"]
+            UC16["Modifier une charge"]
+            UC17["Approuver une charge"]
+            UC18["Demander une prédiction IA des coûts"]
+            UC19["Consulter le catalogue de charges"]
+        end
+        subgraph NOTIFS["Notifications"]
+            UC20["Recevoir une notification EMAIL"]
+            UC21["Recevoir une notification SMS"]
+            UC22["Recevoir une notification PUSH"]
+        end
+        subgraph DASHBOARD["Tableau de Bord"]
+            UC23["Voir le tableau de bord analytique"]
+            UC24["Consulter les statistiques d'événements"]
+            UC25["Consulter les logs d'audit"]
+        end
+    end
+
+    %% Admin
+    Admin --> UC0
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC17
+    Admin --> UC23
+    Admin --> UC24
+    Admin --> UC25
+    Admin --> UC8
+
+    %% Organisateur
+    Organisateur --> UC0
+    Organisateur --> UC4
+    Organisateur --> UC5
+    Organisateur --> UC6
+    Organisateur --> UC7
+    Organisateur --> UC12
+    Organisateur --> UC13
+    Organisateur --> UC15
+    Organisateur --> UC16
+    Organisateur --> UC18
+    Organisateur --> UC19
+    Organisateur --> UC23
+    Organisateur --> UC24
+    Organisateur --> UC8
+
+    %% Participant
+    Participant --> UC0
+    Participant --> UC8
+    Participant --> UC9
+    Participant --> UC10
+    Participant --> UC11
+    Participant --> UC14
+    Participant --> UC20
+    Participant --> UC21
+    Participant --> UC22
+
+    %% Styles
+    classDef actor fill:#4A90D9,stroke:#2C5F8A,color:#fff,rx:50
+    classDef usecase fill:#F5F5F5,stroke:#666,color:#333
+    classDef sysbox fill:#E8F4FD,stroke:#4A90D9

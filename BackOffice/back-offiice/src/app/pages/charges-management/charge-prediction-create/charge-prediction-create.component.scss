@@ -31,3 +31,12 @@ select.form-control option:checked {
   background-color: #f4f6fb;
   color: #2c3e50;
 }
+
+.card-header {
+  .card-title {
+    color: #fff !important;
+  }
+  .card-category {
+    color: #fff !important;
+  }
+}

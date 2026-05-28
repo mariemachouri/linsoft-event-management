@@ -1,17 +1,17 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8083',  // Direct to users-service (no gateway)
+  apiUrl: 'http://localhost:8080',  // Gateway — routes all /api/* calls correctly
   tokenKey: 'access_token',
   refreshTokenKey: 'refresh_token',
-  
-  // Microservices URLs - Direct (no gateway)
+
+  // Microservices URLs - via Gateway (port 8080)
   services: {
-    users: 'http://localhost:8083/api/users',
-    events: 'http://localhost:8081/api/events',
-    registrations: 'http://localhost:8082/api/registrations',
+    users: 'http://localhost:8080/api/users',
+    events: 'http://localhost:8080/api/events',
+    registrations: 'http://localhost:8080/api/registrations',
     notifications: 'http://localhost:8080/api/notifications',
     dashboard: 'http://localhost:8080/api/dashboard',
-    charges: 'http://localhost:8083/api/charges'
+    charges: 'http://localhost:8080/api/charges'
   },
   
   // Keycloak Configuration

@@ -1,0 +1,171 @@
+graph TB
+
+    subgraph FRONTEND["🖥️ Couche Présentation"]
+        subgraph FO["FrontOffice - React / TypeScript"]
+            FO_AUTH["AuthModule\n(Login, Register)"]
+            FO_EVENTS["EventsModule\n(Liste, Détail)"]
+            FO_REG["RegistrationsModule\n(Inscriptions)"]
+            FO_NOTIF["NotificationsModule\n(Push/Email)"]
+        end
+        subgraph BO["BackOffice - React / TypeScript"]
+            BO_USERS["UsersManager\n(CRUD Utilisateurs)"]
+            BO_EVENTS["EventsManager\n(CRUD Événements)"]
+            BO_CHARGES["ChargesManager\n(Charges & IA)"]
+            BO_DASH["DashboardView\n(Stats & Audit)"]
+        end
+    end
+
+    subgraph INFRA["⚙️ Infrastructure"]
+        subgraph GW_SVC["API Gateway - Spring Cloud"]
+            GW_ROUTER["Router\n(Route matching)"]
+            GW_FILTER["JWT Filter\n(Token validation)"]
+            GW_LB["Load Balancer\n(Ribbon)"]
+        end
+        subgraph EUR_SVC["Eureka Server"]
+            EUR_REG2["Service Registry"]
+            EUR_DISC["Service Discovery"]
+        end
+        subgraph CFG_SVC["Config Server"]
+            CFG_REPO["Config Repository\n(Git/local)"]
+        end
+        subgraph KC_SVC["Keycloak"]
+            KC_AUTH["Auth Server\n(OAuth2/OIDC)"]
+            KC_TOKEN["Token Manager\n(JWT/Refresh)"]
+            KC_ROLE["Role Manager\n(ADMIN/ORGANIZER/PARTICIPANT)"]
+        end
+    end
+
+    subgraph SERVICES["📦 Services Métiers - Quarkus 3.8"]
+        subgraph ES["Events Service :8081"]
+            ES_R["EventResource\n(REST /api/events)"]
+            ES_S["EventService\n(Business Logic)"]
+            ES_RP["EventRepository\n(Panache MongoDB)"]
+            ES_M["Event Model\n(title, location, status...)"]
+            ES_PUB["EventPublisher\n(Kafka Producer)"]
+            ES_CON["RegistrationConsumer\n(Kafka Consumer)"]
+        end
+        subgraph RS["Registrations Service :8082"]
+            RS_R["RegistrationResource\n(REST /api/registrations)"]
+            RS_S["RegistrationService\n(Business Logic)"]
+            RS_RP["RegistrationRepository\n(Panache MongoDB)"]
+            RS_M["Registration Model\n(eventId, status...)"]
+            RS_PUB["RegistrationPublisher\n(Kafka Producer)"]
+        end
+        subgraph US["Users Service :8083"]
+            US_R["UserProfileResource\n(REST /api/users)"]
+            US_AUTH["AuthResource\n(REST /api/auth)"]
+            US_ROLE["RoleResource\n(REST /api/roles)"]
+            US_S["UserProfileService\n(Business Logic)"]
+            US_AS["AuthService\n(Keycloak Integration)"]
+            US_KS["KeycloakRoleService"]
+            US_RP["UserProfileRepository\n(Panache MongoDB)"]
+            US_PUB["UserPublisher\n(Kafka Producer)"]
+        end
+        subgraph NS["Notifications Service :8084"]
+            NS_R["NotificationResource\n(REST /api/notifications)"]
+            NS_S["NotificationService\n(Business Logic)"]
+            NS_RP["NotificationRepository\n(Panache MongoDB)"]
+            NS_CON["NotificationConsumer\n(Kafka Consumer)"]
+            NS_EMAIL["EmailSender\n(SMTP)"]
+            NS_SMS["SmsSender\n(SMS Gateway)"]
+            NS_PUSH["PushSender\n(Firebase FCM)"]
+        end
+        subgraph DS["Dashboard Service :8085"]
+            DS_R["DashboardResource\n(REST /api/dashboard)"]
+            DS_AUDIT["AuditLogResource\n(REST /api/audit)"]
+            DS_S["DashboardSnapshotService"]
+            DS_AS["AuditLogService"]
+            DS_RP["DashboardRepository\n(Panache MongoDB)"]
+            DS_CON["DashboardConsumer\n(Kafka Consumer)"]
+            DS_AC["AuditConsumer\n(Kafka Consumer)"]
+        end
+        subgraph CS["Charges Service :8086"]
+            CS_R["ChargeItemResource\n(REST /api/charges)"]
+            CS_PR["ChargePredictionResource\n(REST /api/charges/predictions)"]
+            CS_CR["ChargeCatalogResource\n(REST /api/charges/catalog)"]
+            CS_S["ChargeItemService\n(Business Logic)"]
+            CS_PS["ChargePredictionService"]
+            CS_AI["AIChargePredictionService\n(ML Model)"]
+            CS_CS["ChargeCatalogService"]
+            CS_RP["ChargeItemRepository\n(Panache MongoDB)"]
+            CS_PP["ChargePredictionRepository"]
+        end
+    end
+
+    subgraph MESSAGING["📨 Apache Kafka"]
+        KF_E["Topic: events.*\n(created, updated, cancelled)"]
+        KF_R["Topic: registrations.*\n(created, confirmed, waitlisted, cancelled)"]
+        KF_U["Topic: users.*\n(created, updated)"]
+    end
+
+    subgraph DATA["🗄️ MongoDB"]
+        DB_E[("events\ncollection")]
+        DB_R[("registrations\ncollection")]
+        DB_U[("users\ncollection")]
+        DB_N[("notifications\ncollection")]
+        DB_D[("dashboards\ncollection")]
+        DB_C[("charges\ncollection")]
+        DB_CP[("charge_predictions\ncollection")]
+    end
+
+    %% Frontend → Gateway
+    FO_AUTH & FO_EVENTS & FO_REG & FO_NOTIF -->|HTTPS| GW_ROUTER
+    BO_USERS & BO_EVENTS & BO_CHARGES & BO_DASH -->|HTTPS| GW_ROUTER
+
+    %% Gateway internals
+    GW_ROUTER --> GW_FILTER --> GW_LB
+    GW_FILTER <-->|Validate JWT| KC_AUTH
+
+    %% Gateway → Services (via Eureka)
+    GW_LB -->|/api/events| ES_R
+    GW_LB -->|/api/registrations| RS_R
+    GW_LB -->|/api/users + /api/auth| US_R
+    GW_LB -->|/api/notifications| NS_R
+    GW_LB -->|/api/dashboard| DS_R
+    GW_LB -->|/api/charges| CS_R
+
+    %% Service Discovery
+    GW_LB <-->|lookup| EUR_DISC
+    ES_R & RS_R & US_R & NS_R & DS_R & CS_R -->|register| EUR_REG2
+
+    %% Config
+    ES_R & RS_R & US_R -->|fetch config| CFG_REPO
+
+    %% Auth
+    US_AS <-->|authenticate / token| KC_AUTH
+    US_KS <-->|manage roles| KC_ROLE
+    KC_AUTH --> KC_TOKEN
+
+    %% Service internals
+    ES_R --> ES_S --> ES_RP --> DB_E
+    ES_S --> ES_M
+    ES_S --> ES_PUB --> KF_E
+    ES_CON -.->|consume| KF_R
+
+    RS_R --> RS_S --> RS_RP --> DB_R
+    RS_S --> RS_M
+    RS_S --> RS_PUB --> KF_R
+
+    US_R --> US_S --> US_RP --> DB_U
+    US_AUTH --> US_AS
+    US_ROLE --> US_KS
+    US_S --> US_PUB --> KF_U
+
+    NS_R --> NS_S --> NS_RP --> DB_N
+    NS_CON -.->|consume| KF_E
+    NS_CON -.->|consume| KF_R
+    NS_CON -.->|consume| KF_U
+    NS_S --> NS_EMAIL
+    NS_S --> NS_SMS
+    NS_S --> NS_PUSH
+
+    DS_R --> DS_S --> DS_RP --> DB_D
+    DS_AUDIT --> DS_AS
+    DS_CON -.->|consume| KF_E
+    DS_CON -.->|consume| KF_R
+    DS_AC -.->|consume| KF_U
+
+    CS_R --> CS_S --> CS_RP --> DB_C
+    CS_PR --> CS_PS --> CS_PP --> DB_CP
+    CS_PS --> CS_AI
+    CS_CR --> CS_CS

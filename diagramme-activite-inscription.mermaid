@@ -1,0 +1,58 @@
+flowchart TD
+    START([🟢 Début]) --> A
+
+    A["👤 Participant consulte\nla liste des événements"]
+    A --> B["Sélectionner un événement"]
+    B --> C{Événement\npublié ?}
+
+    C -- ❌ Non --> A
+    C -- ✅ Oui --> D{Déjà inscrit\nà cet événement ?}
+
+    D -- ✅ Oui --> E["Afficher message :\nDéjà inscrit"]
+    E --> END
+
+    D -- ❌ Non --> F{Places\ndisponibles ?}
+
+    F -- ✅ Oui --> G["Créer Inscription\n(statut: PENDING)"]
+    F -- ❌ Non --> H["Créer Inscription\n(statut: WAITLISTED)"]
+
+    G --> I["📨 Kafka: registrations.created"]
+    H --> I2["📨 Kafka: registrations.waitlisted"]
+
+    I --> J["📧 Email: Inscription en attente"]
+    I2 --> K["📧 Email: Liste d'attente"]
+
+    I --> L["Incrémenter compteur\nparticipants de l'événement"]
+
+    J --> M{Organisateur\nvalide ?}
+    M -- ✅ Oui --> N["Mise à jour statut:\nCONFIRMED"]
+    M -- ❌ Non --> O["Mise à jour statut:\nCANCELLED"]
+
+    N --> P["📨 Kafka: registrations.confirmed"]
+    O --> Q["📨 Kafka: registrations.cancelled"]
+
+    P --> R["📧 Email: Inscription confirmée !"]
+    Q --> S["📧 Email: Inscription annulée"]
+    Q --> T["Décrémenter compteur\nparticipants"]
+    T --> U{Liste d'attente\nnon vide ?}
+    U -- ✅ Oui --> V["Confirmer 1er participant\nen liste d'attente"]
+    U -- ❌ Non --> END
+
+    K --> END
+    R --> END
+    S --> END
+    V --> END
+
+    END([🔴 Fin])
+
+    %% Styles
+    style START fill:#28A745,color:#fff,stroke:#1E7E34
+    style END fill:#DC3545,color:#fff,stroke:#C82333
+    classDef decision fill:#FFC107,stroke:#E0A800,color:#333
+    classDef action fill:#E8F4FD,stroke:#4A90D9,color:#333
+    classDef kafka fill:#FF8C00,color:#fff,stroke:#CC7000
+    classDef notif fill:#6F42C1,color:#fff,stroke:#5A2D91
+    class C,D,F,M,U decision
+    class G,H,L,N,O,T,V action
+    class I,I2,P,Q kafka
+    class J,K,R,S notif

@@ -1,0 +1,42 @@
+stateDiagram-v2
+    [*] --> DRAFT : Création par l'organisateur
+
+    DRAFT --> PUBLISHED : publier()\n[toutes les infos remplies]
+    DRAFT --> CANCELLED : annuler()
+
+    PUBLISHED --> CANCELLED : annuler()\n[avant la date de début]
+    PUBLISHED --> COMPLETED : clôturer()\n[date de fin passée]
+
+    CANCELLED --> [*] : Fin du cycle
+    COMPLETED --> [*] : Fin du cycle
+
+    state DRAFT {
+        [*] --> EnAttenteDInfos
+        EnAttenteDInfos --> InfosComplètes : Toutes les infos saisies
+        InfosComplètes --> [*]
+    }
+
+    state PUBLISHED {
+        [*] --> OuvertAuxInscriptions
+        OuvertAuxInscriptions --> CompletementRempli : maxParticipants atteint
+        CompletementRempli --> OuvertAuxInscriptions : annulation d'une inscription
+        CompletementRempli --> [*]
+        OuvertAuxInscriptions --> [*]
+    }
+
+    note right of DRAFT
+        L'organisateur peut modifier
+        tous les détails de l'événement
+    end note
+
+    note right of PUBLISHED
+        Les participants peuvent s'inscrire.
+        L'organisateur ne peut plus modifier
+        les informations principales.
+    end note
+
+    note right of COMPLETED
+        Statistiques archivées.
+        Rapport final disponible
+        dans le Dashboard.
+    end note

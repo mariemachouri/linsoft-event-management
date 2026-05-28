@@ -1,0 +1,90 @@
+graph TB
+    subgraph CLIENTS["🖥️ Couche Présentation"]
+        FO["FrontOffice\nReact + TypeScript\nParticipants & Organisateurs"]
+        BO["BackOffice\nReact + TypeScript\nAdministrateurs"]
+    end
+
+    subgraph INFRA["⚙️ Infrastructure"]
+        GW["🔀 API Gateway\nSpring Cloud Gateway\nPort 8080\nRoutage & Load Balancing"]
+        EUR["📋 Eureka Server\nService Discovery\nPort 8761"]
+        CFG["⚙️ Config Server\nConfiguration Centralisée\nPort 8888"]
+        KC["🔐 Keycloak\nAuthentification & Autorisation\nJWT / OAuth2 / OIDC"]
+    end
+
+    subgraph SERVICES["📦 Services Métiers (Quarkus 3.8)"]
+        ES["📅 Events Service\nPort 8081\n/api/events"]
+        RS["📝 Registrations Service\nPort 8082\n/api/registrations"]
+        US["👤 Users Service\nPort 8083\n/api/users  /api/auth"]
+        NS["🔔 Notifications Service\nPort 8084\n/api/notifications"]
+        DS["📊 Dashboard Service\nPort 8085\n/api/dashboard"]
+        CS["💰 Charges Service\nPort 8086\n/api/charges"]
+    end
+
+    subgraph MESSAGING["📨 Messagerie Asynchrone"]
+        KF["Apache Kafka\nMessage Broker\nTopics: events, registrations, users"]
+    end
+
+    subgraph DATA["🗄️ Persistance des Données"]
+        MDB[("MongoDB\nBase de données NoSQL\nCollections par service")]
+    end
+
+    %% Flux clients -> Gateway
+    FO -->|HTTPS| GW
+    BO -->|HTTPS| GW
+
+    %% Gateway -> Services
+    GW -->|/api/events| ES
+    GW -->|/api/registrations| RS
+    GW -->|/api/users + /api/auth| US
+    GW -->|/api/notifications| NS
+    GW -->|/api/dashboard| DS
+    GW -->|/api/charges| CS
+
+    %% Auth
+    US <-->|Authenticate / Token| KC
+    GW <-->|Validate JWT| KC
+
+    %% Service Discovery
+    ES -->|Register| EUR
+    RS -->|Register| EUR
+    US -->|Register| EUR
+    NS -->|Register| EUR
+    DS -->|Register| EUR
+    CS -->|Register| EUR
+    GW -->|Discover| EUR
+
+    %% Config
+    ES -->|Fetch Config| CFG
+    RS -->|Fetch Config| CFG
+    US -->|Fetch Config| CFG
+
+    %% Kafka Producers
+    ES -->|Publish events.*| KF
+    RS -->|Publish registrations.*| KF
+    US -->|Publish users.*| KF
+
+    %% Kafka Consumers
+    KF -->|Consume| NS
+    KF -->|Consume| DS
+    KF -->|Consume| ES
+
+    %% Database
+    ES -->|CRUD| MDB
+    RS -->|CRUD| MDB
+    US -->|CRUD| MDB
+    NS -->|CRUD| MDB
+    DS -->|CRUD| MDB
+    CS -->|CRUD| MDB
+
+    %% Styles
+    classDef client fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    classDef infra fill:#7B68EE,stroke:#5A4CB8,color:#fff
+    classDef service fill:#28A745,stroke:#1E7E34,color:#fff
+    classDef messaging fill:#FF8C00,stroke:#CC7000,color:#fff
+    classDef data fill:#6C757D,stroke:#495057,color:#fff
+
+    class FO,BO client
+    class GW,EUR,CFG,KC infra
+    class ES,RS,US,NS,DS,CS service
+    class KF messaging
+    class MDB data

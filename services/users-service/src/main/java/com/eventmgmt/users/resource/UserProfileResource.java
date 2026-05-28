@@ -5,6 +5,7 @@ import com.eventmgmt.users.dto.UserResponse;
 import com.eventmgmt.users.dto.UserUpdateRequest;
 import com.eventmgmt.users.model.UserRole;
 import com.eventmgmt.users.service.UserProfileService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -38,16 +39,16 @@ public class UserProfileResource {
     UserProfileService service;
     
     @GET
-    @RolesAllowed({"admin", "user"})
-    @Operation(summary = "Get all users", description = "Retrieve a list of all users")
+    @RolesAllowed({"admin"})
+    @Operation(summary = "Get all users", description = "Retrieve a list of all users (admin only)")
     @APIResponse(responseCode = "200", description = "Users retrieved successfully")
     public List<UserResponse> getAllUsers() {
         return service.getAllUsers();
     }
-    
+
     @GET
     @Path("/{id}")
-    @RolesAllowed({"admin", "user"})
+    @Authenticated
     @Operation(summary = "Get user by ID", description = "Retrieve a specific user by their ID")
     @APIResponse(responseCode = "200", description = "User found")
     @APIResponse(responseCode = "404", description = "User not found")
@@ -60,7 +61,7 @@ public class UserProfileResource {
     
     @GET
     @Path("/username/{username}")
-    @RolesAllowed({"admin", "user"})
+    @Authenticated
     @Operation(summary = "Get user by username", description = "Retrieve a specific user by their username")
     @APIResponse(responseCode = "200", description = "User found")
     @APIResponse(responseCode = "404", description = "User not found")
@@ -78,14 +79,21 @@ public class UserProfileResource {
     @APIResponse(responseCode = "400", description = "Invalid input")
     @APIResponse(responseCode = "409", description = "User already exists")
     public Response createUser(@Valid UserCreateRequest request) {
-        UserResponse created = service.createUser(request);
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        try {
+            UserResponse created = service.createUser(request);
+            return Response.status(Response.Status.CREATED).entity(created).build();
+        } catch (jakarta.ws.rs.WebApplicationException e) {
+            // Return proper JSON error so the frontend can display the message
+            return Response.status(e.getResponse().getStatus())
+                .entity(java.util.Map.of("message", e.getMessage()))
+                .build();
+        }
     }
     
     @PUT
     @Path("/{id}")
-    @RolesAllowed("admin")
-    @Operation(summary = "Update user", description = "Update an existing user")
+    @Authenticated
+    @Operation(summary = "Update user", description = "Update an existing user (own profile or admin)")
     @APIResponse(responseCode = "200", description = "User updated successfully")
     @APIResponse(responseCode = "404", description = "User not found")
     public UserResponse updateUser(

@@ -41,12 +41,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-scheduler</artifactId>
     </dependency>
-    <!-- SMS notifications (Twilio) -->
-    <dependency>
-      <groupId>com.twilio.sdk</groupId>
-      <artifactId>twilio</artifactId>
-      <version>9.14.1</version>
-    </dependency>
     <!-- Push notifications (Firebase) -->
     <dependency>
       <groupId>com.google.firebase</groupId>

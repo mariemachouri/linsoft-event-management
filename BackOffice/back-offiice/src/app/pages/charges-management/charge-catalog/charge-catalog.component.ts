@@ -19,7 +19,7 @@ export class ChargeCatalogComponent implements OnInit {
 
   form: ChargeCatalogItem = this.emptyForm();
 
-  categories = ['EQUIPMENT', 'SUPPLIES', 'VENUE', 'CATERING', 'STAFFING', 'MARKETING', 'INSURANCE', 'OTHER'];
+  categories = ['EQUIPMENT', 'SUPPLIES', 'VENUE', 'CATERING', 'STAFFING', 'MARKETING', 'INSURANCE', 'MISCELLANEOUS'];
   units = ['pièce', 'heure', 'jour', 'forfait'];
 
   constructor(private catalogService: ChargeCatalogService) {}
@@ -64,13 +64,13 @@ export class ChargeCatalogComponent implements OnInit {
     }
     if (this.editMode && this.selectedId) {
       this.catalogService.updateCatalogItem(this.selectedId, this.form).subscribe({
-        next: () => { this.successMessage = 'Élément mis à jour.'; this.showForm = false; this.loadItems(); },
-        error: () => { this.errorMessage = 'Erreur lors de la mise à jour.'; }
+        next: () => { this.showSuccess('Élément mis à jour.'); this.showForm = false; this.loadItems(); },
+        error: () => { this.showError('Erreur lors de la mise à jour.'); }
       });
     } else {
       this.catalogService.createCatalogItem(this.form).subscribe({
-        next: () => { this.successMessage = 'Élément ajouté au catalogue.'; this.showForm = false; this.loadItems(); },
-        error: () => { this.errorMessage = 'Erreur lors de la création.'; }
+        next: () => { this.showSuccess('Élément ajouté au catalogue.'); this.showForm = false; this.loadItems(); },
+        error: () => { this.showError('Erreur lors de la création.'); }
       });
     }
   }
@@ -78,13 +78,25 @@ export class ChargeCatalogComponent implements OnInit {
   delete(item: ChargeCatalogItem): void {
     if (!confirm(`Supprimer "${item.name}" du catalogue ?`)) return;
     this.catalogService.deleteCatalogItem(item.id!).subscribe({
-      next: () => { this.successMessage = 'Élément supprimé.'; this.loadItems(); },
-      error: () => { this.errorMessage = 'Erreur lors de la suppression.'; }
+      next: () => { this.showSuccess('Élément supprimé.'); this.loadItems(); },
+      error: () => { this.showError('Erreur lors de la suppression.'); }
     });
   }
 
   private emptyForm(): ChargeCatalogItem {
     return { name: '', description: '', category: 'EQUIPMENT', unit: 'pièce', defaultUnitPrice: 0, currency: 'EUR', active: true };
+  }
+
+  showSuccess(msg: string): void {
+    this.successMessage = msg;
+    this.errorMessage = '';
+    setTimeout(() => { this.successMessage = ''; }, 3000);
+  }
+
+  showError(msg: string): void {
+    this.errorMessage = msg;
+    this.successMessage = '';
+    setTimeout(() => { this.errorMessage = ''; }, 4000);
   }
 
   private clearMessages(): void {

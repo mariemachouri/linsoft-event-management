@@ -12,8 +12,12 @@
         </div>
         <div class="card-body">
 
-          <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
-          <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+          <div class="alert alert-success" *ngIf="successMessage" style="color:#fff !important; font-weight:500;">
+            <i class="tim-icons icon-check-2 mr-2"></i> {{ successMessage }}
+          </div>
+          <div class="alert alert-danger" *ngIf="errorMessage" style="color:#fff !important; font-weight:500;">
+            <i class="tim-icons icon-simple-remove mr-2"></i> {{ errorMessage }}
+          </div>
 
           <!-- Formulaire ajout / modification -->
           <div class="card border mb-4" *ngIf="showForm">

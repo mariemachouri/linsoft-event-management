@@ -27,7 +27,8 @@ export class ChargeItemsComponent implements OnInit {
   form: ChargeItem = this.emptyForm();
   autoAmount = 0;
 
-  statuses = ['PENDING', 'APPROVED', 'PAID', 'REJECTED'];
+  statuses = ['PENDING', 'APPROVED', 'PAID', 'REJECTED', 'CANCELLED'];
+  allCharges: ChargeItem[] = []; // toutes les charges tous events confondus
 
   constructor(
     private catalogService: ChargeCatalogService,
@@ -43,6 +44,8 @@ export class ChargeItemsComponent implements OnInit {
       next: (data) => { this.catalogItems = data; },
       error: () => {}
     });
+    // Charger toutes les charges au démarrage (historique global)
+    this.loadAllCharges();
   }
 
   onEventChange(): void {
@@ -55,8 +58,33 @@ export class ChargeItemsComponent implements OnInit {
   loadCharges(): void {
     this.loading = true;
     this.catalogService.getChargesByEvent(this.selectedEventId).subscribe({
-      next: (data) => { this.charges = data; this.loading = false; },
+      next: (data) => { this.charges = data; this.loading = false; this.loadAllCharges(); },
       error: () => { this.errorMessage = 'Erreur lors du chargement des charges.'; this.loading = false; }
+    });
+  }
+
+  loadAllCharges(): void {
+    this.catalogService.getAllCharges().subscribe({
+      next: (data) => { this.allCharges = data; },
+      error: () => {}
+    });
+  }
+
+  getEventName(eventId: string): string {
+    const ev = this.events.find(e => e.id === eventId);
+    return ev?.title || ev?.name || eventId;
+  }
+
+  cancelCharge(charge: ChargeItem): void {
+    if (!confirm(`Annuler la charge "${charge.description || charge.item}" ?`)) return;
+    this.catalogService.updateChargeStatus(charge.id!, 'REJECTED').subscribe({
+      next: () => {
+        this.successMessage = 'Charge annulée.';
+        setTimeout(() => this.successMessage = '', 3000);
+        this.loadAllCharges();
+        if (this.selectedEventId) this.loadCharges();
+      },
+      error: () => { this.errorMessage = 'Erreur lors de l\'annulation.'; }
     });
   }
 
@@ -117,29 +145,51 @@ export class ChargeItemsComponent implements OnInit {
 
     if (this.editMode && this.selectedChargeId) {
       this.catalogService.updateChargeItem(this.selectedChargeId, this.form).subscribe({
-        next: () => { this.successMessage = 'Charge mise à jour.'; this.showForm = false; this.loadCharges(); },
-        error: () => { this.errorMessage = 'Erreur lors de la mise à jour.'; }
+        next: () => {
+          this.successMessage = 'Charge mise à jour.';
+          setTimeout(() => this.successMessage = '', 3000);
+          this.showForm = false;
+          this.loadCharges();
+          this.loadAllCharges();
+        },
+        error: () => { this.errorMessage = 'Erreur lors de la mise à jour.'; setTimeout(() => this.errorMessage = '', 4000); }
       });
     } else {
       this.catalogService.createChargeItem(this.form).subscribe({
-        next: () => { this.successMessage = 'Charge ajoutée avec succès.'; this.showForm = false; this.loadCharges(); },
-        error: () => { this.errorMessage = 'Erreur lors de la création.'; }
+        next: () => {
+          this.successMessage = 'Charge ajoutée avec succès.';
+          setTimeout(() => this.successMessage = '', 3000);
+          this.showForm = false;
+          this.loadCharges();
+          this.loadAllCharges();
+        },
+        error: () => { this.errorMessage = 'Erreur lors de la création.'; setTimeout(() => this.errorMessage = '', 4000); }
       });
     }
   }
 
   updateStatus(charge: ChargeItem, status: string): void {
     this.catalogService.updateChargeStatus(charge.id!, status).subscribe({
-      next: () => { this.successMessage = 'Statut mis à jour.'; this.loadCharges(); },
-      error: () => { this.errorMessage = 'Erreur lors de la mise à jour du statut.'; }
+      next: () => {
+        this.successMessage = 'Statut mis à jour.';
+        setTimeout(() => this.successMessage = '', 3000);
+        this.loadCharges();
+        this.loadAllCharges();
+      },
+      error: () => { this.errorMessage = 'Erreur lors de la mise à jour du statut.'; setTimeout(() => this.errorMessage = '', 4000); }
     });
   }
 
   delete(charge: ChargeItem): void {
     if (!confirm('Supprimer cette charge ?')) return;
     this.catalogService.deleteChargeItem(charge.id!).subscribe({
-      next: () => { this.successMessage = 'Charge supprimée.'; this.loadCharges(); },
-      error: () => { this.errorMessage = 'Erreur lors de la suppression.'; }
+      next: () => {
+        this.successMessage = 'Charge supprimée.';
+        setTimeout(() => this.successMessage = '', 3000);
+        this.loadCharges();
+        this.loadAllCharges();
+      },
+      error: () => { this.errorMessage = 'Erreur lors de la suppression.'; setTimeout(() => this.errorMessage = '', 4000); }
     });
   }
 

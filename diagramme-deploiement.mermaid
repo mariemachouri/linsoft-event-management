@@ -1,0 +1,113 @@
+graph TB
+
+    subgraph CLIENT_MACHINE["💻 Machine Client (Navigateur)"]
+        BROWSER["Navigateur Web\n(Chrome / Firefox / Edge)"]
+        subgraph SPA["Applications Web SPA"]
+            FO_APP["FrontOffice\nReact + Vite\nlocalhost:5173"]
+            BO_APP["BackOffice\nReact + Vite\nlocalhost:5174"]
+        end
+    end
+
+    subgraph SERVER["🖥️ Serveur de Déploiement (Docker Host)"]
+
+        subgraph NET_PUBLIC["Réseau Public (eventmgmt-network)"]
+
+            subgraph GATEWAY_NODE["Nœud : API Gateway"]
+                GW_CT["Container: gateway-service\nImage: eventmgmt/gateway:latest\nPort Exposé: 8080:8080\nRAM: 512MB"]
+            end
+
+            subgraph EUREKA_NODE["Nœud : Service Discovery"]
+                EUR_CT["Container: eureka-server\nImage: eventmgmt/eureka:latest\nPort Exposé: 8761:8761\nRAM: 256MB"]
+            end
+
+            subgraph CONFIG_NODE["Nœud : Configuration"]
+                CFG_CT["Container: config-server\nImage: eventmgmt/config:latest\nPort Exposé: 8888:8888\nRAM: 256MB"]
+            end
+
+            subgraph KC_NODE["Nœud : Authentification"]
+                KC_CT["Container: keycloak\nImage: quay.io/keycloak/keycloak:24\nPort Exposé: 8180:8080\nRAM: 512MB"]
+            end
+        end
+
+        subgraph NET_SERVICES["Réseau Interne Services (eventmgmt-internal)"]
+
+            subgraph ES_NODE["Nœud : Events Service"]
+                ES_CT["Container: events-service\nImage: eventmgmt/events:latest\nPort: 8081\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+
+            subgraph RS_NODE["Nœud : Registrations Service"]
+                RS_CT["Container: registrations-service\nImage: eventmgmt/registrations:latest\nPort: 8082\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+
+            subgraph US_NODE["Nœud : Users Service"]
+                US_CT["Container: users-service\nImage: eventmgmt/users:latest\nPort: 8083\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+
+            subgraph NS_NODE["Nœud : Notifications Service"]
+                NS_CT["Container: notifications-service\nImage: eventmgmt/notifications:latest\nPort: 8084\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+
+            subgraph DS_NODE["Nœud : Dashboard Service"]
+                DS_CT["Container: dashboard-service\nImage: eventmgmt/dashboard:latest\nPort: 8085\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+
+            subgraph CS_NODE["Nœud : Charges Service"]
+                CS_CT["Container: charges-service\nImage: eventmgmt/charges:latest\nPort: 8086\nRuntime: Quarkus 3.8 / JVM 21\nRAM: 256MB"]
+            end
+        end
+
+        subgraph NET_INFRA["Réseau Infrastructure (eventmgmt-infra)"]
+
+            subgraph KAFKA_NODE["Nœud : Message Broker"]
+                ZK_CT["Container: zookeeper\nImage: confluentinc/cp-zookeeper:7.5\nPort: 2181"]
+                KF_CT["Container: kafka\nImage: confluentinc/cp-kafka:7.5\nPort: 9092\nRAM: 1GB"]
+            end
+
+            subgraph MONGO_NODE["Nœud : Base de Données"]
+                MDB_CT["Container: mongodb\nImage: mongo:7.0\nPort: 27017\nVolume: mongo-data:/data/db\nRAM: 512MB"]
+            end
+
+            subgraph SMTP_NODE["Nœud : Email"]
+                SMTP_CT["Container: maildev\nImage: maildev/maildev\nPort SMTP: 1025\nPort UI: 1080"]
+            end
+        end
+    end
+
+    %% Connexions Client → Serveur
+    BROWSER -->|HTTP :5173| FO_APP
+    BROWSER -->|HTTP :5174| BO_APP
+    FO_APP -->|HTTPS :8080| GW_CT
+    BO_APP -->|HTTPS :8080| GW_CT
+
+    %% Gateway → Services
+    GW_CT -->|HTTP :8761 - Discovery| EUR_CT
+    GW_CT -->|HTTP :8081| ES_CT
+    GW_CT -->|HTTP :8082| RS_CT
+    GW_CT -->|HTTP :8083| US_CT
+    GW_CT -->|HTTP :8084| NS_CT
+    GW_CT -->|HTTP :8085| DS_CT
+    GW_CT -->|HTTP :8086| CS_CT
+    GW_CT <-->|HTTP :8180 - Validate JWT| KC_CT
+
+    %% Services → Eureka
+    ES_CT & RS_CT & US_CT & NS_CT & DS_CT & CS_CT -->|Register :8761| EUR_CT
+
+    %% Services → Config
+    ES_CT & RS_CT & US_CT -->|Fetch config :8888| CFG_CT
+
+    %% Users → Keycloak
+    US_CT <-->|Admin REST API :8180| KC_CT
+
+    %% Services → Kafka
+    ES_CT & RS_CT & US_CT -->|Produce :9092| KF_CT
+    KF_CT -->|Consume| NS_CT & DS_CT & ES_CT
+
+    %% Kafka → Zookeeper
+    KF_CT -->|Coordination :2181| ZK_CT
+
+    %% Services → MongoDB
+    ES_CT & RS_CT & US_CT & NS_CT & DS_CT & CS_CT -->|CRUD :27017| MDB_CT
+
+    %% Notifications → SMTP
+    NS_CT -->|SMTP :1025| SMTP_CT
+    SMTP_CT -->|Livraison email| BROWSER

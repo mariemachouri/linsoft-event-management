@@ -84,10 +84,13 @@ public class AIChargePredictionService {
     ) {
         var breakdown = new ChargePrediction.CostBreakdown();
         
-        // Venue Cost - facteur taille et lieu
-        double venueCostPerM2 = baseCosts.get("baseVenueCost") * cityMultiplier;
+        // Venue Cost - tarif horaire de base (EUR/heure) × durée × multiplicateur ville
+        // venueSizeRange used as a scale factor: larger events need proportionally bigger spaces
+        double baseVenuePerHour = baseCosts.get("baseVenueCost") * cityMultiplier;
         double[] venueSizeRange = calculateVenueSizeRange(metrics.expectedAttendees, metrics.eventType);
-        breakdown.venueCost = venueCostPerM2 * venueSizeRange[0] * metrics.durationHours;
+        // sizeScale: 1.0 for 100 attendees, grows sub-linearly for larger events
+        double sizeScale = Math.max(1.0, venueSizeRange[0] / 100.0);
+        breakdown.venueCost = baseVenuePerHour * metrics.durationHours * sizeScale;
         
         // Catering Cost - si requis
         if (metrics.cateringRequired) {

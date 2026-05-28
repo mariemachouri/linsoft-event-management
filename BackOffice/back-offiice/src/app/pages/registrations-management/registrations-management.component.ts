@@ -116,14 +116,14 @@ export class RegistrationsManagementComponent implements OnInit {
   }
 
   getParticipantName(participantId: string): string {
-    const user = this.users.find(u => u.id === participantId);
+    const user = this.users.find(u => u.id === participantId || u.keycloakId === participantId);
     if (!user) return participantId || '—';
     const full = [user.firstName, user.lastName].filter(Boolean).join(' ');
     return full || user.username || user.email || participantId;
   }
 
   getParticipantEmail(participantId: string): string {
-    const user = this.users.find(u => u.id === participantId);
+    const user = this.users.find(u => u.id === participantId || u.keycloakId === participantId);
     return user?.email || '';
   }
 

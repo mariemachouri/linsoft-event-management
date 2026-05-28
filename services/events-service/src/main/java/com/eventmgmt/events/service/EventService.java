@@ -107,7 +107,11 @@ public class EventService {
         if (event.organizerId != null) {
             existingEvent.organizerId = event.organizerId;
         }
-        
+
+        if (event.imageUrl != null) {
+            existingEvent.imageUrl = event.imageUrl;
+        }
+
         repository.update(existingEvent);
         
         // Publish event update to Kafka
@@ -141,6 +145,22 @@ public class EventService {
         }
         
         return deleted;
+    }
+
+    public void incrementParticipants(String eventId) {
+        Event event = repository.findByIdOptional(new ObjectId(eventId))
+            .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+        int current = event.currentParticipants != null ? event.currentParticipants : 0;
+        event.currentParticipants = current + 1;
+        repository.update(event);
+    }
+
+    public void decrementParticipants(String eventId) {
+        Event event = repository.findByIdOptional(new ObjectId(eventId))
+            .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+        int current = event.currentParticipants != null ? event.currentParticipants : 0;
+        event.currentParticipants = Math.max(0, current - 1);
+        repository.update(event);
     }
 }
 

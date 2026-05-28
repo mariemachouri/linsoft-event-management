@@ -1,0 +1,35 @@
+stateDiagram-v2
+    [*] --> PENDING : Soumission de l'inscription\n(POST /api/registrations)
+
+    PENDING --> CONFIRMED : Validation par l'organisateur\n[place disponible]
+    PENDING --> WAITLISTED : Événement complet\n[maxParticipants atteint]
+    PENDING --> CANCELLED : Refus ou annulation\npar le participant
+
+    WAITLISTED --> CONFIRMED : Une place se libère\n(annulation d'un autre participant)
+    WAITLISTED --> CANCELLED : Annulation par le participant
+
+    CONFIRMED --> CANCELLED : Annulation par le participant\n[avant date de début]
+
+    CANCELLED --> [*] : Fin
+
+    note right of PENDING
+        Notification EMAIL envoyée
+        au participant : "En attente"
+    end note
+
+    note right of CONFIRMED
+        Notification EMAIL envoyée :
+        "Inscription confirmée !"
+    end note
+
+    note right of WAITLISTED
+        Notification EMAIL envoyée :
+        "Vous êtes en liste d'attente"
+    end note
+
+    note right of CANCELLED
+        Notification EMAIL envoyée :
+        "Inscription annulée"
+        La place est libérée
+        pour la liste d'attente
+    end note

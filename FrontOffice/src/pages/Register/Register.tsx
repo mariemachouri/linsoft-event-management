@@ -68,7 +68,7 @@ export default function Register() {
         phoneNumber: form.phoneNumber.trim() || undefined,
       });
       showToast('success', 'Account created successfully! Welcome 🎉');
-      navigate('/', { replace: true });
+      navigate('/home', { replace: true });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       showToast('error', msg ?? 'An error occurred while creating the account.');
@@ -172,7 +172,7 @@ export default function Register() {
                 <Phone size={15} className="auth-input-icon" />
                 <input
                   name="phoneNumber" type="tel" className="auth-input"
-                  placeholder="+213 6XX XX XX XX" value={form.phoneNumber} onChange={handleChange} disabled={loading}
+                  placeholder="+216 XX XXX XXX" value={form.phoneNumber} onChange={handleChange} disabled={loading}
                 />
               </div>
             </div>

@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.keycloakService.logout(window.location.origin + '/#/login');
+    this.keycloakService.logout('http://localhost:4300');
   }
 }
 

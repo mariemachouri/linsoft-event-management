@@ -1,0 +1,41 @@
+sequenceDiagram
+    autonumber
+    actor Org as 👤 Organisateur
+    participant GW as 🔀 API Gateway
+    participant CS as 💰 Charges Service
+    participant AI as 🤖 AI Prediction Service
+    participant ES as 📅 Events Service
+    participant DB as 🗄️ MongoDB
+
+    Org->>GW: POST /api/charges/predictions\n{eventMetrics: {attendees, type, duration, location, ...}}
+    GW->>CS: POST /api/charges/predictions
+
+    CS->>AI: predict(eventMetrics)
+    Note over AI: Analyse par modèle ML\n(Linear Regression / Neural Network)
+    AI->>AI: Calcul des coûts estimés par catégorie
+    AI-->>CS: PredictionResult\n{predictedTotal, confidenceScore, breakdown, recommendations}
+
+    CS->>DB: save(ChargePrediction{status: PENDING})
+    DB-->>CS: ChargePrediction avec ID
+    CS-->>GW: 201 Created {prediction}
+    GW-->>Org: Prédiction IA\n(coûts estimés + recommandations)
+
+    Note over Org, GW: L'organisateur examine la prédiction et décide du mode de paiement
+
+    Org->>GW: POST /api/charges/predictions/{id}/decide\n{paymentMethod: "STRIPE", requiresApproval: true}
+    GW->>CS: POST /api/charges/predictions/{id}/decide
+    CS->>DB: update(ChargePrediction{paymentDecision, status: APPROVED})
+
+    CS->>ES: PUT /api/events/{eventId} → lier chargePredictionId
+    ES->>DB: update(Event{chargePredictionId: predId})
+    ES-->>CS: Événement mis à jour ✅
+
+    CS-->>GW: 200 OK {decision enregistrée}
+    GW-->>Org: Décision confirmée
+
+    Note over Org, DB: Génération automatique des charges préconisées
+
+    CS->>CS: Créer ChargeItems depuis les recommandations IA
+    CS->>DB: saveAll(ChargeItems)
+    DB-->>CS: Charges créées
+    CS-->>Org: Charges pré-remplies automatiquement

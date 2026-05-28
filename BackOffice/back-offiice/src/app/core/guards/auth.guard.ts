@@ -34,14 +34,8 @@ export class AuthGuard extends KeycloakAuthGuard {
     const hasAccess = ALLOWED_ROLES.some(role => userRoles.includes(role));
 
     if (!hasAccess) {
-      // Si l'utilisateur vient d'une connexion sociale (participant), rediriger vers register-success
-      // Sinon, afficher la page unauthorized
-      const isParticipant = userRoles.includes('participant');
-      if (isParticipant) {
-        this.router.navigate(['/register-success']);
-      } else {
-        this.router.navigate(['/unauthorized']);
-      }
+      // Participant ou user sans rôle BackOffice → renvoyer vers le FrontOffice
+      window.location.href = 'http://localhost:4300/home';
       return false;
     }
 

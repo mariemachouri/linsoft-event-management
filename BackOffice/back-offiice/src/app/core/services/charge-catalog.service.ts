@@ -20,13 +20,14 @@ export interface ChargeItem {
   id?: string;
   eventId: string;
   catalogItemId?: string;
+  item?: string;         // alias for description (backend compat)
   description?: string;
   category?: string;
   quantity: number;
   unitPrice: number;
   amount?: number;       // calculé côté backend
   currency?: string;
-  status?: string;       // PENDING, APPROVED, PAID, REJECTED
+  status?: string;       // PENDING, APPROVED, PAID, REJECTED, CANCELLED
   createdAt?: string;
   updatedAt?: string;
 }

@@ -10,6 +10,6 @@ export class UnauthorizedComponent {
   constructor(private keycloakService: KeycloakService) { }
 
   logout(): void {
-    this.keycloakService.logout(window.location.origin + '/#/login');
+    this.keycloakService.logout('http://localhost:4300');
   }
 }

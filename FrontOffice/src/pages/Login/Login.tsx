@@ -12,7 +12,7 @@ export default function Login() {
   const { login } = useAuth();
   const { showToast } = useToast();
 
-  const from = (location.state as { from?: string })?.from ?? '/';
+  const from = (location.state as { from?: string })?.from ?? '/home';
 
   const [form, setForm] = useState({ username: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);

@@ -6,16 +6,9 @@ export default defineConfig({
   server: {
     port: 4300,
     proxy: {
-      '/api/events': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-      },
-      '/api/registrations': {
-        target: 'http://localhost:8082',
-        changeOrigin: true,
-      },
+      // Route ALL /api/* through the gateway (port 8080)
       '/api': {
-        target: 'http://localhost:8083',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
     },

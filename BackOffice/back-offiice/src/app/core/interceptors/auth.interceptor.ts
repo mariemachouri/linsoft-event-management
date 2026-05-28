@@ -28,7 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(authRequest).pipe(
           catchError(error => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
-              this.keycloakService.logout(window.location.origin + '/#/login');
+              this.keycloakService.logout('http://localhost:4300');
             }
             return throwError(() => error);
           })

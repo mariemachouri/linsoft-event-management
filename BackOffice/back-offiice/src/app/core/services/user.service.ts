@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 
 export interface UserResponse {
   id?: string;
+  keycloakId?: string;
   username: string;
   email?: string;
   firstName?: string;

@@ -8,8 +8,12 @@
         </div>
         <div class="card-body">
 
-          <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
-          <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+          <div class="alert alert-success" *ngIf="successMessage" style="color:#fff !important; font-weight:500;">
+            <i class="tim-icons icon-check-2 mr-2"></i> {{ successMessage }}
+          </div>
+          <div class="alert alert-danger" *ngIf="errorMessage" style="color:#fff !important; font-weight:500;">
+            <i class="tim-icons icon-simple-remove mr-2"></i> {{ errorMessage }}
+          </div>
 
           <!-- Sélecteur d'événement -->
           <div class="row mb-4">
@@ -91,66 +95,87 @@
             </div>
           </div>
 
-          <!-- Message si aucun événement sélectionné -->
-          <div *ngIf="!selectedEventId" class="text-center py-5 text-muted">
-            <i class="tim-icons icon-notes" style="font-size: 3rem;"></i>
-            <p class="mt-2">Select an event to view its charges.</p>
-          </div>
-
-          <!-- Tableau des charges -->
-          <div *ngIf="selectedEventId && loading" class="text-center py-4">
-            Loading...
-          </div>
+          <!-- Tableau des charges de l'event sélectionné -->
+          <div *ngIf="selectedEventId && loading" class="text-center py-4">Loading...</div>
 
           <div *ngIf="selectedEventId && !loading && charges.length === 0 && !showForm" class="text-center py-4 text-muted">
-            No charges for this event.
+            No charges for this event yet.
           </div>
 
           <div *ngIf="selectedEventId && !loading && charges.length > 0">
+            <h6 class="text-muted mb-2">Charges for: <strong>{{ selectedEventName }}</strong></h6>
+            <ng-container *ngTemplateOutlet="chargesTable; context: { charges: charges, showEvent: false }"></ng-container>
+          </div>
+
+          <!-- Historique global : toutes les charges tous events confondus -->
+          <div *ngIf="!selectedEventId && allCharges.length > 0" class="mt-2">
+            <h6 class="text-primary mb-3">
+              <i class="tim-icons icon-notes mr-2"></i> All charges history ({{ allCharges.length }} entries)
+            </h6>
+            <ng-container *ngTemplateOutlet="chargesTable; context: { charges: allCharges, showEvent: true }"></ng-container>
+          </div>
+
+          <div *ngIf="!selectedEventId && allCharges.length === 0" class="text-center py-5 text-muted">
+            <i class="tim-icons icon-notes" style="font-size: 3rem;"></i>
+            <p class="mt-2">No charges yet. Select an event to add charges.</p>
+          </div>
+
+          <!-- Template réutilisable pour le tableau -->
+          <ng-template #chargesTable let-charges="charges" let-showEvent="showEvent">
             <table class="table table-hover">
               <thead class="text-primary">
                 <tr>
+                  <th *ngIf="showEvent">Event</th>
                   <th>Description</th>
-                  <th>Quantity</th>
+                  <th>Qty</th>
                   <th>Unit price</th>
-                  <th>Total amount</th>
+                  <th>Total</th>
                   <th>Status</th>
                   <th class="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let charge of charges">
-                  <td>{{ charge.description || '—' }}</td>
+                <tr *ngFor="let charge of charges" [class.table-secondary]="charge.status === 'REJECTED'">
+                  <td *ngIf="showEvent"><small class="text-muted">{{ getEventName(charge.eventId) }}</small></td>
+                  <td>{{ charge.description || charge.item || '—' }}</td>
                   <td>{{ charge.quantity || 1 }}</td>
-                  <td>{{ (charge.unitPrice || 0) | number:'1.2-2' }} {{ charge.currency || 'EUR' }}</td>
-                  <td><strong>{{ (charge.amount || 0) | number:'1.2-2' }} {{ charge.currency || 'EUR' }}</strong></td>
+                  <td>{{ (charge.unitPrice || 0) | number:'1.2-2' }} €</td>
+                  <td><strong>{{ (charge.amount || 0) | number:'1.2-2' }} €</strong></td>
                   <td>
                     <span class="badge" [ngClass]="statusClass(charge.status || 'PENDING')">
                       {{ charge.status || 'PENDING' }}
                     </span>
                   </td>
                   <td class="text-right">
-                    <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(charge)">
+                    <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(charge)"
+                      *ngIf="charge.status !== 'REJECTED' && charge.status !== 'PAID'">
                       <i class="tim-icons icon-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-success mr-1" title="Approve" (click)="updateStatus(charge, 'APPROVED')"
+                    <button class="btn btn-sm btn-success mr-1" title="Approve"
+                      (click)="updateStatus(charge, 'APPROVED')"
                       *ngIf="charge.status === 'PENDING'">
                       <i class="tim-icons icon-check-2"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(charge)">
+                    <button class="btn btn-sm btn-warning mr-1" title="Cancel charge"
+                      (click)="cancelCharge(charge)"
+                      *ngIf="charge.status === 'PENDING' || charge.status === 'APPROVED'">
+                      <i class="tim-icons icon-simple-remove"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(charge)"
+                      *ngIf="charge.status === 'REJECTED'">
                       <i class="tim-icons icon-trash-simple"></i>
                     </button>
                   </td>
                 </tr>
               </tbody>
-              <tfoot>
+              <tfoot *ngIf="!showEvent">
                 <tr class="font-weight-bold">
-                  <td colspan="3" class="text-right">Total:</td>
+                  <td colspan="4" class="text-right">Total active:</td>
                   <td colspan="3">{{ getTotalAmount() | number:'1.2-2' }} EUR</td>
                 </tr>
               </tfoot>
             </table>
-          </div>
+          </ng-template>
 
         </div>
       </div>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diagrammes PFE – Event Management System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a3c6e;
+      --accent: #4A90D9;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --border: #dde4f0;
+      --text: #2c3e50;
+      --muted: #6c757d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), #2563a8);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: .4rem; }
+    header p { opacity: .85; font-size: 1rem; }
+    header .badge {
+      display: inline-block; margin-top: .8rem;
+      background: rgba(255,255,255,0.2); border-radius: 20px;
+      padding: .3rem 1rem; font-size: .85rem;
+    }
+    nav {
+      background: var(--card);
+      border-bottom: 2px solid var(--border);
+      padding: 0 2rem;
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      justify-content: center;
+    }
+    nav a {
+      display: inline-block; padding: .8rem 1.2rem;
+      color: var(--primary); font-weight: 600; font-size: .85rem;
+      text-decoration: none; border-bottom: 3px solid transparent;
+      transition: all .2s;
+    }
+    nav a:hover { border-bottom-color: var(--accent); color: var(--accent); }
+    .container { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .section {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+    .section-header {
+      background: linear-gradient(90deg, var(--primary) 0%, #2563a8 100%);
+      color: white; padding: 1.2rem 1.8rem;
+      display: flex; align-items: center; gap: .8rem;
+    }
+    .section-header .num {
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%; width: 2rem; height: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .9rem; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 1.15rem; font-weight: 700; }
+    .section-header p { font-size: .82rem; opacity: .85; margin-top: .15rem; }
+    .section-body { padding: 1.8rem; }
+    .diagram-wrap {
+      background: #fafbfd; border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.5rem; overflow-x: auto;
+      text-align: center;
+    }
+    .diagram-wrap .mermaid { display: inline-block; text-align: left; }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .tag {
+      background: #EBF3FC; color: var(--accent);
+      border-radius: 20px; padding: .25rem .75rem;
+      font-size: .78rem; font-weight: 600; border: 1px solid #c5ddf7;
+    }
+    .tag.green { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+    .tag.orange { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+    .tag.purple { background: #f3e5f5; color: #6a1b9a; border-color: #ce93d8; }
+    footer {
+      text-align: center; color: var(--muted); font-size: .82rem;
+      padding: 2rem; border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+    .toc-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem; margin-bottom: 2.5rem;
+    }
+    .toc-card {
+      background: var(--card); border-radius: 10px;
+      border: 1px solid var(--border); padding: 1.2rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      transition: box-shadow .2s, transform .2s;
+      text-decoration: none; color: inherit;
+    }
+    .toc-card:hover { box-shadow: 0 4px 16px rgba(74,144,217,0.18); transform: translateY(-2px); }
+    .toc-card .icon { font-size: 2rem; margin-bottom: .5rem; }
+    .toc-card h3 { font-size: .95rem; color: var(--primary); margin-bottom: .25rem; }
+    .toc-card p { font-size: .78rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📐 Diagrammes UML – Rapport PFE</h1>
+  <p>Système de Gestion d'Événements – Architecture Microservices</p>
+  <div class="badge">ESPRIT · Année 2025-2026 · Mariem Achouri</div>
+</header>
+
+<nav>
+  <a href="#uc">Cas d'Utilisation</a>
+  <a href="#classes">Diagramme de Classes</a>
+  <a href="#composants">Composants</a>
+  <a href="#deploiement">Déploiement</a>
+  <a href="#archi">Architecture</a>
+  <a href="#seq-auth">Séquence – Auth</a>
+  <a href="#seq-inscription">Séquence – Inscription</a>
+  <a href="#seq-ia">Séquence – Prédiction IA</a>
+  <a href="#state-event">États – Événement</a>
+  <a href="#state-reg">États – Inscription</a>
+  <a href="#activity">Activité – Inscription</a>
+</nav>
+
+<div class="container">
+
+  <!-- TABLE DES MATIÈRES -->
+  <div class="toc-grid" style="margin-top:2rem">
+    <a class="toc-card" href="#uc"><div class="icon">🎭</div><h3>Diagramme des Cas d'Utilisation</h3><p>Acteurs : Admin, Organisateur, Participant</p></a>
+    <a class="toc-card" href="#classes"><div class="icon">🗂️</div><h3>Diagramme de Classes</h3><p>Toutes les entités et leurs relations</p></a>
+    <a class="toc-card" href="#composants"><div class="icon">🧩</div><h3>Diagramme des Composants</h3><p>Structure interne de chaque microservice</p></a>
+    <a class="toc-card" href="#deploiement"><div class="icon">🚀</div><h3>Diagramme de Déploiement</h3><p>Conteneurs Docker, ports, réseaux, volumes</p></a>
+    <a class="toc-card" href="#archi"><div class="icon">🏗️</div><h3>Diagramme d'Architecture</h3><p>Microservices, Kafka, MongoDB, Keycloak</p></a>
+    <a class="toc-card" href="#seq-auth"><div class="icon">🔐</div><h3>Séquence – Authentification</h3><p>Login JWT via Keycloak</p></a>
+    <a class="toc-card" href="#seq-inscription"><div class="icon">📝</div><h3>Séquence – Inscription</h3><p>Flux complet d'inscription à un événement</p></a>
+    <a class="toc-card" href="#seq-ia"><div class="icon">🤖</div><h3>Séquence – Prédiction IA</h3><p>Estimation des coûts par intelligence artificielle</p></a>
+    <a class="toc-card" href="#state-event"><div class="icon">📅</div><h3>États – Événement</h3><p>DRAFT → PUBLISHED → COMPLETED / CANCELLED</p></a>
+    <a class="toc-card" href="#state-reg"><div class="icon">✅</div><h3>États – Inscription</h3><p>PENDING → CONFIRMED / WAITLISTED / CANCELLED</p></a>
+    <a class="toc-card" href="#activity"><div class="icon">🔄</div><h3>Diagramme d'Activité</h3><p>Processus complet d'inscription</p></a>
+  </div>
+
+  <!-- 1. CAS D'UTILISATION -->
+  <div class="section" id="uc">
+    <div class="section-header">
+      <div class="num">1</div>
+      <div>
+        <h2>🎭 Diagramme des Cas d'Utilisation Général</h2>
+        <p>Représente les interactions entre les acteurs (Admin, Organisateur, Participant) et le système</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Admin</span>
+        <span class="tag green">Organisateur</span>
+        <span class="tag orange">Participant</span>
+        <span class="tag purple">25 cas d'utilisation</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+graph TB
+    Admin(("👤 Admin"))
+    Organisateur(("👤 Organisateur"))
+    Participant(("👤 Participant"))
+
+    subgraph SYS["Système de Gestion d'Événements"]
+        subgraph AUTH["Authentification"]
+            UC0["S'authentifier / Se connecter"]
+            UC00["Rafraîchir le token JWT"]
+        end
+        subgraph USERS["Gestion des Utilisateurs"]
+            UC1["Gérer les utilisateurs"]
+            UC2["Gérer les rôles"]
+            UC3["Activer / Désactiver un compte"]
+        end
+        subgraph EVENTS["Gestion des Événements"]
+            UC4["Créer un événement"]
+            UC5["Modifier un événement"]
+            UC6["Annuler un événement"]
+            UC7["Publier un événement"]
+            UC8["Consulter la liste des événements"]
+            UC9["Consulter les détails d'un événement"]
+        end
+        subgraph REGISTRATIONS["Gestion des Inscriptions"]
+            UC10["S'inscrire à un événement"]
+            UC11["Annuler une inscription"]
+            UC12["Valider une inscription"]
+            UC13["Gérer la liste d'attente"]
+            UC14["Voir mes inscriptions"]
+        end
+        subgraph CHARGES["Gestion des Charges"]
+            UC15["Ajouter une charge"]
+            UC16["Modifier une charge"]
+            UC17["Approuver une charge"]
+            UC18["Demander une prédiction IA des coûts"]
+            UC19["Consulter le catalogue de charges"]
+        end
+        subgraph NOTIFS["Notifications"]
+            UC20["Recevoir une notification EMAIL"]
+            UC21["Recevoir une notification SMS"]
+            UC22["Recevoir une notification PUSH"]
+        end
+        subgraph DASHBOARD["Tableau de Bord"]
+            UC23["Voir le tableau de bord analytique"]
+            UC24["Consulter les statistiques"]
+            UC25["Consulter les logs d'audit"]
+        end
+    end
+
+    Admin --> UC0
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC17
+    Admin --> UC23
+    Admin --> UC24
+    Admin --> UC25
+    Admin --> UC8
+
+    Organisateur --> UC0
+    Organisateur --> UC4
+    Organisateur --> UC5
+    Organisateur --> UC6
+    Organisateur --> UC7
+    Organisateur --> UC12
+    Organisateur --> UC13
+    Organisateur --> UC15
+    Organisateur --> UC16
+    Organisateur --> UC18
+    Organisateur --> UC19
+    Organisateur --> UC23
+    Organisateur --> UC24
+    Organisateur --> UC8
+
+    Participant --> UC0
+    Participant --> UC8
+    Participant --> UC9
+    Participant --> UC10
+    Participant --> UC11
+    Participant --> UC14
+    Participant --> UC20
+    Participant --> UC21
+    Participant --> UC22
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CLASSES -->
+  <div class="section" id="classes">
+    <div class="section-header">
+      <div class="num">2</div>
+      <div>
+        <h2>🗂️ Diagramme de Classes Général</h2>
+        <p>Toutes les entités métier, leurs attributs, méthodes et relations</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">7 entités principales</span>
+        <span class="tag green">7 énumérations</span>
+        <span class="tag orange">MongoDB NoSQL</span>
+        <span class="tag purple">Quarkus Panache</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+classDiagram
+    direction TB
+
+    class UserProfile {
+        +ObjectId id
+        +String keycloakId
+        +String username
+        +String email
+        +String firstName
+        +String lastName
+        +String phoneNumber
+        +Set~UserRole~ roles
+        +Boolean enabled
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +prePersist() void
+        +preUpdate() void
+    }
+
+    class Event {
+        +ObjectId id
+        +String title
+        +String description
+        +String location
+        +String startAt
+        +String endAt
+        +Integer maxParticipants
+        +Integer currentParticipants
+        +String organizerId
+        +String imageUrl
+        +EventCategory category
+        +EventStatus status
+        +List~String~ chargeIds
+        +String chargePredictionId
+    }
+
+    class Registration {
+        +ObjectId id
+        +String eventId
+        +String participantId
+        +String status
+        +String registeredAt
+        +setStatus(String) void
+        +getStatus() String
+    }
+
+    class Notification {
+        +ObjectId id
+        +String recipientId
+        +NotificationType type
+        +String message
+        +NotificationStatus status
+        +String sendAt
+    }
+
+    class ChargeItem {
+        +ObjectId id
+        +String eventId
+        +String catalogItemId
+        +ChargeCategory category
+        +String description
+        +int quantity
+        +double unitPrice
+        +double amount
+        +String currency
+        +ChargeStatus status
+        +PaymentInfo paymentInfo
+    }
+
+    class ChargePrediction {
+        +ObjectId id
+        +String eventId
+        +String organizerId
+        +EventMetrics eventMetrics
+        +PredictionResult predictionResult
+        +PaymentDecision paymentDecision
+        +ChargeStatus status
+        +String createdAt
+    }
+
+    class DashboardSnapshot {
+        +ObjectId id
+        +String organizerId
+        +int totalEvents
+        +int totalRegistrations
+        +double totalCharges
+    }
+
+    class UserRole {
+        <<enumeration>>
+        ADMIN
+        ORGANIZER
+        PARTICIPANT
+        MODERATOR
+    }
+
+    class EventStatus {
+        <<enumeration>>
+        DRAFT
+        PUBLISHED
+        CANCELLED
+        COMPLETED
+    }
+
+    class EventCategory {
+        <<enumeration>>
+        CONFERENCE
+        WORKSHOP
+        MEETUP
+        SEMINAR
+    }
+
+    class RegistrationStatus {
+        <<enumeration>>
+        CONFIRMED
+        PENDING
+        WAITLISTED
+        CANCELLED
+    }
+
+    class ChargeStatus {
+        <<enumeration>>
+        PENDING
+        APPROVED
+        PAID
+        REJECTED
+    }
+
+    class NotificationStatus {
+        <<enumeration>>
+        PENDING
+        SENT
+        FAILED
+    }
+
+    class NotificationType {
+        <<enumeration>>
+        EMAIL
+        SMS
+        PUSH
+    }
+
+    UserProfile "1" --> "0..*" Event : organise
+    UserProfile "1" --> "0..*" Registration : effectue
+    UserProfile "1" --> "1..*" UserRole : possède
+    Event "1" --> "0..*" Registration : reçoit
+    Event "1" --> "0..*" ChargeItem : contient
+    Event "1" --> "0..1" ChargePrediction : associée à
+    Event --> EventStatus
+    Event --> EventCategory
+    Registration --> RegistrationStatus
+    ChargeItem --> ChargeStatus
+    Notification --> NotificationStatus
+    Notification --> NotificationType
+    Notification --> UserProfile : envoyée à
+    DashboardSnapshot --> UserProfile : appartient à
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. COMPOSANTS -->
+  <div class="section" id="composants">
+    <div class="section-header">
+      <div class="num">3</div>
+      <div>
+        <h2>🧩 Diagramme des Composants</h2>
+        <p>Structure interne de chaque microservice : Resource, Service, Repository, Kafka Producers/Consumers</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">6 microservices</span>
+        <span class="tag green">Kafka Producers/Consumers</span>
+        <span class="tag orange">Panache MongoDB</span>
+        <span class="tag purple">REST Resources</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+graph TB
+
+    subgraph FRONTEND["Couche Présentation"]
+        subgraph FO["FrontOffice - React / TypeScript"]
+            FO_AUTH["AuthModule\n(Login, Register)"]
+            FO_EVENTS["EventsModule\n(Liste, Détail)"]
+            FO_REG["RegistrationsModule\n(Inscriptions)"]
+            FO_NOTIF["NotificationsModule\n(Push/Email)"]
+        end
+        subgraph BO["BackOffice - React / TypeScript"]
+            BO_USERS["UsersManager\n(CRUD Utilisateurs)"]
+            BO_EVENTS2["EventsManager\n(CRUD Événements)"]
+            BO_CHARGES["ChargesManager\n(Charges et IA)"]
+            BO_DASH["DashboardView\n(Stats et Audit)"]
+        end
+    end
+
+    subgraph INFRA["Infrastructure"]
+        subgraph GW_SVC["API Gateway - Spring Cloud"]
+            GW_ROUTER["Router"]
+            GW_FILTER["JWT Filter"]
+            GW_LB["Load Balancer"]
+        end
+        KC_SVC["Keycloak\nOAuth2 / JWT"]
+        EUR_SVC["Eureka\nService Registry"]
+    end
+
+    subgraph SERVICES["Services Métiers - Quarkus 3.8"]
+        subgraph ES["Events Service :8081"]
+            ES_R["EventResource\nREST /api/events"]
+            ES_S["EventService\nBusiness Logic"]
+            ES_RP["EventRepository\nPanache MongoDB"]
+            ES_PUB["EventPublisher\nKafka Producer"]
+            ES_CON["RegistrationConsumer\nKafka Consumer"]
+        end
+        subgraph RS["Registrations Service :8082"]
+            RS_R["RegistrationResource\nREST /api/registrations"]
+            RS_S["RegistrationService\nBusiness Logic"]
+            RS_RP["RegistrationRepository\nPanache MongoDB"]
+            RS_PUB["RegistrationPublisher\nKafka Producer"]
+        end
+        subgraph US["Users Service :8083"]
+            US_R["UserProfileResource\nREST /api/users"]
+            US_AUTH2["AuthResource\nREST /api/auth"]
+            US_S["UserProfileService"]
+            US_AS["AuthService\nKeycloak Client"]
+            US_RP["UserProfileRepository\nPanache MongoDB"]
+            US_PUB["UserPublisher\nKafka Producer"]
+        end
+        subgraph NS["Notifications Service :8084"]
+            NS_CON["NotificationConsumer\nKafka Consumer"]
+            NS_S["NotificationService"]
+            NS_RP["NotificationRepository\nPanache MongoDB"]
+            NS_EMAIL["EmailSender\nSMTP"]
+            NS_SMS["SmsSender\nSMS Gateway"]
+            NS_PUSH["PushSender\nFirebase FCM"]
+        end
+        subgraph DS["Dashboard Service :8085"]
+            DS_R["DashboardResource\nREST /api/dashboard"]
+            DS_CON["DashboardConsumer\nKafka Consumer"]
+            DS_AC["AuditConsumer\nKafka Consumer"]
+            DS_S["DashboardService"]
+            DS_RP["DashboardRepository\nPanache MongoDB"]
+        end
+        subgraph CS["Charges Service :8086"]
+            CS_R2["ChargeItemResource\nREST /api/charges"]
+            CS_PR["ChargePredictionResource\nREST /api/charges/predictions"]
+            CS_S["ChargeItemService"]
+            CS_AI["AIChargePredictionService\nML Model"]
+            CS_RP2["ChargeItemRepository\nPanache MongoDB"]
+        end
+    end
+
+    subgraph KAFKA["Apache Kafka"]
+        KF_E["Topic: events.*"]
+        KF_R["Topic: registrations.*"]
+        KF_U["Topic: users.*"]
+    end
+
+    subgraph MONGO["MongoDB Collections"]
+        DB_E[("events")]
+        DB_R[("registrations")]
+        DB_U[("users")]
+        DB_N[("notifications")]
+        DB_D[("dashboards")]
+        DB_C[("charges")]
+    end
+
+    FO_AUTH & FO_EVENTS & FO_REG & FO_NOTIF --> GW_ROUTER
+    BO_USERS & BO_EVENTS2 & BO_CHARGES & BO_DASH --> GW_ROUTER
+    GW_ROUTER --> GW_FILTER --> GW_LB
+    GW_FILTER <--> KC_SVC
+    GW_LB --> ES_R & RS_R & US_R & NS_CON & DS_R & CS_R2
+    ES_R & RS_R & US_R & NS_CON & DS_R & CS_R2 --> EUR_SVC
+    US_AS <--> KC_SVC
+
+    ES_R --> ES_S --> ES_RP --> DB_E
+    ES_S --> ES_PUB --> KF_E
+    ES_CON -.->|consume| KF_R
+
+    RS_R --> RS_S --> RS_RP --> DB_R
+    RS_S --> RS_PUB --> KF_R
+
+    US_R --> US_S --> US_RP --> DB_U
+    US_AUTH2 --> US_AS
+    US_S --> US_PUB --> KF_U
+
+    NS_CON -.->|consume| KF_E & KF_R & KF_U
+    NS_CON --> NS_S --> NS_RP --> DB_N
+    NS_S --> NS_EMAIL & NS_SMS & NS_PUSH
+
+    DS_CON -.->|consume| KF_E & KF_R
+    DS_AC -.->|consume| KF_U
+    DS_R --> DS_S --> DS_RP --> DB_D
+
+    CS_R2 --> CS_S --> CS_RP2 --> DB_C
+    CS_PR --> CS_AI
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DEPLOIEMENT -->
+  <div class="section" id="deploiement">
+    <div class="section-header">
+      <div class="num">4</div>
+      <div>
+        <h2>🚀 Diagramme de Déploiement</h2>
+        <p>Infrastructure Docker : conteneurs, ports exposés, réseaux, volumes de persistance</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Docker Compose</span>
+        <span class="tag green">14 conteneurs</span>
+        <span class="tag orange">3 réseaux</span>
+        <span class="tag purple">Java 21 / JVM</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+graph TB
+
+    subgraph CLIENT["Machine Client - Navigateur Web"]
+        FO_APP["FrontOffice React\nlocalhost:5173"]
+        BO_APP["BackOffice React\nlocalhost:5174"]
+    end
+
+    subgraph SERVER["Serveur Docker Host"]
+
+        subgraph NET_PUBLIC["Réseau Public"]
+            GW_CT["gateway-service\nPort 8080:8080\nSpring Cloud Gateway"]
+            EUR_CT["eureka-server\nPort 8761:8761\nSpring Netflix Eureka"]
+            CFG_CT["config-server\nPort 8888:8888\nSpring Config"]
+            KC_CT["keycloak\nPort 8180:8080\nKeycloak 24 - OAuth2/OIDC"]
+        end
+
+        subgraph NET_SERVICES["Réseau Services Internes"]
+            ES_CT["events-service\nPort 8081\nQuarkus 3.8 / JVM 21"]
+            RS_CT["registrations-service\nPort 8082\nQuarkus 3.8 / JVM 21"]
+            US_CT["users-service\nPort 8083\nQuarkus 3.8 / JVM 21"]
+            NS_CT["notifications-service\nPort 8084\nQuarkus 3.8 / JVM 21"]
+            DS_CT["dashboard-service\nPort 8085\nQuarkus 3.8 / JVM 21"]
+            CS_CT["charges-service\nPort 8086\nQuarkus 3.8 / JVM 21"]
+        end
+
+        subgraph NET_INFRA["Réseau Infrastructure"]
+            ZK_CT["zookeeper\nPort 2181\nConfluentinc 7.5"]
+            KF_CT["kafka\nPort 9092\nConfluentinc 7.5\nRAM: 1GB"]
+            MDB_CT[("mongodb\nPort 27017\nMongo 7.0\nVolume: mongo-data")]
+            SMTP_CT["maildev\nSMTP: 1025\nUI: 1080"]
+        end
+    end
+
+    FO_APP -->|HTTP| GW_CT
+    BO_APP -->|HTTP| GW_CT
+
+    GW_CT <-->|Validate JWT :8180| KC_CT
+    GW_CT -->|Discovery :8761| EUR_CT
+    GW_CT --> ES_CT & RS_CT & US_CT & NS_CT & DS_CT & CS_CT
+
+    ES_CT & RS_CT & US_CT & NS_CT & DS_CT & CS_CT -->|Register :8761| EUR_CT
+    ES_CT & RS_CT & US_CT -->|Fetch Config :8888| CFG_CT
+    US_CT <-->|Admin API :8180| KC_CT
+
+    ES_CT & RS_CT & US_CT -->|Produce :9092| KF_CT
+    KF_CT -->|Consume| NS_CT & DS_CT & ES_CT
+    KF_CT -->|Coordination :2181| ZK_CT
+
+    ES_CT & RS_CT & US_CT & NS_CT & DS_CT & CS_CT -->|CRUD :27017| MDB_CT
+    NS_CT -->|SMTP :1025| SMTP_CT
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ARCHITECTURE -->
+  <div class="section" id="archi">
+    <div class="section-header">
+      <div class="num">5</div>
+      <div>
+        <h2>🏗️ Diagramme d'Architecture Microservices</h2>
+        <p>Vue complète de l'infrastructure : Gateway, Kafka, MongoDB, Keycloak, Eureka</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Spring Boot</span>
+        <span class="tag green">Quarkus 3.8</span>
+        <span class="tag orange">Apache Kafka</span>
+        <span class="tag purple">Keycloak OAuth2</span>
+        <span class="tag">MongoDB</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+graph TB
+    subgraph CLIENTS["Couche Présentation"]
+        FO["FrontOffice React\nParticipants & Organisateurs"]
+        BO["BackOffice React\nAdministrateurs"]
+    end
+
+    subgraph INFRA["Infrastructure Spring Boot"]
+        GW["API Gateway\nSpring Cloud Gateway\nPort 8080"]
+        EUR["Eureka Server\nService Discovery\nPort 8761"]
+        CFG["Config Server\nConfiguration Centralisée\nPort 8888"]
+        KC["Keycloak\nAuthentification OAuth2/JWT"]
+    end
+
+    subgraph SERVICES["Services Métiers - Quarkus 3.8"]
+        ES["Events Service\nPort 8081"]
+        RS["Registrations Service\nPort 8082"]
+        US["Users Service\nPort 8083"]
+        NS["Notifications Service\nPort 8084"]
+        DS["Dashboard Service\nPort 8085"]
+        CS["Charges Service\nPort 8086"]
+    end
+
+    subgraph MESSAGING["Messagerie Asynchrone"]
+        KF["Apache Kafka\nTopics: events, registrations, users"]
+    end
+
+    subgraph DATA["Persistance"]
+        MDB[("MongoDB\nNoSQL Database")]
+    end
+
+    FO -->|HTTPS| GW
+    BO -->|HTTPS| GW
+
+    GW --> ES
+    GW --> RS
+    GW --> US
+    GW --> NS
+    GW --> DS
+    GW --> CS
+
+    US <-->|Auth / Token| KC
+    GW <-->|Validate JWT| KC
+
+    ES --> EUR
+    RS --> EUR
+    US --> EUR
+    NS --> EUR
+    DS --> EUR
+    CS --> EUR
+    GW --> EUR
+
+    ES -->|Publish| KF
+    RS -->|Publish| KF
+    US -->|Publish| KF
+
+    KF -->|Consume| NS
+    KF -->|Consume| DS
+    KF -->|Consume| ES
+
+    ES --> MDB
+    RS --> MDB
+    US --> MDB
+    NS --> MDB
+    DS --> MDB
+    CS --> MDB
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SEQUENCE AUTH -->
+  <div class="section" id="seq-auth">
+    <div class="section-header">
+      <div class="num">6</div>
+      <div>
+        <h2>🔐 Diagramme de Séquence – Authentification</h2>
+        <p>Flux de connexion JWT via Keycloak (OAuth2 / OIDC)</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">JWT</span>
+        <span class="tag green">Keycloak</span>
+        <span class="tag orange">Refresh Token</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as Utilisateur
+    participant Frontend as Frontend React
+    participant GW as API Gateway
+    participant US as Users Service
+    participant KC as Keycloak
+
+    User->>Frontend: Saisit email + mot de passe
+    Frontend->>GW: POST /api/auth/login {email, password}
+    GW->>US: POST /api/auth/login
+    US->>KC: POST /token {username, password, client_id}
+    KC->>KC: Vérification des credentials
+
+    alt Credentials valides
+        KC-->>US: Access Token (JWT) + Refresh Token
+        US-->>GW: LoginResponse {accessToken, refreshToken}
+        GW-->>Frontend: 200 OK {accessToken, refreshToken}
+        Frontend->>Frontend: Stocker les tokens
+        User->>Frontend: Accède aux ressources protégées
+        Frontend->>GW: GET /api/events (Bearer Token)
+        GW->>KC: Valider JWT
+        KC-->>GW: Token valide + rôles
+        GW-->>Frontend: 200 OK + Données autorisées
+    else Credentials invalides
+        KC-->>US: 401 Unauthorized
+        US-->>GW: 401 Unauthorized
+        GW-->>Frontend: 401 Invalid credentials
+        Frontend->>User: Afficher message d'erreur
+    end
+
+    Note over Frontend,KC: Rafraîchissement automatique du token
+    Frontend->>GW: POST /api/auth/refresh {refreshToken}
+    GW->>US: POST /api/auth/refresh
+    US->>KC: POST /token grant_type=refresh_token
+    KC-->>US: Nouveau Access Token
+    US-->>GW: LoginResponse {newAccessToken}
+    GW-->>Frontend: 200 OK {newAccessToken}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. SEQUENCE INSCRIPTION -->
+  <div class="section" id="seq-inscription">
+    <div class="section-header">
+      <div class="num">7</div>
+      <div>
+        <h2>📝 Diagramme de Séquence – Inscription à un Événement</h2>
+        <p>Flux complet : consultation, inscription, validation, notification via Kafka</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Kafka Events</span>
+        <span class="tag green">Notification EMAIL</span>
+        <span class="tag orange">Liste d'attente</span>
+        <span class="tag purple">Async</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Participant as Participant
+    participant GW as API Gateway
+    participant ES as Events Service
+    participant RS as Registrations Service
+    participant KF as Apache Kafka
+    participant NS as Notifications Service
+    participant DB as MongoDB
+
+    Participant->>GW: GET /api/events
+    GW->>ES: GET /api/events
+    ES->>DB: findAll() events publiés
+    DB-->>ES: Liste des événements
+    ES-->>GW: Liste événements
+    GW-->>Participant: Événements disponibles
+
+    Participant->>GW: POST /api/registrations {eventId, participantId}
+    GW->>RS: POST /api/registrations
+    RS->>ES: Vérifier disponibilité (currentParticipants < maxParticipants)
+    ES-->>RS: Réponse disponibilité
+
+    alt Places disponibles
+        RS->>DB: save Registration PENDING
+        RS->>KF: Publish registrations.created
+        RS-->>GW: 201 Created
+        GW-->>Participant: Inscription PENDING
+
+        par Traitement asynchrone
+            KF->>NS: Consume registrations.created
+            NS-->>Participant: Email - Inscription en attente
+            KF->>ES: Consume registrations.created
+            ES->>DB: Incrémenter currentParticipants
+        end
+
+        Note over RS,KF: L'organisateur valide
+        RS->>DB: update Registration CONFIRMED
+        RS->>KF: Publish registrations.confirmed
+        KF->>NS: Consume registrations.confirmed
+        NS-->>Participant: Email - Inscription confirmée
+    else Aucune place
+        RS->>DB: save Registration WAITLISTED
+        RS->>KF: Publish registrations.waitlisted
+        RS-->>GW: 201 Created WAITLISTED
+        GW-->>Participant: Mise en liste d'attente
+        KF->>NS: Consume registrations.waitlisted
+        NS-->>Participant: Email - Liste d'attente
+    end
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. SEQUENCE IA -->
+  <div class="section" id="seq-ia">
+    <div class="section-header">
+      <div class="num">8</div>
+      <div>
+        <h2>🤖 Diagramme de Séquence – Prédiction IA des Charges</h2>
+        <p>Estimation intelligente des coûts d'un événement par Machine Learning</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Machine Learning</span>
+        <span class="tag green">Linear Regression</span>
+        <span class="tag orange">CostBreakdown</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Org as Organisateur
+    participant GW as API Gateway
+    participant CS as Charges Service
+    participant AI as AI Prediction Service
+    participant ES as Events Service
+    participant DB as MongoDB
+
+    Org->>GW: POST /api/charges/predictions {eventMetrics}
+    GW->>CS: POST /api/charges/predictions
+    CS->>AI: predict(eventMetrics)
+    Note over AI: Analyse ML - Linear Regression
+    AI->>AI: Calcul des coûts par catégorie
+    AI-->>CS: PredictionResult {total, score, breakdown, recommandations}
+    CS->>DB: save ChargePrediction PENDING
+    DB-->>CS: ChargePrediction avec ID
+    CS-->>GW: 201 Created {prediction}
+    GW-->>Org: Prédiction IA - coûts estimés
+
+    Note over Org,GW: L'organisateur examine et décide
+    Org->>GW: POST /api/charges/predictions/{id}/decide {paymentMethod}
+    GW->>CS: POST decision
+    CS->>DB: update ChargePrediction APPROVED + PaymentDecision
+    CS->>ES: PUT /api/events/{eventId} - lier chargePredictionId
+    ES->>DB: update Event.chargePredictionId
+    ES-->>CS: Event mis à jour
+    CS->>CS: Créer ChargeItems depuis recommandations IA
+    CS->>DB: saveAll ChargeItems
+    CS-->>GW: 200 OK - Decision + Charges créées
+    GW-->>Org: Charges pré-remplies automatiquement
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. ETATS EVENEMENT -->
+  <div class="section" id="state-event">
+    <div class="section-header">
+      <div class="num">9</div>
+      <div>
+        <h2>📅 Diagramme d'États – Cycle de Vie d'un Événement</h2>
+        <p>Transitions d'état : DRAFT → PUBLISHED → COMPLETED / CANCELLED</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">DRAFT</span>
+        <span class="tag green">PUBLISHED</span>
+        <span class="tag orange">CANCELLED</span>
+        <span class="tag purple">COMPLETED</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> DRAFT : Création par l'organisateur
+
+    DRAFT --> PUBLISHED : publier() - informations complètes
+    DRAFT --> CANCELLED : annuler()
+
+    PUBLISHED --> CANCELLED : annuler() avant la date de début
+    PUBLISHED --> COMPLETED : date de fin passée / clôturer()
+
+    CANCELLED --> [*]
+    COMPLETED --> [*]
+
+    state DRAFT {
+        [*] --> EnCours
+        EnCours --> InfosComplètes : Toutes les infos saisies
+        InfosComplètes --> [*]
+    }
+
+    state PUBLISHED {
+        [*] --> OuvertInscriptions
+        OuvertInscriptions --> Complet : maxParticipants atteint
+        Complet --> OuvertInscriptions : annulation inscription
+        Complet --> [*]
+        OuvertInscriptions --> [*]
+    }
+
+    note right of DRAFT : L'organisateur peut modifier\ntous les détails
+    note right of PUBLISHED : Inscriptions ouvertes\nModification restreinte
+    note right of COMPLETED : Statistiques archivées\nRapport Dashboard disponible
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. ETATS INSCRIPTION -->
+  <div class="section" id="state-reg">
+    <div class="section-header">
+      <div class="num">10</div>
+      <div>
+        <h2>✅ Diagramme d'États – Cycle de Vie d'une Inscription</h2>
+        <p>Transitions : PENDING → CONFIRMED / WAITLISTED / CANCELLED</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">PENDING</span>
+        <span class="tag green">CONFIRMED</span>
+        <span class="tag orange">WAITLISTED</span>
+        <span class="tag purple">CANCELLED</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> PENDING : Soumission inscription
+
+    PENDING --> CONFIRMED : Validation organisateur - place dispo
+    PENDING --> WAITLISTED : Événement complet
+    PENDING --> CANCELLED : Refus ou annulation participant
+
+    WAITLISTED --> CONFIRMED : Place libérée
+    WAITLISTED --> CANCELLED : Annulation par le participant
+
+    CONFIRMED --> CANCELLED : Annulation avant date début
+
+    CANCELLED --> [*]
+
+    note right of PENDING : Email envoyé : En attente
+    note right of CONFIRMED : Email envoyé : Inscription confirmée
+    note right of WAITLISTED : Email envoyé : Liste d'attente
+    note right of CANCELLED : Email envoyé : Annulée\nPlace libérée pour liste d'attente
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. ACTIVITE -->
+  <div class="section" id="activity">
+    <div class="section-header">
+      <div class="num">11</div>
+      <div>
+        <h2>🔄 Diagramme d'Activité – Processus d'Inscription</h2>
+        <p>Flux complet depuis la consultation jusqu'à la confirmation finale</p>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="meta">
+        <span class="tag">Flowchart</span>
+        <span class="tag green">Kafka Async</span>
+        <span class="tag orange">Notifications</span>
+      </div>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TD
+    START([Début]) --> A
+
+    A["Participant consulte\nla liste des événements"]
+    A --> B["Sélectionner un événement"]
+    B --> C{Événement publié ?}
+
+    C -- Non --> A
+    C -- Oui --> D{Déjà inscrit ?}
+    D -- Oui --> E["Message : Déjà inscrit"]
+    E --> END
+    D -- Non --> F{Places disponibles ?}
+
+    F -- Oui --> G["Créer Inscription PENDING"]
+    F -- Non --> H["Créer Inscription WAITLISTED"]
+
+    G --> I["Kafka: registrations.created"]
+    H --> I2["Kafka: registrations.waitlisted"]
+
+    I --> J["Email: Inscription en attente"]
+    I2 --> K["Email: Liste d'attente"]
+    I --> L["Incrémenter compteur participants"]
+
+    J --> M{Organisateur valide ?}
+    M -- Oui --> N["Statut: CONFIRMED"]
+    M -- Non --> O["Statut: CANCELLED"]
+
+    N --> P["Kafka: registrations.confirmed"]
+    O --> Q["Kafka: registrations.cancelled"]
+
+    P --> R["Email: Inscription confirmée !"]
+    Q --> S["Email: Inscription annulée"]
+    Q --> T["Décrémenter compteur participants"]
+    T --> U{Liste d'attente non vide ?}
+    U -- Oui --> V["Confirmer 1er participant\nen liste d'attente"]
+    U -- Non --> END
+
+    K --> END
+    R --> END
+    S --> END
+    V --> END
+
+    END([Fin])
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>📐 Diagrammes UML générés pour le Rapport PFE · Système de Gestion d'Événements</p>
+  <p style="margin-top:.4rem">Stack : Java 21 · Spring Boot 3 · Quarkus 3.8 · Apache Kafka · MongoDB · Keycloak · React/TypeScript</p>
+  <p style="margin-top:.4rem; color: #aaa">Mariem Achouri · ESPRIT · 2025-2026</p>
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    themeVariables: {
+      primaryColor: '#4A90D9',
+      primaryTextColor: '#2c3e50',
+      primaryBorderColor: '#2C5F8A',
+      lineColor: '#6c757d',
+      secondaryColor: '#E8F4FD',
+      tertiaryColor: '#f4f7fb'
+    },
+    flowchart: { htmlLabels: true, curve: 'basis' },
+    sequence: { showSequenceNumbers: false },
+    classDiagram: { useMaxWidth: false }
+  });
+</script>
+</body>
+</html>

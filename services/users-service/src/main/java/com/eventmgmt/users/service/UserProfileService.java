@@ -56,8 +56,14 @@ public class UserProfileService {
     }
     
     public Optional<UserResponse> getUserById(String id) {
-        return repository.findByIdOptional(new ObjectId(id))
-            .map(this::mapToResponse);
+        try {
+            return repository.findByIdOptional(new ObjectId(id))
+                .map(this::mapToResponse);
+        } catch (IllegalArgumentException e) {
+            // Not a valid MongoDB ObjectId — try keycloakId (Keycloak UUID)
+            UserProfile profile = repository.find("keycloakId", id).firstResult();
+            return Optional.ofNullable(profile).map(this::mapToResponse);
+        }
     }
     
     public Optional<UserResponse> getUserByUsername(String username) {
@@ -77,6 +83,13 @@ public class UserProfileService {
         String keycloakUserId;
         try {
             keycloakUserId = createKeycloakUser(request);
+        } catch (WebApplicationException e) {
+            // Propagate Keycloak 409 Conflict as a clean 409 to the client
+            if (e.getResponse().getStatus() == 409) {
+                throw new WebApplicationException("Username or email already exists", 409);
+            }
+            LOG.error("Failed to create user in Keycloak", e);
+            throw new WebApplicationException("Failed to create user: " + e.getMessage(), 500);
         } catch (Exception e) {
             LOG.error("Failed to create user in Keycloak", e);
             throw new WebApplicationException("Failed to create user: " + e.getMessage(), 500);
@@ -103,19 +116,62 @@ public class UserProfileService {
         return mapToResponse(profile);
     }
     
+    // Helper: find user by MongoDB ObjectId OR Keycloak UUID — returns null if not found
+    private UserProfile findProfileByAnyId(String id) {
+        try {
+            return repository.findByIdOptional(new ObjectId(id)).orElse(null);
+        } catch (IllegalArgumentException e) {
+            // Not a valid MongoDB ObjectId — try keycloakId (Keycloak UUID format)
+        }
+        return repository.find("keycloakId", id).firstResult();
+    }
+
+    // Auto-create MongoDB profile from Keycloak data (for users created outside the API)
+    private UserProfile syncFromKeycloak(String keycloakId, UserUpdateRequest request) {
+        UserRepresentation kcUser;
+        try {
+            kcUser = keycloak.realm(realm).users().get(keycloakId).toRepresentation();
+        } catch (Exception e) {
+            LOG.error("Keycloak user not found for id: " + keycloakId, e);
+            throw new WebApplicationException("User not found in Keycloak", 404);
+        }
+
+        UserProfile profile = new UserProfile();
+        profile.setKeycloakId(keycloakId);
+        profile.setUsername(kcUser.getUsername());
+        profile.setEmail(kcUser.getEmail() != null ? kcUser.getEmail() : "");
+        profile.setFirstName(request.getFirstName() != null ? request.getFirstName()
+                : (kcUser.getFirstName() != null ? kcUser.getFirstName() : ""));
+        profile.setLastName(request.getLastName() != null ? request.getLastName()
+                : (kcUser.getLastName() != null ? kcUser.getLastName() : ""));
+        profile.setPhoneNumber(request.getPhoneNumber());
+        profile.setRoles(new HashSet<>());
+        profile.setEnabled(kcUser.isEnabled());
+        profile.prePersist();
+        repository.persist(profile);
+        LOG.info("Auto-synced MongoDB profile from Keycloak for user: " + kcUser.getUsername());
+        return profile;
+    }
+
     // @Transactional // Désactivé pour MongoDB standalone
     public UserResponse updateUser(String id, UserUpdateRequest request) {
-        UserProfile profile = repository.findByIdOptional(new ObjectId(id))
-            .orElseThrow(() -> new WebApplicationException("User not found", 404));
-        
+        UserProfile profile = findProfileByAnyId(id);
+
+        if (profile == null) {
+            // User exists in Keycloak but not in MongoDB — auto-create their profile
+            profile = syncFromKeycloak(id, request);
+            userPublisher.publishUserCreated(profile);
+            return mapToResponse(profile);
+        }
+
         // Update in Keycloak
         try {
             updateKeycloakUser(profile.getKeycloakId(), request);
         } catch (Exception e) {
-            LOG.error("Failed to update user in Keycloak", e);
-            throw new WebApplicationException("Failed to update user: " + e.getMessage(), 500);
+            LOG.warn("Could not sync update to Keycloak (non-fatal): " + e.getMessage());
+            // Non-fatal — continue updating MongoDB
         }
-        
+
         // Update in MongoDB
         if (request.getEmail() != null) {
             profile.setEmail(request.getEmail());
@@ -136,20 +192,19 @@ public class UserProfileService {
             profile.setEnabled(request.getEnabled());
         }
         profile.preUpdate();
-        
+
         repository.update(profile);
         LOG.info("User updated successfully: " + profile.getUsername());
-       
+
         // Publish user update to Kafka
         userPublisher.publishUserUpdated(profile);
-        
+
         return mapToResponse(profile);
     }
     
     // @Transactional // Désactivé pour MongoDB standalone
     public void deleteUser(String id) {
-        UserProfile profile = repository.findByIdOptional(new ObjectId(id))
-            .orElseThrow(() -> new WebApplicationException("User not found", 404));
+        UserProfile profile = findProfileByAnyId(id);
         
         // Delete from Keycloak
         try {
@@ -162,7 +217,7 @@ public class UserProfileService {
         }
         
         // Delete from MongoDB
-        repository.deleteById(new ObjectId(id));
+        repository.deleteById(profile.id);
         LOG.info("User deleted successfully: " + profile.getUsername());
         
         // Publish user deletion to Kafka

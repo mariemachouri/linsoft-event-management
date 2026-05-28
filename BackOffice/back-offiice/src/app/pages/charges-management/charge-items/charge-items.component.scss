@@ -4,3 +4,12 @@
 .badge-danger   { background-color: #ef8157; color: #fff; }
 .badge-secondary { background-color: #aaa; color: #fff; }
 .gap-2 { gap: 0.5rem; }
+
+.card-header {
+  .card-title {
+    color: #fff !important;
+  }
+  .card-category {
+    color: #fff !important;
+  }
+}

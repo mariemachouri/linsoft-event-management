@@ -1,42 +1,39 @@
-﻿<div class="content">
+<div class="content">
+
+  <!-- ================================================================ -->
+  <!-- GRAPHIQUE PRINCIPAL DE PERFORMANCE                                -->
+  <!-- ================================================================ -->
   <div class="row">
     <div class="col-12">
-      <!-- Graphique principal de performance -->
       <div class="card card-chart">
         <div class="card-header">
           <div class="row">
             <div class="col-sm-6 text-left">
-              <h5 class="card-category">Total Shipments</h5>
+              <h5 class="card-category">Total Inscriptions</h5>
               <h2 class="card-title">Performance</h2>
             </div>
             <div class="col-sm-6">
               <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
-                <label class="btn btn-sm btn-primary btn-simple" 
+                <label class="btn btn-sm btn-primary btn-simple"
                        [class.active]="activeTab === 'accounts'"
                        (click)="switchTab('accounts')">
-                  <input type="radio" name="options" checked>
-                  <span class="d-none d-sm-block">Accounts</span>
-                  <span class="d-block d-sm-none">
-                    <i class="tim-icons icon-single-02"></i>
-                  </span>
+                  <input type="radio" name="opts" checked>
+                  <span class="d-none d-sm-block">Inscriptions</span>
+                  <span class="d-block d-sm-none"><i class="tim-icons icon-single-02"></i></span>
                 </label>
-                <label class="btn btn-sm btn-primary btn-simple" 
+                <label class="btn btn-sm btn-primary btn-simple"
                        [class.active]="activeTab === 'purchases'"
                        (click)="switchTab('purchases')">
-                  <input type="radio" class="d-none d-sm-none" name="options">
-                  <span class="d-none d-sm-block">Purchases</span>
-                  <span class="d-block d-sm-none">
-                    <i class="tim-icons icon-gift-2"></i>
-                  </span>
+                  <input type="radio" class="d-none" name="opts">
+                  <span class="d-none d-sm-block">Événements</span>
+                  <span class="d-block d-sm-none"><i class="tim-icons icon-gift-2"></i></span>
                 </label>
-                <label class="btn btn-sm btn-primary btn-simple" 
+                <label class="btn btn-sm btn-primary btn-simple"
                        [class.active]="activeTab === 'sessions'"
                        (click)="switchTab('sessions')">
-                  <input type="radio" class="d-none" name="options">
+                  <input type="radio" class="d-none" name="opts">
                   <span class="d-none d-sm-block">Sessions</span>
-                  <span class="d-block d-sm-none">
-                    <i class="tim-icons icon-tap-02"></i>
-                  </span>
+                  <span class="d-block d-sm-none"><i class="tim-icons icon-tap-02"></i></span>
                 </label>
               </div>
             </div>
@@ -51,122 +48,99 @@
     </div>
   </div>
 
-  <!-- Statistiques secondaires -->
+  <!-- ================================================================ -->
+  <!-- KPI MINI-CARTES                                                   -->
+  <!-- ================================================================ -->
   <div class="row">
-    <!-- Total Shipments -->
     <div class="col-lg-4">
       <div class="card card-chart">
         <div class="card-header">
-          <h5 class="card-category">Total Shipments</h5>
+          <h5 class="card-category">Total Inscriptions</h5>
           <h3 class="card-title">
-            <i class="tim-icons icon-bell-55 text-primary"></i> 
+            <i class="tim-icons icon-bell-55 text-primary"></i>
             {{ formatNumber(totalShipments) }}
           </h3>
         </div>
-        <div class="card-body">
-          <div class="chart-area" style="height: 120px;">
-            <canvas id="shipmentsChart"></canvas>
-          </div>
-        </div>
+        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="shipmentsChart"></canvas></div></div>
       </div>
     </div>
-
-    <!-- Daily Sales -->
     <div class="col-lg-4">
       <div class="card card-chart">
         <div class="card-header">
-          <h5 class="card-category">Daily Sales</h5>
+          <h5 class="card-category">Revenus du jour</h5>
           <h3 class="card-title">
-            <i class="tim-icons icon-delivery-fast text-info"></i> 
+            <i class="tim-icons icon-delivery-fast text-info"></i>
             {{ dailySales }}€
           </h3>
         </div>
-        <div class="card-body">
-          <div class="chart-area" style="height: 120px;">
-            <canvas id="salesChart"></canvas>
-          </div>
-        </div>
+        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="salesChart"></canvas></div></div>
       </div>
     </div>
-
-    <!-- Completed Tasks -->
     <div class="col-lg-4">
       <div class="card card-chart">
         <div class="card-header">
-          <h5 class="card-category">Completed Tasks</h5>
+          <h5 class="card-category">Événements complétés</h5>
           <h3 class="card-title">
-            <i class="tim-icons icon-send text-success"></i> 
+            <i class="tim-icons icon-send text-success"></i>
             {{ formatNumber(completedTasks) }}
           </h3>
         </div>
-        <div class="card-body">
-          <div class="chart-area" style="height: 120px;">
-            <canvas id="tasksChart"></canvas>
-          </div>
-        </div>
+        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="tasksChart"></canvas></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Message de chargement -->
+  <!-- Chargement / erreur -->
   <div *ngIf="loading" class="row">
     <div class="col-12">
       <div class="alert alert-info">
-        <i class="tim-icons icon-refresh-01"></i>
-        Loading data from the database...
+        <i class="tim-icons icon-refresh-01"></i> Chargement des données…
       </div>
     </div>
   </div>
-
-  <!-- Affichage des erreurs -->
   <div *ngIf="error" class="row">
     <div class="col-12">
       <div class="alert alert-warning">
-        <i class="tim-icons icon-alert-circle-exc"></i>
-        {{ error }} - Displaying demo data
+        <i class="tim-icons icon-alert-circle-exc"></i> {{ error }}
       </div>
     </div>
   </div>
 
-  <!-- Informations sur les données -->
+  <!-- ================================================================ -->
+  <!-- SOURCES DE DONNÉES                                                -->
+  <!-- ================================================================ -->
   <div class="row" *ngIf="!loading">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h4 class="card-title">📊 Data Sources</h4>
-        </div>
+        <div class="card-header"><h4 class="card-title">📊 Sources de données</h4></div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-calendar-60 text-primary"></i>
-                <h5>Events</h5>
-                <h3>{{ events?.length || 0 }}</h3>
-                <small>Total events</small>
+                <h5>Événements</h5><h3>{{ events?.length || 0 }}</h3>
+                <small>Total événements</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-single-02 text-info"></i>
-                <h5>Users</h5>
-                <h3>{{ users?.length || 0 }}</h3>
-                <small>User accounts</small>
+                <h5>Utilisateurs</h5><h3>{{ users?.length || 0 }}</h3>
+                <small>Comptes actifs</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-notes text-success"></i>
-                <h5>Registrations</h5>
-                <h3>{{ registrations?.length || 0 }}</h3>
-                <small>Total registrations</small>
+                <h5>Inscriptions</h5><h3>{{ registrations?.length || 0 }}</h3>
+                <small>Total inscriptions</small>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stats-box">
                 <i class="tim-icons icon-chart-bar-32 text-warning"></i>
-                <h5>Tasks</h5>
-                <h3>{{ completedTasks }}</h3>
-                <small>Completed events</small>
+                <h5>Complétés</h5><h3>{{ completedTasks }}</h3>
+                <small>Événements passés</small>
               </div>
             </div>
           </div>
@@ -175,28 +149,192 @@
     </div>
   </div>
 
-  <!-- Insights IA -->
-  <div class="row" *ngIf="!loading && healthScore">
-    <div class="col-lg-6">
+  <!-- ================================================================ -->
+  <!-- 🤖 PRÉVISION IA — HOLT-WINTERS / POLYNOMIALE                    -->
+  <!-- ================================================================ -->
+  <div class="row" *ngIf="forecastResult">
+    <div class="col-12">
+      <div class="card card-ai-forecast">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-sm-8 text-left">
+              <h4 class="card-title">
+                🤖 Prévision IA — <span class="model-badge">{{ forecastResult.model | uppercase }}</span>
+              </h4>
+              <p class="card-category">Prédiction des 3 prochains mois avec intervalles de confiance à 95%</p>
+            </div>
+            <div class="col-sm-4 text-right">
+              <div class="accuracy-badges">
+                <span class="acc-badge" [class.acc-good]="forecastResult.mape < 15" [class.acc-fair]="forecastResult.mape >= 15 && forecastResult.mape < 30" [class.acc-poor]="forecastResult.mape >= 30">
+                  MAPE: {{ forecastResult.mape }}%
+                </span>
+                <span class="acc-badge acc-rmse">RMSE: {{ forecastResult.rmse }}</span>
+                <span class="acc-badge acc-conf">Confiance: {{ (forecastResult.confidence * 100).toFixed(0) }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="forecast-values mb-3">
+            <div class="forecast-pill" *ngFor="let f of forecastResult.forecast; let i = index">
+              <span class="pill-label">M+{{ i + 1 }}</span>
+              <span class="pill-value">{{ f }}</span>
+              <span class="pill-range">{{ forecastResult.lowerBound[i] }} – {{ forecastResult.upperBound[i] }}</span>
+            </div>
+          </div>
+          <div class="chart-area" style="height:260px">
+            <canvas id="forecastChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- 🔍 ANOMALIES   |   🎯 CLUSTERS K-MEANS                          -->
+  <!-- ================================================================ -->
+  <div class="row" *ngIf="anomalies.length || clusterResult">
+    <!-- Anomaly Chart -->
+    <div class="col-lg-8">
+      <div class="card card-ai-section">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="card-title">
+                🔍 Détection d'Anomalies
+                <span class="anomaly-count" *ngIf="anomalyCount > 0">{{ anomalyCount }} détectée(s)</span>
+                <span class="no-anomaly" *ngIf="anomalyCount === 0">✅ Aucune anomalie</span>
+              </h4>
+              <p class="card-category">Méthode combinée IQR + Z-Score (seuil 2.5σ)</p>
+            </div>
+            <div class="col-4 text-right">
+              <div class="anomaly-legend">
+                <span class="legend-dot" style="background:#1d8cf8"></span> Normal
+                <span class="legend-dot" style="background:#ffc864; margin-left:8px"></span> Faible
+                <span class="legend-dot" style="background:#ff8d72; margin-left:8px"></span> Moyen
+                <span class="legend-dot" style="background:#fd5d93; margin-left:8px"></span> Élevé
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height:200px">
+            <canvas id="anomalyChart"></canvas>
+          </div>
+          <!-- Liste des anomalies détectées -->
+          <div class="anomaly-list mt-3" *ngIf="anomalyCount > 0">
+            <ng-container *ngFor="let a of anomalies">
+              <div class="anomaly-item"
+                   *ngIf="a.isAnomaly"
+                   [class.anomaly-high]="a.severity === 'high'"
+                   [class.anomaly-med]="a.severity === 'medium'"
+                   [class.anomaly-low]="a.severity === 'low'">
+                <span class="anomaly-month">{{ MONTHS[a.index] }}</span>
+                <span class="anomaly-val">{{ a.value }}</span>
+                <span class="anomaly-dir">{{ a.direction === 'spike' ? '▲ Pic' : '▼ Creux' }}</span>
+                <span class="anomaly-z">z={{ a.zScore }}</span>
+                <span class="anomaly-sev">{{ a.severity | uppercase }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cluster Chart -->
+    <div class="col-lg-4" *ngIf="clusterResult">
+      <div class="card card-ai-section">
+        <div class="card-header">
+          <h4 class="card-title">🎯 Clustering K-Means</h4>
+          <p class="card-category">Segmentation des performances mensuelles (k=3)</p>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height:200px">
+            <canvas id="clusterChart"></canvas>
+          </div>
+          <div class="cluster-details mt-3">
+            <div class="cluster-row" *ngFor="let c of clusterResult?.clusters">
+              <div class="cluster-dot" [style.background]="c.color"></div>
+              <div class="cluster-info">
+                <span class="cluster-label">
+                  {{ c.label === 'high-performance' ? 'Haute performance' :
+                     c.label === 'medium-performance' ? 'Performance moyenne' : 'Basse performance' }}
+                </span>
+                <div class="cluster-bar">
+                  <div class="cluster-fill" [style.width.%]="c.percentage" [style.background]="c.color"></div>
+                </div>
+                <span class="cluster-pct">{{ c.size }} mois • centroïde {{ c.centroid }}</span>
+              </div>
+            </div>
+            <p class="silhouette-score mt-2">
+              Score Silhouette: <strong>{{ clusterResult?.silhouetteScore }}</strong>
+              <span class="sil-hint">{{ clusterResult?.silhouetteScore >= 0.5 ? '✅ Bonne séparation' : '⚠ Clusters proches' }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- 💡 HEALTH SCORE   |   🔗 MATRICE DE CORRÉLATION                 -->
+  <!-- ================================================================ -->
+  <div class="row" *ngIf="healthScore || correlationMatrix">
+
+    <!-- Health Score 5 dimensions -->
+    <div class="col-lg-5" *ngIf="healthScore">
       <div class="card card-ai-insights">
         <div class="card-header">
           <h4 class="card-title">
-            <i class="tim-icons icon-atom"></i> AI Analysis - Health Score
+            <i class="tim-icons icon-atom"></i> Score de Santé IA
+            <span class="trend-badge" [class]="getTrendClass()">
+              {{ getTrendIcon() }} {{ healthScore.trend === 'improving' ? 'Progression' : healthScore.trend === 'declining' ? 'En baisse' : 'Stable' }}
+            </span>
           </h4>
         </div>
         <div class="card-body">
           <div class="health-score-container">
+            <!-- Cercle score global -->
             <div class="score-circle" [ngClass]="getHealthScoreClass()">
               <i class="tim-icons" [ngClass]="getHealthScoreIcon()"></i>
               <h2>{{ healthScore.score }}/100</h2>
               <p class="status-text">{{ healthScore.status | uppercase }}</p>
             </div>
-            <div class="score-details mt-4">
-              <h5>AI Recommendations:</h5>
+
+            <!-- 5 dimensions -->
+            <div class="dimensions mt-3">
+              <div class="dim-row">
+                <span class="dim-label">Engagement</span>
+                <div class="dim-bar"><div class="dim-fill" [style.width.%]="getDimensionWidth(healthScore.dimensions.engagement, 35)" style="background:#1d8cf8"></div></div>
+                <span class="dim-val">{{ healthScore.dimensions.engagement }}/35</span>
+              </div>
+              <div class="dim-row">
+                <span class="dim-label">Croissance</span>
+                <div class="dim-bar"><div class="dim-fill" [style.width.%]="getDimensionWidth(healthScore.dimensions.growth, 20)" style="background:#00f2c3"></div></div>
+                <span class="dim-val">{{ healthScore.dimensions.growth }}/20</span>
+              </div>
+              <div class="dim-row">
+                <span class="dim-label">Rétention</span>
+                <div class="dim-bar"><div class="dim-fill" [style.width.%]="getDimensionWidth(healthScore.dimensions.retention, 20)" style="background:#e14eca"></div></div>
+                <span class="dim-val">{{ healthScore.dimensions.retention }}/20</span>
+              </div>
+              <div class="dim-row">
+                <span class="dim-label">Activité</span>
+                <div class="dim-bar"><div class="dim-fill" [style.width.%]="getDimensionWidth(healthScore.dimensions.activity, 15)" style="background:#ff8d72"></div></div>
+                <span class="dim-val">{{ healthScore.dimensions.activity }}/15</span>
+              </div>
+              <div class="dim-row">
+                <span class="dim-label">Efficacité</span>
+                <div class="dim-bar"><div class="dim-fill" [style.width.%]="getDimensionWidth(healthScore.dimensions.efficiency, 10)" style="background:#fd5d93"></div></div>
+                <span class="dim-val">{{ healthScore.dimensions.efficiency }}/10</span>
+              </div>
+            </div>
+
+            <!-- Recommandations -->
+            <div class="score-details mt-3">
+              <h5>Recommandations IA :</h5>
               <ul class="recommendation-list">
-                <li *ngFor="let rec of healthScore.recommendations">
-                  <i class="tim-icons icon-bulb-63"></i> {{ rec }}
-                </li>
+                <li *ngFor="let rec of healthScore.recommendations">{{ rec }}</li>
               </ul>
             </div>
           </div>
@@ -204,8 +342,53 @@
       </div>
     </div>
 
-    <div class="col-lg-6">
-      <div class="card card-ai-insights">
+    <!-- Corrélation + Smart Insights -->
+    <div class="col-lg-7">
+
+      <!-- Matrice de corrélation -->
+      <div class="card card-ai-section" *ngIf="correlationMatrix">
+        <div class="card-header">
+          <h4 class="card-title">🔗 Matrice de Corrélation de Pearson</h4>
+          <p class="card-category">Relations statistiques entre les métriques</p>
+        </div>
+        <div class="card-body">
+          <table class="corr-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th *ngFor="let l of correlationMatrix.labels">{{ l }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of correlationMatrix.matrix; let i = index">
+                <td class="corr-label">{{ correlationMatrix.labels[i] }}</td>
+                <td *ngFor="let val of row"
+                    class="corr-cell"
+                    [style.background]="getCorrelationColor(val)"
+                    [title]="'r = ' + val">
+                  {{ val === 1 ? '—' : val }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="strong-correlations mt-3" *ngIf="correlationMatrix.strongCorrelations.length > 0">
+            <h6>Corrélations significatives (|r| ≥ 0.5) :</h6>
+            <div class="corr-pill" *ngFor="let sc of correlationMatrix.strongCorrelations"
+                 [class.positive]="sc.type === 'positive'"
+                 [class.negative]="sc.type === 'negative'">
+              {{ sc.a }} ↔ {{ sc.b }} : <strong>{{ sc.value }}</strong>
+              <span>{{ sc.type === 'positive' ? '📈 Corrélation positive' : '📉 Corrélation inverse' }}</span>
+            </div>
+          </div>
+          <p class="no-corr mt-2" *ngIf="correlationMatrix.strongCorrelations.length === 0">
+            Aucune corrélation forte détectée (|r| &lt; 0.5)
+          </p>
+        </div>
+      </div>
+
+      <!-- Smart Insights -->
+      <div class="card card-ai-insights mt-0">
         <div class="card-header">
           <h4 class="card-title">
             <i class="tim-icons icon-chart-pie-36"></i> Smart Insights
@@ -213,28 +396,25 @@
         </div>
         <div class="card-body">
           <div class="insights-container">
-            <h5>Predictive Analytics:</h5>
-            <div class="insight-item" *ngFor="let recommendation of aiRecommendations">
-              <div class="insight-icon">
-                <i class="tim-icons icon-bulb-63"></i>
-              </div>
-              <div class="insight-text">
-                {{ recommendation }}
-              </div>
+            <h5>Analyse Prédictive :</h5>
+            <div class="insight-item" *ngFor="let rec of aiRecommendations">
+              <div class="insight-icon"><i class="tim-icons icon-bulb-63"></i></div>
+              <div class="insight-text">{{ rec }}</div>
             </div>
 
-            <div class="mt-4" *ngIf="predictions && predictions.length > 0">
-              <h5>Predictions (next 3 months):</h5>
+            <div class="mt-3" *ngIf="predictions?.length > 0">
+              <h5>Prévisions — 3 prochains mois :</h5>
               <div class="predictions-box">
-                <span class="badge badge-primary" *ngFor="let pred of predictions; let i = index">
-                  Month {{ i + 1 }}: {{ pred }}
+                <span class="badge badge-primary" *ngFor="let p of predictions; let i = index">
+                  M+{{ i + 1 }}: {{ p }}
                 </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
-</div>
 
+</div>

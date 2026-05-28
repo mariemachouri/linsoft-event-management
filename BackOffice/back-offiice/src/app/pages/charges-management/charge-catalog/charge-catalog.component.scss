@@ -2,3 +2,12 @@
 .badge-success { background-color: #6bd098; }
 .badge-secondary { background-color: #aaa; }
 .gap-2 { gap: 0.5rem; }
+
+.card-header {
+  .card-title {
+    color: #fff !important;
+  }
+  .card-category {
+    color: #fff !important;
+  }
+}
