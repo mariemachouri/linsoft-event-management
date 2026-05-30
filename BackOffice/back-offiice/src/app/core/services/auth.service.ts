@@ -90,7 +90,12 @@ export class AuthService {
   }
 
   logout(): void {
-    this.keycloakService.logout('http://localhost:4300');
+    // Bypass keycloak-angular to avoid id_token_hint which causes Keycloak to reject the redirect
+    const logoutUrl =
+      `http://localhost:8180/realms/event-mgmt/protocol/openid-connect/logout` +
+      `?client_id=backoffice-client` +
+      `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4300/')}`;
+    window.location.href = logoutUrl;
   }
 }
 

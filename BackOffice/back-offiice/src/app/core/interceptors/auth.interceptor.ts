@@ -28,7 +28,10 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(authRequest).pipe(
           catchError(error => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
-              this.keycloakService.logout('http://localhost:4300');
+              window.location.href =
+                `http://localhost:8180/realms/event-mgmt/protocol/openid-connect/logout` +
+                `?client_id=backoffice-client` +
+                `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4300/')}`;
             }
             return throwError(() => error);
           })

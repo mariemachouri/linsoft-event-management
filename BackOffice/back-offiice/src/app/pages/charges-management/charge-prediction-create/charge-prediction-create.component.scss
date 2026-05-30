@@ -8,6 +8,13 @@
   background-color: #e9ecef;
 }
 
+// Table headers always white
+table thead th {
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .list-group-item {
   background-color: #ffffff;
   border-color: #dee2e6;

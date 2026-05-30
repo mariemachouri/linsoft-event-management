@@ -15,9 +15,18 @@
       <div class="card identity-card">
         <!-- Avatar Banner -->
         <div class="identity-banner">
-          <div class="avatar-initials">
-            {{ (currentUser?.firstName?.[0] || '') + (currentUser?.lastName?.[0] || '') || (currentUser?.username?.[0] || 'U') | uppercase }}
+          <div class="avatar-wrapper" (click)="triggerPhotoUpload()">
+            <img *ngIf="photoUrl" [src]="photoUrl" class="avatar-photo" alt="Profile photo" />
+            <div *ngIf="!photoUrl" class="avatar-initials">
+              {{ (currentUser?.firstName?.[0] || '') + (currentUser?.lastName?.[0] || '') || (currentUser?.username?.[0] || 'U') | uppercase }}
+            </div>
+            <div class="avatar-overlay">
+              <i class="tim-icons icon-camera-18"></i>
+              <span>Changer</span>
+            </div>
           </div>
+          <input #photoInput type="file" accept="image/*" class="d-none"
+                 (change)="onPhotoSelected($event)" />
           <div class="online-indicator">
             <span class="dot-online"></span> Active
           </div>

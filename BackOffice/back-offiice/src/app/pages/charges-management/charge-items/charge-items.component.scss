@@ -5,6 +5,13 @@
 .badge-secondary { background-color: #aaa; color: #fff; }
 .gap-2 { gap: 0.5rem; }
 
+// Table headers always white
+table thead th {
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .card-header {
   .card-title {
     color: #fff !important;

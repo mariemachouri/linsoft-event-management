@@ -24,7 +24,7 @@ $border: #e4e9f0;
     color: $white !important; margin: 0;
   }
   .page-subtitle {
-    font-size: 0.8rem; color: $white; margin: 4px 0 0;
+    font-size: 0.8rem; color: #fff !important; margin: 4px 0 0;
   }
 }
 
@@ -90,11 +90,11 @@ $border: #e4e9f0;
   width: 100%; border-collapse: collapse;
 
   thead tr {
-    background: #f8f9fc;
+    background: $navy;
     th {
       padding: 14px 16px;
       font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px;
-      text-transform: uppercase; color: $navy;
+      text-transform: uppercase; color: #fff !important;
       border-bottom: 2px solid $border;
       &.text-center { text-align: center; }
     }
