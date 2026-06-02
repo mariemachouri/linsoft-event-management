@@ -50,8 +50,22 @@ export class EventEditComponent implements OnInit {
       maxParticipants: [0, [Validators.min(0)]],
       category: ['CONFERENCE', [Validators.required]],
       status: ['DRAFT', [Validators.required]],
-      imageUrl: ['']
+      imageUrl: [''],
+      isOnline: [false],
+      meetingLink: ['']
     }, { validators: this.dateValidator });
+
+    // Lien Meet requis uniquement si l'événement est en ligne
+    this.eventForm.get('isOnline')?.valueChanges.subscribe((online: boolean) => {
+      const link = this.eventForm.get('meetingLink');
+      if (online) {
+        link?.setValidators([Validators.required, Validators.pattern(/^https?:\/\/.+/)]);
+      } else {
+        link?.clearValidators();
+        link?.setValue('');
+      }
+      link?.updateValueAndValidity();
+    });
   }
 
   ngOnInit(): void {
@@ -82,7 +96,9 @@ export class EventEditComponent implements OnInit {
           maxParticipants: event.maxParticipants || 0,
           category: event.category || 'CONFERENCE',
           status: event.status,
-          imageUrl: event.imageUrl || ''
+          imageUrl: event.imageUrl || '',
+          isOnline: event.isOnline || false,
+          meetingLink: event.meetingLink || ''
         });
       },
       error: (err) => {
@@ -170,7 +186,9 @@ export class EventEditComponent implements OnInit {
       maxParticipants: this.f['maxParticipants'].value || 0,
       category: this.f['category'].value || undefined,
       status: this.f['status'].value,
-      imageUrl: this.f['imageUrl'].value || undefined
+      imageUrl: this.f['imageUrl'].value || undefined,
+      isOnline: this.f['isOnline'].value || false,
+      meetingLink: this.f['isOnline'].value ? (this.f['meetingLink'].value || undefined) : undefined
     };
 
     this.eventService.updateEvent(this.eventId, eventData).subscribe({

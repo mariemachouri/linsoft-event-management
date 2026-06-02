@@ -5,6 +5,7 @@ import com.eventmgmt.registrations.model.Registration;
 import com.eventmgmt.registrations.repository.RegistrationRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.bson.types.ObjectId;
@@ -26,8 +27,16 @@ public class RegistrationService {
     }
 
     public Registration create(Registration registration) {
+        // Set registration timestamp if not already set
+        if (registration.registeredAt == null) {
+            registration.registeredAt = Instant.now().toString();
+        }
+        // Default isGuest to false if not set
+        if (registration.isGuest == null) {
+            registration.isGuest = false;
+        }
         repository.persist(registration);
-        
+
         // Publish registration creation to Kafka
         registrationPublisher.publishRegistrationCreated(registration);
         

@@ -20,7 +20,7 @@ export default function Footer() {
             </div>
           </Link>
           <p className="footer__tagline">
-            Discover, join and grow with LinSoft’s professional events — workshops, conferences, webinars and more.
+            Découvrez, rejoignez et progressez avec les événements professionnels LinSoft — ateliers, conférences, webinaires et plus.
           </p>
           <div className="footer__socials">
             <a href="#" className="footer__social-btn" aria-label="LinkedIn">
@@ -39,10 +39,10 @@ export default function Footer() {
         <div className="footer__section">
           <h4 className="footer__section-title">Navigation</h4>
           <ul className="footer__links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/events">Events</Link></li>
-            <li><Link to="/dashboard">My Registrations</Link></li>
-            <li><Link to="/profile">My Profile</Link></li>
+            <li><Link to="/">Accueil</Link></li>
+            <li><Link to="/events">Événements</Link></li>
+            <li><Link to="/dashboard">Mes inscriptions</Link></li>
+            <li><Link to="/profile">Mon profil</Link></li>
           </ul>
         </div>
 
@@ -72,7 +72,7 @@ export default function Footer() {
         <a href="https://www.linsoft.com" target="_blank" rel="noreferrer" className="footer__linsoft-link">
           LinSoft
         </a>
-        <span>· All rights reserved</span>
+        <span>· Tous droits réservés</span>
       </div>
     </footer>
   );

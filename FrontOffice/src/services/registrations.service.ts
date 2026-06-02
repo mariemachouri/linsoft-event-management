@@ -12,7 +12,19 @@ export const registrationsService = {
     return response.data;
   },
 
-  async create(registration: { eventId: string; participantId: string; notes?: string }): Promise<Registration> {
+  async create(registration: {
+    eventId: string;
+    participantId: string;
+    notes?: string;
+    isGuest?: boolean;
+    guestFirstName?: string;
+    guestLastName?: string;
+    guestEmail?: string;
+    guestPhone?: string;
+    participantEmail?: string;
+    participantPhone?: string;
+    participantName?: string;
+  }): Promise<Registration> {
     const response = await api.post<Registration>('/registrations', registration);
     return response.data;
   },

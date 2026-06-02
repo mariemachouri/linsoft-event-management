@@ -27,7 +27,29 @@
   height: 68px;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 0.75rem;
+}
+
+/* â”€â”€ Landing Button â”€â”€ */
+.navbar__landing-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.navbar__landing-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* â”€â”€ Logo â”€â”€ */
@@ -83,6 +105,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  margin-left: 0.75rem;
 }
 
 .navbar__nav-link {

@@ -53,7 +53,7 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      showToast('warning', 'Image must be smaller than 2 MB.');
+      showToast('warning', 'L\'image doit faire moins de 2 Mo.');
       return;
     }
     const reader = new FileReader();
@@ -79,7 +79,7 @@ export default function Profile() {
     e.preventDefault();
 
     if (!form.firstName.trim() || !form.lastName.trim()) {
-      showToast('warning', 'First name and last name are required.');
+      showToast('warning', 'Le prénom et le nom sont requis.');
       return;
     }
 
@@ -114,14 +114,14 @@ export default function Profile() {
         });
         // Merge API response with local avatar
         updateUser({ ...updated, avatarUrl: avatarUrl || undefined });
-        showToast('success', 'Profile updated successfully!');
+        showToast('success', 'Profil mis à jour avec succès !');
       } catch {
-        showToast('error', 'Could not sync with server, changes saved locally.');
+        showToast('error', 'Synchronisation impossible, modifications enregistrées localement.');
       } finally {
         setLoading(false);
       }
     } else {
-      showToast('success', 'Profile updated successfully!');
+      showToast('success', 'Profil mis à jour avec succès !');
     }
   };
 
@@ -170,7 +170,7 @@ export default function Profile() {
               {form.firstName || user?.firstName} {form.lastName || user?.lastName}
             </h1>
             <p className="profile-hero__username">@{user?.username}</p>
-            <p className="profile-hero__photo-hint">Click the photo to change it</p>
+            <p className="profile-hero__photo-hint">Cliquez sur la photo pour la modifier</p>
           </div>
         </div>
       </section>
@@ -178,15 +178,15 @@ export default function Profile() {
       <div className="profile-body">
         <div className="profile-card">
           <div className="profile-card__header">
-            <h2>Personal Information</h2>
-            <p>Update your profile information</p>
+            <h2>Informations personnelles</h2>
+            <p>Mettez à jour vos informations de profil</p>
           </div>
 
           <form className="profile-form" onSubmit={handleSubmit} noValidate>
             {/* Read-only */}
             <div className="profile-field profile-field--readonly">
               <label className="profile-label">
-                <Mail size={14} /> Email Address
+                <Mail size={14} /> Adresse e-mail
               </label>
               <div className="profile-input-wrap">
                 <input
@@ -195,13 +195,13 @@ export default function Profile() {
                   value={user?.email ?? ''}
                   readOnly
                 />
-                <span className="profile-input-badge">Read-only</span>
+                <span className="profile-input-badge">Lecture seule</span>
               </div>
             </div>
 
             <div className="profile-field profile-field--readonly">
               <label className="profile-label">
-                <User size={14} /> Username
+                <User size={14} /> Nom d'utilisateur
               </label>
               <div className="profile-input-wrap">
                 <input
@@ -210,7 +210,7 @@ export default function Profile() {
                   value={user?.username ?? ''}
                   readOnly
                 />
-                <span className="profile-input-badge">Read-only</span>
+                <span className="profile-input-badge">Lecture seule</span>
               </div>
             </div>
 
@@ -219,7 +219,7 @@ export default function Profile() {
             {/* Editable */}
             <div className="profile-row">
               <div className="profile-field">
-                <label className="profile-label">First Name *</label>
+                <label className="profile-label">Prénom *</label>
                 <input
                   name="firstName"
                   type="text"
@@ -227,11 +227,11 @@ export default function Profile() {
                   value={form.firstName}
                   onChange={handleChange}
                   disabled={loading}
-                  placeholder="Your first name"
+                  placeholder="Votre prénom"
                 />
               </div>
               <div className="profile-field">
-                <label className="profile-label">Last Name *</label>
+                <label className="profile-label">Nom *</label>
                 <input
                   name="lastName"
                   type="text"
@@ -239,15 +239,15 @@ export default function Profile() {
                   value={form.lastName}
                   onChange={handleChange}
                   disabled={loading}
-                  placeholder="Your last name"
+                  placeholder="Votre nom"
                 />
               </div>
             </div>
 
             <div className="profile-field">
               <label className="profile-label">
-                <Phone size={14} /> Phone{' '}
-                <span className="profile-optional">(optional)</span>
+                <Phone size={14} /> Téléphone{' '}
+                <span className="profile-optional">(optionnel)</span>
               </label>
               <input
                 name="phoneNumber"
@@ -265,9 +265,9 @@ export default function Profile() {
                 {loading ? (
                   <LoadingSpinner size="sm" />
                 ) : saved ? (
-                  <><CheckCircle size={15} /> Saved</>
+                  <><CheckCircle size={15} /> Enregistré</>
                 ) : (
-                  <><Save size={15} /> Save Changes</>
+                  <><Save size={15} /> Enregistrer</>
                 )}
               </button>
             </div>

@@ -1,0 +1,35 @@
+# ── Exclusions du contexte de build Docker ──
+# Évite de tarer des dossiers lourds / récursifs (cause de "closed pipe")
+
+# Worktrees Claude (copie récursive du repo) — CRITIQUE
+.claude/
+**/.claude/
+
+# Git
+.git/
+.gitignore
+
+# Artefacts de build Java (reconstruits dans l'image via mvn package)
+**/target/
+**/*.class
+
+# Node / front
+**/node_modules/
+**/dist/
+FrontOffice/dist/
+BackOffice/back-offiice/dist/
+
+# Logs & temp
+**/*.log
+**/tmp/
+**/.tmp/
+
+# IDE / OS
+.idea/
+.vscode/
+**/.DS_Store
+**/Thumbs.db
+
+# Docker / compose meta
+docker-compose*.yml
+**/*.md

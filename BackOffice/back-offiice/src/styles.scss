@@ -423,23 +423,33 @@ body.sidebar-mini {
    ===================================================== */
 .white-content {
 
-  // ── Fond général ──────────────────────────────────
-  background: #f5f7fa !important;
+  // ── Fond général : transparent pour laisser voir la photo ──
+  background: transparent !important;
 
   .main-panel {
-    background: #f5f7fa !important;
+    background: transparent !important;
   }
 
   .content {
-    background: #f5f7fa !important;
+    background: transparent !important;
   }
 
-  // ── Cards : toutes blanches ────────────────────────
+  // ── Cards : blanches, ombres élégantes, hover fluide ──
   .card,
   .card:not(.card-white) {
     background: #ffffff !important;
-    box-shadow: 0 2px 12px rgba(42, 54, 82, 0.1) !important;
-    border: none !important;
+    box-shadow: 0 6px 24px rgba(13, 19, 32, 0.10),
+                0 1px 3px rgba(13, 19, 32, 0.06) !important;
+    border: 1px solid rgba(42, 54, 82, 0.06) !important;
+    border-radius: 14px !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(13, 19, 32, 0.16),
+                  0 2px 6px rgba(13, 19, 32, 0.08) !important;
+    }
   }
 
   .card .card-body {
@@ -519,19 +529,125 @@ body.sidebar-mini {
     }
   }
 
-  // ── Navbar ─────────────────────────────────────────
-  .navbar {
-    background: #ffffff !important;
-    box-shadow: 0 1px 8px rgba(42, 54, 82, 0.08) !important;
+  // ── Navbar : verre dépoli sombre (style FrontOffice) ──
+  // Spécificité .navbar.navbar-transparent pour battre la règle du thème
+  // black-dashboard (chargé après styles.scss) qui force transparent.
+  .navbar,
+  .navbar.navbar-transparent,
+  .navbar.navbar-absolute {
+    background: rgba(17, 22, 34, 0.55) !important;
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
 
-    .navbar-brand,
-    .nav-link,
-    i,
-    .navbar-minimize button i {
-      color: #2c3e50 !important;
+  .navbar .navbar-brand,
+  .navbar.navbar-transparent .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+  }
+
+  .navbar .nav-link,
+  .navbar i,
+  .navbar .navbar-minimize button i,
+  .navbar p,
+  .navbar.navbar-transparent .navbar-nav li a:not(.dropdown-item) {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .navbar .nav-link:hover i {
+    color: #ff6d88 !important;
+  }
+
+  // ── Footer : verre dépoli + texte clair lisible sur la photo ──
+  .footer {
+    background: rgba(17, 22, 34, 0.45) !important;
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px;
+    margin: 10px 18px 16px;
+    padding: 4px 10px;
+  }
+
+  // Liens du footer (LinSoft / À propos / Contact) — spécificité > thème
+  .white-content .footer .nav .nav-link,
+  .footer .nav .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+
+    &:hover {
+      color: #ff6d88 !important;
     }
   }
 
+  // Copyright (battre .white-content .footer .copyright du thème)
+  .footer .container-fluid .copyright,
+  .footer .container-fluid .copyright a {
+    color: rgba(255, 255, 255, 0.78) !important;
+  }
+
+  .footer .container-fluid .copyright a:hover {
+    color: #ff6d88 !important;
+  }
+
+  .footer .container-fluid .copyright i {
+    color: #ff5276 !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Sidebar masquée : décaler le titre de la navbar pour
+   libérer le bouton rouge flottant (sinon il recouvre le nom)
+   ───────────────────────────────────────────────────────── */
+body.sidebar-mini .navbar .navbar-wrapper,
+body.sidebar-mini .navbar-wrapper {
+  padding-left: 64px !important;
+  transition: padding-left 0.35s cubic-bezier(0.685, 0.0473, 0.346, 1);
+}
+
+/* Titre de page bien lisible sur le verre dépoli */
+.navbar .navbar-brand {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* ─────────────────────────────────────────────────────────
+   SIDEBAR — libellés du menu en blanc lisible
+   (bat la règle .white-content p { color:$black-states } du thème)
+   ───────────────────────────────────────────────────────── */
+.sidebar .sidebar-wrapper .nav li a p,
+.sidebar .nav li a p,
+.sidebar .nav li a {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 500 !important;
+}
+
+.sidebar .nav li a i {
+  color: rgba(255, 255, 255, 0.80) !important;
+}
+
+/* Survol */
+.sidebar .nav li a:hover p,
+.sidebar .nav li a:hover i {
+  color: #ffffff !important;
+}
+
+/* Item actif : accent corail LinSoft */
+.sidebar .nav li.active > a,
+.sidebar .nav li.active > a p,
+.sidebar .nav li.active > a i {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.sidebar .nav li.active > a {
+  background: rgba(255, 82, 118, 0.16) !important;
+  border-radius: 10px;
+  box-shadow: inset 3px 0 0 #ff5276;
+}
+
+.white-content {
   // ── Dropdown menus ─────────────────────────────────
   .dropdown-menu {
     background: #ffffff !important;

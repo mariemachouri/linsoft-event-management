@@ -61,7 +61,7 @@ export default function Dashboard() {
 
       setItems(enriched);
     } catch {
-      showToast('error', 'Error loading your registrations.');
+      showToast('error', 'Erreur lors du chargement de vos inscriptions.');
     } finally {
       setLoading(false);
     }
@@ -76,9 +76,9 @@ export default function Dashboard() {
       setItems((prev) =>
         prev.map((r) => (r.id === regId ? { ...r, status: 'CANCELLED' as const } : r))
       );
-      showToast('success', 'Registration cancelled.');
+      showToast('success', 'Inscription annulée.');
     } catch {
-      showToast('error', 'Unable to cancel this registration.');
+      showToast('error', 'Impossible d\'annuler cette inscription.');
     } finally {
       setCancelling(null);
     }
@@ -95,16 +95,16 @@ export default function Dashboard() {
   };
 
   const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'all',       label: 'All',        icon: <Layout size={14} /> },
-    { key: 'PENDING',   label: 'Pending',    icon: <Clock size={14} /> },
-    { key: 'CONFIRMED', label: 'Confirmed',  icon: <CheckCircle size={14} /> },
-    { key: 'CANCELLED', label: 'Cancelled',  icon: <XCircle size={14} /> },
+    { key: 'all',       label: 'Toutes',      icon: <Layout size={14} /> },
+    { key: 'PENDING',   label: 'En attente',  icon: <Clock size={14} /> },
+    { key: 'CONFIRMED', label: 'Confirmées',  icon: <CheckCircle size={14} /> },
+    { key: 'CANCELLED', label: 'Annulées',    icon: <XCircle size={14} /> },
   ];
 
   const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    PENDING:   { label: 'Pending',   color: '#e67e22', bg: 'rgba(230,126,34,0.1)' },
-    CONFIRMED: { label: 'Confirmed',  color: '#27ae60', bg: 'rgba(39,174,96,0.1)' },
-    CANCELLED: { label: 'Cancelled',  color: '#e74c3c', bg: 'rgba(231,76,60,0.1)' },
+    PENDING:   { label: 'En attente',  color: '#e67e22', bg: 'rgba(230,126,34,0.1)' },
+    CONFIRMED: { label: 'Confirmée',   color: '#27ae60', bg: 'rgba(39,174,96,0.1)' },
+    CANCELLED: { label: 'Annulée',     color: '#e74c3c', bg: 'rgba(231,76,60,0.1)' },
   };
 
   return (
@@ -114,20 +114,20 @@ export default function Dashboard() {
         <div className="dashboard-hero__inner">
           <div className="dashboard-hero__left">
             <h1 className="dashboard-hero__title">
-              Hello, {auth.user?.firstName ?? auth.user?.username ?? 'participant'} 👋
+              Bonjour, {auth.user?.firstName ?? auth.user?.username ?? 'participant'} 👋
             </h1>
             <p className="dashboard-hero__subtitle">
-              Manage your event registrations
+              Gérez vos inscriptions aux événements
             </p>
           </div>
           <div className="dashboard-hero__actions">
             <button className="dashboard-hero__refresh" onClick={fetchData} disabled={loading}>
               <RefreshCw size={15} className={loading ? 'spin' : ''} />
-              Refresh
+              Actualiser
             </button>
             <Link to="/events" className="dashboard-hero__cta">
               <Calendar size={15} />
-              Browse Events
+              Parcourir les événements
             </Link>
           </div>
         </div>
@@ -137,10 +137,10 @@ export default function Dashboard() {
         {/* Stats */}
         <div className="dashboard-stats">
           {[
-            { label: 'Total Registrations', value: counts.all,       color: '#2A3652' },
-            { label: 'Pending',              value: counts.PENDING,   color: '#e67e22' },
-            { label: 'Confirmed',            value: counts.CONFIRMED, color: '#27ae60' },
-            { label: 'Cancelled',            value: counts.CANCELLED, color: '#e74c3c' },
+            { label: 'Total des inscriptions', value: counts.all,       color: '#2A3652' },
+            { label: 'En attente',             value: counts.PENDING,   color: '#e67e22' },
+            { label: 'Confirmées',             value: counts.CONFIRMED, color: '#27ae60' },
+            { label: 'Annulées',               value: counts.CANCELLED, color: '#e74c3c' },
           ].map((s) => (
             <div key={s.label} className="dashboard-stat">
               <div className="dashboard-stat__value" style={{ color: s.color }}>{s.value}</div>
@@ -167,15 +167,15 @@ export default function Dashboard() {
         {/* List */}
         {loading ? (
           <div className="dashboard-loading">
-            <LoadingSpinner size="lg" text="Loading your registrations…" />
+            <LoadingSpinner size="lg" text="Chargement de vos inscriptions…" />
           </div>
         ) : displayed.length === 0 ? (
           <div className="dashboard-empty">
             <div className="dashboard-empty__icon">📋</div>
-            <h3>No {tab !== 'all' ? `"${TABS.find((t) => t.key === tab)?.label?.toLowerCase()}"` : ''} registrations</h3>
-            <p>Browse available events and register!</p>
+            <h3>Aucune inscription{tab !== 'all' ? ` "${TABS.find((t) => t.key === tab)?.label?.toLowerCase()}"` : ''}</h3>
+            <p>Parcourez les événements disponibles et inscrivez-vous !</p>
             <Link to="/events" className="dashboard-empty__btn">
-              Browse Events
+              Parcourir les événements
             </Link>
           </div>
         ) : (
@@ -207,14 +207,14 @@ export default function Dashboard() {
                     <div className="dashboard-item__meta">
                       <span><Calendar size={13} /> {date}</span>
                       {reg.event?.location && <span>📍 {reg.event.location}</span>}
-                      <span>🎫 Registered on {reg.createdAt ? new Date(reg.createdAt).toLocaleDateString('en-US') : '—'}</span>
+                      <span>🎫 Inscrit le {reg.createdAt ? new Date(reg.createdAt).toLocaleDateString('fr-FR') : '—'}</span>
                     </div>
                   </div>
                   <div className="dashboard-item__actions">
                     {reg.event && (
                       <Link to={`/events/${reg.eventId}`} className="dashboard-item__view">
                         <ExternalLink size={14} />
-                        View
+                        Voir
                       </Link>
                     )}
                     {canCancel && (
@@ -223,7 +223,7 @@ export default function Dashboard() {
                         onClick={() => handleCancel(reg.id)}
                         disabled={cancelling === reg.id}
                       >
-                        {cancelling === reg.id ? <LoadingSpinner size="sm" /> : 'Cancel'}
+                        {cancelling === reg.id ? <LoadingSpinner size="sm" /> : 'Annuler'}
                       </button>
                     )}
                   </div>

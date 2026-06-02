@@ -27,7 +27,7 @@
             id="search-button"
           >
             <i class=" tim-icons icon-zoom-split"> </i>
-            <span class=" d-lg-none d-md-block"> Search </span>
+            <span class=" d-lg-none d-md-block"> Rechercher </span>
           </button>
         </li>
         <li class=" nav-item" ngbDropdown>
@@ -40,31 +40,32 @@
             <div class=" notification d-none d-lg-block d-xl-block"></div>
             <i class=" tim-icons icon-sound-wave"> </i>
             <p class=" d-lg-none">Notifications</p>
+
           </a>
           <ul class=" dropdown-menu-right dropdown-navbar" ngbDropdownMenu>
             <li class=" nav-link">
               <a class=" nav-item" href="javascript:void(0)" ngbDropdownItem>
-                Mike John responded to your email
+                Mike John a répondu à votre e-mail
               </a>
             </li>
             <li class=" nav-link">
               <a class=" nav-item" href="javascript:void(0)" ngbDropdownItem>
-                You have 5 more tasks
+                Vous avez 5 tâches supplémentaires
               </a>
             </li>
             <li class=" nav-link">
               <a class=" nav-item" href="javascript:void(0)" ngbDropdownItem>
-                Your friend Michael is in town
+                Votre ami Michael est en ville
               </a>
             </li>
             <li class=" nav-link">
               <a class=" nav-item" href="javascript:void(0)" ngbDropdownItem>
-                Another notification
+                Une autre notification
               </a>
             </li>
             <li class=" nav-link">
               <a class=" nav-item" href="javascript:void(0)" ngbDropdownItem>
-                Another one
+                Encore une
               </a>
             </li>
           </ul>
@@ -88,26 +89,26 @@
             ngbDropdownToggle
           >
             <div class=" photo">
-              <img alt="Profile Photo" src="assets/img/anime3.png" />
+              <img alt="Profile Photo" [src]="avatarUrl || 'assets/img/anime3.png'" />
             </div>
             <b class=" caret d-none d-lg-block d-xl-block"> </b>
-            <p class=" d-lg-none">Log out</p>
+            <p class=" d-lg-none">Déconnexion</p>
           </a>
           <ul class=" dropdown-navbar" ngbDropdownMenu>
             <li class=" nav-link">
               <a class=" nav-item" (click)="goToProfile()" href="javascript:void(0)" ngbDropdownItem>
-                <i class="tim-icons icon-single-02 mr-2"></i> Profile
+                <i class="tim-icons icon-single-02 mr-2"></i> Profil
               </a>
             </li>
             <li class=" nav-link">
               <a class=" nav-item" (click)="goToSettings()" href="javascript:void(0)" ngbDropdownItem>
-                <i class="tim-icons icon-settings-gear-63 mr-2"></i> Settings
+                <i class="tim-icons icon-settings-gear-63 mr-2"></i> Paramètres
               </a>
             </li>
             <li class=" dropdown-divider"></li>
             <li class=" nav-link">
               <a class=" nav-item" (click)="logout()" href="javascript:void(0)" ngbDropdownItem>
-                <i class="tim-icons icon-button-power mr-2"></i> Log out
+                <i class="tim-icons icon-button-power mr-2"></i> Déconnexion
               </a>
             </li>
           </ul>
@@ -123,7 +124,7 @@
     <input
       class=" form-control"
       id="inlineFormInputGroup"
-      placeholder="SEARCH"
+      placeholder="RECHERCHER"
       type="text"
     />
 

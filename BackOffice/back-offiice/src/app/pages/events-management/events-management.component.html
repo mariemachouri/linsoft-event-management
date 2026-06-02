@@ -3,11 +3,11 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-header-left">
-      <h2 class="page-title">Event Management</h2>
-      <p class="page-subtitle">Upcoming events — past events are automatically removed</p>
+      <h2 class="page-title">Gestion des événements</h2>
+      <p class="page-subtitle">Événements à venir — les événements passés sont automatiquement supprimés</p>
     </div>
     <button class="btn-create" (click)="createEvent()">
-      <i class="tim-icons icon-simple-add"></i> CREATE EVENT
+      <i class="tim-icons icon-simple-add"></i> CRÉER UN ÉVÉNEMENT
     </button>
   </div>
 
@@ -19,32 +19,32 @@
 
   <!-- Loading -->
   <div *ngIf="loading" class="loading-state">
-    <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
-    <p>Loading events...</p>
+    <div class="spinner-border" role="status"><span class="sr-only">Chargement...</span></div>
+    <p>Chargement des événements...</p>
   </div>
 
   <!-- Search & Filter Bar -->
   <div class="search-filter-bar" *ngIf="!loading">
     <div class="search-input-wrapper">
       <i class="tim-icons icon-zoom-split"></i>
-      <input type="text" class="form-control search-input" placeholder="Search by name, location..."
+      <input type="text" class="form-control search-input" placeholder="Rechercher par nom, lieu..."
         [(ngModel)]="searchQuery" />
     </div>
     <select class="form-control filter-select" [(ngModel)]="filterStatus">
-      <option value="">All statuses</option>
-      <option value="DRAFT">Draft</option>
-      <option value="PUBLISHED">Published</option>
-      <option value="CANCELLED">Cancelled</option>
-      <option value="COMPLETED">Completed</option>
+      <option value="">Tous les statuts</option>
+      <option value="DRAFT">Brouillon</option>
+      <option value="PUBLISHED">Publié</option>
+      <option value="CANCELLED">Annulé</option>
+      <option value="COMPLETED">Terminé</option>
     </select>
     <select class="form-control filter-select" [(ngModel)]="filterCategory">
-      <option value="">All categories</option>
-      <option value="CONFERENCE">Conference</option>
-      <option value="WORKSHOP">Workshop</option>
-      <option value="MEETUP">Meetup</option>
-      <option value="SEMINAR">Seminar</option>
+      <option value="">Toutes les catégories</option>
+      <option value="CONFERENCE">Conférence</option>
+      <option value="WORKSHOP">Atelier</option>
+      <option value="MEETUP">Rencontre</option>
+      <option value="SEMINAR">Séminaire</option>
     </select>
-    <span class="results-count">{{ upcomingEvents.length }} upcoming event(s)</span>
+    <span class="results-count">{{ upcomingEvents.length }} événement(s) à venir</span>
   </div>
 
   <!-- Events Grid -->
@@ -75,7 +75,7 @@
           <p class="event-desc">
             {{ (event.description && event.description.length > 120)
                 ? (event.description | slice:0:120) + '...'
-                : (event.description || 'No description available.') }}
+                : (event.description || 'Aucune description disponible.') }}
           </p>
           <div class="event-meta-row">
             <span class="meta-item" *ngIf="event.location">
@@ -91,10 +91,10 @@
         <div class="event-card-footer">
           <a class="read-more-link" (click)="viewEvent(event.id!)">Lire la suite...</a>
           <div class="event-card-actions">
-            <button class="btn-action btn-edit" (click)="editEvent(event.id!)" title="Edit">
+            <button class="btn-action btn-edit" (click)="editEvent(event.id!)" title="Modifier">
               <i class="tim-icons icon-pencil"></i>
             </button>
-            <button class="btn-action btn-delete" (click)="deleteEvent(event.id!)" title="Delete">
+            <button class="btn-action btn-delete" (click)="deleteEvent(event.id!)" title="Supprimer">
               <i class="tim-icons icon-trash-simple"></i>
             </button>
           </div>
@@ -106,18 +106,18 @@
     <!-- No upcoming events -->
     <div class="no-upcoming" *ngIf="upcomingEvents.length === 0 && events.length > 0">
       <i class="tim-icons icon-calendar-60"></i>
-      <p>No upcoming events</p>
-      <span>All current events have passed. Create a new event to get started.</span>
+      <p>Aucun événement à venir</p>
+      <span>Tous les événements actuels sont passés. Créez un nouvel événement pour commencer.</span>
       <button class="btn-create mt-3" (click)="createEvent()">
-        <i class="tim-icons icon-simple-add"></i> Create Event
+        <i class="tim-icons icon-simple-add"></i> Créer un événement
       </button>
     </div>
 
     <div class="no-upcoming" *ngIf="events.length === 0">
       <i class="tim-icons icon-calendar-60"></i>
-      <p>No events yet</p>
+      <p>Aucun événement pour l'instant</p>
       <button class="btn-create mt-3" (click)="createEvent()">
-        <i class="tim-icons icon-simple-add"></i> Create First Event
+        <i class="tim-icons icon-simple-add"></i> Créer le premier événement
       </button>
     </div>
 

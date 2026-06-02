@@ -28,6 +28,9 @@ export interface Event {
   category: EventCategory;
   status: EventStatus;
   chargeIds?: string[];
+  isOnline?: boolean;
+  // meetingLink volontairement ABSENT côté public : le lien reste privé (admin)
+  // et n'est transmis qu'à l'inscrit par email.
 }
 
 export interface Registration {
@@ -38,6 +41,19 @@ export interface Registration {
   createdAt?: string;
   confirmedAt?: string;
   notes?: string;
+  // Guest fields
+  isGuest?: boolean;
+  guestFirstName?: string;
+  guestLastName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+}
+
+export interface GuestRegistrationForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
 }
 
 export interface UserProfile {

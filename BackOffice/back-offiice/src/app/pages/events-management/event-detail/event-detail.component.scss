@@ -289,3 +289,18 @@ $border: #e4e9f0;
   &.badge-info      { background: #d1ecf1; color: #0c5460; }
 }
 
+
+/* ── Carte lien Meet (privé) ── */
+.meet-card {
+  border-left: 4px solid #FF5276;
+  .meet-note { font-size: 13px; color: #6c757d; margin-bottom: 12px; }
+  .meet-link-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #ED4368 0%, #FF5276 100%);
+    color: #fff; padding: 10px 16px; border-radius: 8px;
+    font-weight: 600; text-decoration: none; word-break: break-all;
+    transition: all 0.25s ease;
+    i { font-size: 16px; }
+    &:hover { box-shadow: 0 4px 16px rgba(255,82,118,0.4); transform: translateY(-1px); color: #fff; }
+  }
+}

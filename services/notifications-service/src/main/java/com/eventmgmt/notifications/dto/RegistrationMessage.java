@@ -17,4 +17,20 @@ public class RegistrationMessage {
     private String registeredAt;
     private String action;
     private Instant timestamp;
+
+    // Guest registration fields
+    private Boolean isGuest;
+    private String guestFirstName;
+    private String guestLastName;
+    private String guestEmail;
+    private String guestPhone;
+
+    // Authenticated participant contact (pour confirmation + rappels)
+    private String participantEmail;
+    private String participantPhone;
+    private String participantName;
+
+    public boolean isGuestRegistration() {
+        return Boolean.TRUE.equals(isGuest);
+    }
 }

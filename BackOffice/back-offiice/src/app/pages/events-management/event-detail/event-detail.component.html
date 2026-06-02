@@ -87,6 +87,19 @@
             </div>
           </div>
         </div>
+
+        <!-- Lien Google Meet (privé — admin seulement) -->
+        <div class="detail-card meet-card" *ngIf="event.isOnline && event.meetingLink">
+          <h4 class="section-title">
+            <i class="tim-icons icon-laptop"></i> Événement en ligne — Lien privé
+          </h4>
+          <p class="meet-note">
+            🔒 Ce lien est confidentiel (visible admin uniquement). Il est envoyé automatiquement par email aux inscrits.
+          </p>
+          <a [href]="event.meetingLink" target="_blank" rel="noreferrer" class="meet-link-btn">
+            <i class="tim-icons icon-link-72"></i> {{ event.meetingLink }}
+          </a>
+        </div>
       </div>
 
       <!-- Right: quick facts -->

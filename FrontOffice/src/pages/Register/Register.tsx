@@ -44,12 +44,12 @@ export default function Register() {
 
   const validate = (): boolean => {
     const errs: Partial<FormState> = {};
-    if (!form.firstName.trim())  errs.firstName = 'First name is required';
-    if (!form.lastName.trim())   errs.lastName  = 'Last name is required';
-    if (!form.username.trim())   errs.username  = 'Username is required';
-    if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email';
-    if (form.password.length < 8) errs.password = 'Minimum 8 characters';
-    if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match';
+    if (!form.firstName.trim())  errs.firstName = 'Le prénom est requis';
+    if (!form.lastName.trim())   errs.lastName  = 'Le nom est requis';
+    if (!form.username.trim())   errs.username  = 'Le nom d\'utilisateur est requis';
+    if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Email invalide';
+    if (form.password.length < 8) errs.password = 'Minimum 8 caractères';
+    if (form.password !== form.confirmPassword) errs.confirmPassword = 'Les mots de passe ne correspondent pas';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -67,11 +67,11 @@ export default function Register() {
         password:    form.password,
         phoneNumber: form.phoneNumber.trim() || undefined,
       });
-      showToast('success', 'Account created successfully! Welcome 🎉');
+      showToast('success', 'Compte créé avec succès ! Bienvenue 🎉');
       navigate('/home', { replace: true });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      showToast('error', msg ?? 'An error occurred while creating the account.');
+      showToast('error', msg ?? 'Une erreur est survenue lors de la création du compte.');
     } finally {
       setLoading(false);
     }
@@ -90,13 +90,13 @@ export default function Register() {
             <span>Event Management</span>
           </div>
           <h2 className="auth-brand__tagline">
-            Join the LinSoft event community
+            Rejoignez la communauté événementielle LinSoft
           </h2>
           <ul className="auth-brand__features">
-            <li>🚀 Free and fast registration</li>
-            <li>📅 Access all events</li>
-            <li>🔔 Personalized notifications</li>
-            <li>🎫 Manage your registrations easily</li>
+            <li>🚀 Inscription gratuite et rapide</li>
+            <li>📅 Accédez à tous les événements</li>
+            <li>🔔 Notifications personnalisées</li>
+            <li>🎫 Gérez facilement vos inscriptions</li>
           </ul>
         </div>
       </div>
@@ -105,10 +105,10 @@ export default function Register() {
       <div className="auth-panel auth-panel--form">
         <div className="auth-form-container auth-form-container--wide">
           <div className="auth-form-header">
-            <h1 className="auth-form-title">Create an Account</h1>
+            <h1 className="auth-form-title">Créer un compte</h1>
             <p className="auth-form-subtitle">
-              Already registered?{' '}
-              <Link to="/login" className="auth-link">Sign in</Link>
+              Déjà inscrit ?{' '}
+              <Link to="/login" className="auth-link">Se connecter</Link>
             </p>
           </div>
 
@@ -116,23 +116,23 @@ export default function Register() {
             {/* Name row */}
             <div className="auth-row">
               <div className="auth-field">
-                <label className="auth-label">First Name *</label>
+                <label className="auth-label">Prénom *</label>
                 <div className="auth-input-wrap">
                   <User size={15} className="auth-input-icon" />
                   <input
                     name="firstName" type="text" className={`auth-input${errors.firstName ? ' auth-input--error' : ''}`}
-                    placeholder="First name" value={form.firstName} onChange={handleChange} disabled={loading}
+                    placeholder="Prénom" value={form.firstName} onChange={handleChange} disabled={loading}
                   />
                 </div>
                 {errors.firstName && <span className="auth-error">{errors.firstName}</span>}
               </div>
               <div className="auth-field">
-                <label className="auth-label">Last Name *</label>
+                <label className="auth-label">Nom *</label>
                 <div className="auth-input-wrap">
                   <User size={15} className="auth-input-icon" />
                   <input
                     name="lastName" type="text" className={`auth-input${errors.lastName ? ' auth-input--error' : ''}`}
-                    placeholder="Last name" value={form.lastName} onChange={handleChange} disabled={loading}
+                    placeholder="Nom" value={form.lastName} onChange={handleChange} disabled={loading}
                   />
                 </div>
                 {errors.lastName && <span className="auth-error">{errors.lastName}</span>}
@@ -141,7 +141,7 @@ export default function Register() {
 
             {/* Username */}
             <div className="auth-field">
-              <label className="auth-label">Username *</label>
+              <label className="auth-label">Nom d'utilisateur *</label>
               <div className="auth-input-wrap">
                 <span className="auth-input-prefix">@</span>
                 <input
@@ -167,7 +167,7 @@ export default function Register() {
 
             {/* Phone */}
             <div className="auth-field">
-              <label className="auth-label">Phone <span className="auth-optional">(optional)</span></label>
+              <label className="auth-label">Téléphone <span className="auth-optional">(optionnel)</span></label>
               <div className="auth-input-wrap">
                 <Phone size={15} className="auth-input-icon" />
                 <input
@@ -180,13 +180,13 @@ export default function Register() {
             {/* Password row */}
             <div className="auth-row">
               <div className="auth-field">
-                <label className="auth-label">Password *</label>
+                <label className="auth-label">Mot de passe *</label>
                 <div className="auth-input-wrap">
                   <Lock size={15} className="auth-input-icon" />
                   <input
                     name="password" type={showPwd ? 'text' : 'password'}
                     className={`auth-input auth-input--has-toggle${errors.password ? ' auth-input--error' : ''}`}
-                    placeholder="Min. 8 characters" value={form.password} onChange={handleChange} disabled={loading}
+                    placeholder="Min. 8 caractères" value={form.password} onChange={handleChange} disabled={loading}
                   />
                   <button type="button" className="auth-pwd-toggle" onClick={() => setShowPwd((v) => !v)} tabIndex={-1}>
                     {showPwd ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -195,13 +195,13 @@ export default function Register() {
                 {errors.password && <span className="auth-error">{errors.password}</span>}
               </div>
               <div className="auth-field">
-                <label className="auth-label">Confirm *</label>
+                <label className="auth-label">Confirmer *</label>
                 <div className="auth-input-wrap">
                   <Lock size={15} className="auth-input-icon" />
                   <input
                     name="confirmPassword" type={showPwd ? 'text' : 'password'}
                     className={`auth-input${errors.confirmPassword ? ' auth-input--error' : ''}`}
-                    placeholder="Repeat password" value={form.confirmPassword} onChange={handleChange} disabled={loading}
+                    placeholder="Répéter le mot de passe" value={form.confirmPassword} onChange={handleChange} disabled={loading}
                   />
                 </div>
                 {errors.confirmPassword && <span className="auth-error">{errors.confirmPassword}</span>}
@@ -224,13 +224,13 @@ export default function Register() {
                   ))}
                 </div>
                 <span className="auth-strength__label">
-                  {form.password.length >= 8 ? 'Strong' : form.password.length >= 6 ? 'Medium' : 'Weak'}
+                  {form.password.length >= 8 ? 'Fort' : form.password.length >= 6 ? 'Moyen' : 'Faible'}
                 </span>
               </div>
             )}
 
             <button type="submit" className="auth-submit" disabled={loading}>
-              {loading ? <LoadingSpinner size="sm" /> : <><UserPlus size={16} /> Create Account</>}
+              {loading ? <LoadingSpinner size="sm" /> : <><UserPlus size={16} /> Créer un compte</>}
             </button>
           </form>
         </div>

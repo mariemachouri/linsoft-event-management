@@ -23,6 +23,8 @@ export interface Event {
   category?: EventCategory;
   organizerId?: string;
   imageUrl?: string;
+  isOnline?: boolean;
+  meetingLink?: string;
   chargeIds?: string[];
   chargePredictionId?: string;
   eventStatisticsId?: string;

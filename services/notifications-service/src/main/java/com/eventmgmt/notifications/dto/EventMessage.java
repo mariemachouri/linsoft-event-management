@@ -18,6 +18,8 @@ public class EventMessage {
     private String organizerId;
     private String category;
     private String status;
+    private Boolean isOnline;
+    private String meetingLink;
     private String action;
     private Instant timestamp;
 }

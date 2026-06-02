@@ -24,16 +24,16 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.username.trim() || !form.password) {
-      showToast('warning', 'Please fill in all fields.');
+      showToast('warning', 'Veuillez remplir tous les champs.');
       return;
     }
     setLoading(true);
     try {
       await login({ username: form.username.trim(), password: form.password });
-      showToast('success', 'Login successful!');
+      showToast('success', 'Connexion réussie !');
       navigate(from, { replace: true });
     } catch {
-      showToast('error', 'Invalid credentials. Please check your username and password.');
+      showToast('error', 'Identifiants incorrects. Vérifiez votre nom d\'utilisateur et mot de passe.');
     } finally {
       setLoading(false);
     }
@@ -52,13 +52,13 @@ export default function Login() {
             <span>Event Management</span>
           </div>
           <h2 className="auth-brand__tagline">
-            LinSoft’s professional event platform
+            La plateforme événementielle professionnelle de LinSoft
           </h2>
           <ul className="auth-brand__features">
-            <li>✅ Access 50+ professional events</li>
-            <li>✅ Register in one click</li>
-            <li>✅ Manage your registrations</li>
-            <li>✅ Real-time notifications</li>
+            <li>✅ Accédez à 50+ événements professionnels</li>
+            <li>✅ Inscrivez-vous en un clic</li>
+            <li>✅ Gérez vos inscriptions</li>
+            <li>✅ Notifications en temps réel</li>
           </ul>
         </div>
       </div>
@@ -67,24 +67,24 @@ export default function Login() {
       <div className="auth-panel auth-panel--form">
         <div className="auth-form-container">
           <div className="auth-form-header">
-            <h1 className="auth-form-title">Sign In</h1>
+            <h1 className="auth-form-title">Connexion</h1>
             <p className="auth-form-subtitle">
-              Don't have an account?{' '}
-              <Link to="/register" className="auth-link">Create one</Link>
+              Pas encore de compte ?{' '}
+              <Link to="/register" className="auth-link">En créer un</Link>
             </p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             {/* Username */}
             <div className="auth-field">
-              <label className="auth-label">Username</label>
+              <label className="auth-label">Nom d'utilisateur</label>
               <div className="auth-input-wrap">
                 <User size={16} className="auth-input-icon" />
                 <input
                   name="username"
                   type="text"
                   className="auth-input"
-                  placeholder="e.g. john.doe"
+                  placeholder="ex. john.doe"
                   value={form.username}
                   onChange={handleChange}
                   autoComplete="username"
@@ -96,14 +96,14 @@ export default function Login() {
 
             {/* Password */}
             <div className="auth-field">
-              <label className="auth-label">Password</label>
+              <label className="auth-label">Mot de passe</label>
               <div className="auth-input-wrap">
                 <Lock size={16} className="auth-input-icon" />
                 <input
                   name="password"
                   type={showPwd ? 'text' : 'password'}
                   className="auth-input auth-input--has-toggle"
-                  placeholder="Your password"
+                  placeholder="Votre mot de passe"
                   value={form.password}
                   onChange={handleChange}
                   autoComplete="current-password"
@@ -126,7 +126,7 @@ export default function Login() {
               ) : (
                 <>
                   <LogIn size={16} />
-                  Sign In
+                  Se connecter
                 </>
               )}
             </button>
@@ -135,7 +135,7 @@ export default function Login() {
           <div className="auth-divider"><span>or</span></div>
 
           <Link to="/events" className="auth-guest-link">
-            Browse without an account →
+            Parcourir sans compte →
           </Link>
         </div>
       </div>

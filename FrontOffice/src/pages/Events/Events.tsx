@@ -8,18 +8,18 @@ import type { Event, EventCategory, EventStatus } from '../../types';
 import './Events.css';
 
 const CATEGORIES: { key: string; label: string; emoji: string }[] = [
-  { key: 'ALL',        label: 'All',          emoji: '✨' },
-  { key: 'CONFERENCE', label: 'Conferences',  emoji: '🎤' },
-  { key: 'WORKSHOP',   label: 'Workshops',    emoji: '🛠️' },
-  { key: 'MEETUP',     label: 'Meetups',      emoji: '🤝' },
-  { key: 'SEMINAR',    label: 'Seminars',     emoji: '📊' },
+  { key: 'ALL',        label: 'Tous',          emoji: '✨' },
+  { key: 'CONFERENCE', label: 'Conférences',   emoji: '🎤' },
+  { key: 'WORKSHOP',   label: 'Ateliers',      emoji: '🛠️' },
+  { key: 'MEETUP',     label: 'Rencontres',    emoji: '🤝' },
+  { key: 'SEMINAR',    label: 'Séminaires',    emoji: '📊' },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'date_asc',     label: 'Date (ascending)' },
-  { value: 'date_desc',    label: 'Date (descending)' },
-  { value: 'popular',      label: 'Popularity' },
-  { value: 'availability', label: 'Available spots' },
+  { value: 'date_asc',     label: 'Date (croissant)' },
+  { value: 'date_desc',    label: 'Date (décroissant)' },
+  { value: 'popular',      label: 'Popularité' },
+  { value: 'availability', label: 'Places disponibles' },
 ];
 
 type ViewMode = 'grid' | 'list';
@@ -126,9 +126,9 @@ export default function Events() {
       {/* Page Header */}
       <section className="events-hero">
         <div className="events-hero__inner">
-          <h1 className="events-hero__title">All Events</h1>
+          <h1 className="events-hero__title">Tous les événements</h1>
           <p className="events-hero__subtitle">
-            {loading ? 'Loading…' : `${filtered.length} event${filtered.length !== 1 ? 's' : ''} found`}
+            {loading ? 'Chargement…' : `${filtered.length} événement${filtered.length !== 1 ? 's' : ''} trouvé${filtered.length !== 1 ? 's' : ''}`}
           </p>
         </div>
       </section>
@@ -138,18 +138,18 @@ export default function Events() {
         <aside className={`events-sidebar${filterOpen ? ' events-sidebar--open' : ''}`}>
           <div className="sidebar__header">
             <span className="sidebar__title">
-              <SlidersHorizontal size={16} /> Filters
+              <SlidersHorizontal size={16} /> Filtres
             </span>
             {hasFilters && (
               <button className="sidebar__clear-btn" onClick={clearFilters}>
-                <X size={14} /> Clear
+                <X size={14} /> Effacer
               </button>
             )}
           </div>
 
           {/* Status Filter */}
           <div className="sidebar__group">
-            <h4 className="sidebar__group-title">Status</h4>
+            <h4 className="sidebar__group-title">Statut</h4>
             {(['ALL', 'PUBLISHED', 'DRAFT', 'COMPLETED'] as const).map((s) => (
               <label key={s} className="sidebar__radio">
                 <input
@@ -160,7 +160,7 @@ export default function Events() {
                   onChange={() => setStatusFilter(s)}
                 />
                 <span>
-                  {s === 'ALL' ? 'All' : s === 'PUBLISHED' ? 'Open' : s === 'DRAFT' ? 'Upcoming' : 'Completed'}
+                  {s === 'ALL' ? 'Tous' : s === 'PUBLISHED' ? 'Ouvert' : s === 'DRAFT' ? 'À venir' : 'Terminé'}
                 </span>
               </label>
             ))}
@@ -168,7 +168,7 @@ export default function Events() {
 
           {/* Sort */}
           <div className="sidebar__group">
-            <h4 className="sidebar__group-title">Sort by</h4>
+            <h4 className="sidebar__group-title">Trier par</h4>
             <select
               className="sidebar__select"
               value={sort}
@@ -190,7 +190,7 @@ export default function Events() {
               <Search size={16} className="events-search__icon" />
               <input
                 type="text"
-                placeholder="Search…"
+                placeholder="Rechercher…"
                 className="events-search__input"
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
@@ -209,7 +209,7 @@ export default function Events() {
                 onClick={() => setFilterOpen((v) => !v)}
               >
                 <Filter size={15} />
-                Filters
+                Filtres
               </button>
 
               {/* View Mode */}
@@ -249,7 +249,7 @@ export default function Events() {
           {/* Active Filters */}
           {hasFilters && (
             <div className="active-filters">
-              <span className="active-filters__label">Active filters:</span>
+              <span className="active-filters__label">Filtres actifs :</span>
               {search && (
                 <span className="active-filter-tag">
                   "{search}" <button onClick={() => handleSearchChange('')}><X size={10} /></button>
@@ -273,15 +273,15 @@ export default function Events() {
           {/* Results */}
           {loading ? (
             <div className="events-loading">
-              <LoadingSpinner size="lg" text="Loading events…" />
+              <LoadingSpinner size="lg" text="Chargement des événements…" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="events-empty">
               <div className="events-empty__icon">🔍</div>
-              <h3>No events found</h3>
-              <p>Try adjusting your filters or search.</p>
+              <h3>Aucun événement trouvé</h3>
+              <p>Essayez de modifier vos filtres ou votre recherche.</p>
               <button className="events-empty__btn" onClick={clearFilters}>
-                Reset filters
+                Réinitialiser les filtres
               </button>
             </div>
           ) : (

@@ -23,6 +23,8 @@ public class EventMessage {
     private String organizerId;
     private EventCategory category;
     private EventStatus status;
+    private Boolean isOnline;
+    private String meetingLink;
     private String action; // CREATED, UPDATED, DELETED
     private Instant timestamp;
 
@@ -36,6 +38,8 @@ public class EventMessage {
         message.setOrganizerId(event.organizerId);
         message.setCategory(event.category);
         message.setStatus(event.status);
+        message.setIsOnline(event.isOnline != null && event.isOnline);
+        message.setMeetingLink(event.meetingLink);
         message.setAction(action);
         message.setTimestamp(Instant.now());
         return message;

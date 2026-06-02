@@ -112,6 +112,17 @@ public class EventService {
             existingEvent.imageUrl = event.imageUrl;
         }
 
+        // Événement en ligne + lien Meet
+        if (event.isOnline != null) {
+            existingEvent.isOnline = event.isOnline;
+        }
+        // meetingLink : mis à jour si en ligne ; effacé si repassé hors-ligne
+        if (Boolean.TRUE.equals(event.isOnline)) {
+            existingEvent.meetingLink = event.meetingLink;
+        } else if (Boolean.FALSE.equals(event.isOnline)) {
+            existingEvent.meetingLink = null;
+        }
+
         repository.update(existingEvent);
         
         // Publish event update to Kafka

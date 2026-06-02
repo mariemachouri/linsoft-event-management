@@ -4,6 +4,8 @@ import { Location } from "@angular/common";
 import { Router } from "@angular/router";
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from "../../core/services/auth.service";
+import { AvatarService } from "../../core/services/avatar.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-navbar",
@@ -21,12 +23,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   closeResult: string = '';
 
+  // ── Avatar (affichage seul — la modification se fait dans la page Profil) ──
+  public avatarUrl: string | null = null;
+  private avatarSub: Subscription = new Subscription();
+
   constructor(
     location: Location,
     private element: ElementRef,
     private router: Router,
     private modalService: NgbModal,
-    private authService: AuthService
+    private authService: AuthService,
+    private avatarService: AvatarService
   ) {
     this.location = location;
     this.sidebarVisible = false;
@@ -54,6 +61,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
         $layer.remove();
         this.mobile_menu_visible = 0;
       }
+    });
+
+    // ── Avatar : charge la photo de l'utilisateur (affichage seul) ──
+    this.authService.currentUser$.subscribe(user => {
+      const userId = user?.id || user?.username || '';
+      if (userId) {
+        this.avatarService.load(userId);
+      }
+    });
+    // Reste synchronisé en direct avec la page profil
+    this.avatarSub = this.avatarService.avatar$.subscribe(url => {
+      this.avatarUrl = url;
     });
   }
 
@@ -173,5 +192,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
      window.removeEventListener("resize", this.updateColor);
+     this.avatarSub.unsubscribe();
   }
 }

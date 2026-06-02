@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Calendar, ChevronDown, LogOut, Menu, User, X, Bell } from 'lucide-react';
+import { Calendar, ChevronDown, LogOut, Menu, User, X, Bell, LayoutGrid } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/events', label: 'Events' },
+  { to: '/home', label: 'Accueil' },
+  { to: '/events', label: 'Événements' },
 ];
 
 export default function Navbar() {
@@ -49,8 +49,13 @@ export default function Navbar() {
   return (
     <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
+        {/* Landing page button */}
+        <Link to="/" className="navbar__landing-btn" title="Retour à l'accueil" onClick={() => setMenuOpen(false)}>
+          <LayoutGrid size={16} />
+        </Link>
+
         {/* Logo */}
-        <Link to="/" className="navbar__logo" onClick={() => setMenuOpen(false)}>
+        <Link to="/home" className="navbar__logo" onClick={() => setMenuOpen(false)}>
           <div className="navbar__logo-icon">
             <Calendar size={18} strokeWidth={2.5} />
           </div>
@@ -121,18 +126,18 @@ export default function Navbar() {
                       className="navbar__dropdown-item"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <Calendar size={15} /> My Events
+                      <Calendar size={15} /> Mes événements
                     </Link>
                     <Link
                       to="/profile"
                       className="navbar__dropdown-item"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <User size={15} /> My Profile
+                      <User size={15} /> Mon profil
                     </Link>
                     <div className="navbar__dropdown-divider" />
                     <button className="navbar__dropdown-item navbar__dropdown-item--danger" onClick={handleLogout}>
-                      <LogOut size={15} /> Sign Out
+                      <LogOut size={15} /> Déconnexion
                     </button>
                   </div>
                 )}
@@ -141,10 +146,10 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/login" className="navbar__btn navbar__btn--ghost">
-                Sign In
+                Connexion
               </Link>
               <Link to="/register" className="navbar__btn navbar__btn--primary">
-                Sign Up
+                S'inscrire
               </Link>
             </>
           )}
@@ -178,22 +183,22 @@ export default function Navbar() {
         {isAuthenticated ? (
           <>
             <Link to="/dashboard" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-              My Registrations
+              Mes inscriptions
             </Link>
             <Link to="/profile" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-              My Profile
+              Mon profil
             </Link>
             <button className="navbar__mobile-logout" onClick={handleLogout}>
-              <LogOut size={15} /> Sign Out
+              <LogOut size={15} /> Déconnexion
             </button>
           </>
         ) : (
           <div className="navbar__mobile-actions">
             <Link to="/login" className="navbar__btn navbar__btn--ghost" onClick={() => setMenuOpen(false)}>
-              Sign In
+              Connexion
             </Link>
             <Link to="/register" className="navbar__btn navbar__btn--primary" onClick={() => setMenuOpen(false)}>
-              Sign Up
+              S'inscrire
             </Link>
           </div>
         )}

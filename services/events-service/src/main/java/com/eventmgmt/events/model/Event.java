@@ -19,6 +19,10 @@ public class Event extends PanacheMongoEntity {
     public Integer currentParticipants;
     public String organizerId;
     public String imageUrl;
+
+    // Événement en ligne (formation/workshop) + lien Google Meet privé (admin only)
+    public Boolean isOnline = false;
+    public String meetingLink;
     public EventCategory category;
     public EventStatus status = EventStatus.DRAFT;
     public List<String> chargeIds = new ArrayList<>();
