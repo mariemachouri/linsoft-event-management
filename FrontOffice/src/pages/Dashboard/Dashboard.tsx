@@ -116,9 +116,6 @@ export default function Dashboard() {
             <h1 className="dashboard-hero__title">
               Bonjour, {auth.user?.firstName ?? auth.user?.username ?? 'participant'} 👋
             </h1>
-            <p className="dashboard-hero__subtitle">
-              Gérez vos inscriptions aux événements
-            </p>
           </div>
           <div className="dashboard-hero__actions">
             <button className="dashboard-hero__refresh" onClick={fetchData} disabled={loading}>
@@ -134,21 +131,6 @@ export default function Dashboard() {
       </section>
 
       <div className="dashboard-body">
-        {/* Stats */}
-        <div className="dashboard-stats">
-          {[
-            { label: 'Total des inscriptions', value: counts.all,       color: '#2A3652' },
-            { label: 'En attente',             value: counts.PENDING,   color: '#e67e22' },
-            { label: 'Confirmées',             value: counts.CONFIRMED, color: '#27ae60' },
-            { label: 'Annulées',               value: counts.CANCELLED, color: '#e74c3c' },
-          ].map((s) => (
-            <div key={s.label} className="dashboard-stat">
-              <div className="dashboard-stat__value" style={{ color: s.color }}>{s.value}</div>
-              <div className="dashboard-stat__label">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Tabs */}
         <div className="dashboard-tabs">
           {TABS.map((t) => (

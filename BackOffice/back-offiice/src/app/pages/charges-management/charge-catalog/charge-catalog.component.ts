@@ -84,7 +84,7 @@ export class ChargeCatalogComponent implements OnInit {
   }
 
   private emptyForm(): ChargeCatalogItem {
-    return { name: '', description: '', category: 'EQUIPMENT', unit: 'pièce', defaultUnitPrice: 0, currency: 'EUR', active: true };
+    return { name: '', description: '', category: 'EQUIPMENT', unit: 'pièce', defaultUnitPrice: 0, currency: 'TND', active: true };
   }
 
   showSuccess(msg: string): void {

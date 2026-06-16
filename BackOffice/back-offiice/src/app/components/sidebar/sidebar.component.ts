@@ -8,33 +8,41 @@ declare interface RouteInfo {
   icon: string;
   class: string;
   requiredRole?: string;
+  hidden?: boolean;
 }
 
 export const ROUTES: RouteInfo[] = [
   {
+    path: "/welcome",
+    title: "Accueil",
+    rtlTitle: "الرئيسية",
+    icon: "icon-app",
+    class: ""
+  },
+  {
     path: "/dashboard",
-    title: "Dashboard",
+    title: "Tableau de bord",
     rtlTitle: "لوحة القيادة",
     icon: "icon-chart-pie-36",
     class: ""
   },
   {
     path: "/events",
-    title: "Events",
+    title: "Événements",
     rtlTitle: "الأحداث",
     icon: "icon-calendar-60",
     class: ""
   },
   {
     path: "/registrations",
-    title: "Registrations",
+    title: "Inscriptions",
     rtlTitle: "التسجيلات",
     icon: "icon-badge",
     class: ""
   },
   {
     path: "/users",
-    title: "Users",
+    title: "Utilisateurs",
     rtlTitle: "المستخدمين",
     icon: "icon-single-02",
     class: "",
@@ -42,21 +50,21 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: "/charges/catalog",
-    title: "Charge Catalog",
+    title: "Catalogue des charges",
     rtlTitle: "كتالوج الرسوم",
     icon: "icon-book-bookmark",
     class: ""
   },
   {
     path: "/charges/items",
-    title: "Charges by Event",
+    title: "Charges par événement",
     rtlTitle: "رسوم الأحداث",
     icon: "icon-money-coins",
     class: ""
   },
   {
     path: "/charges/predictions",
-    title: "AI Predictions",
+    title: "Prédictions IA",
     rtlTitle: "تنبؤات الذكاء الاصطناعي",
     icon: "icon-chart-bar-32",
     class: ""
@@ -69,18 +77,51 @@ export const ROUTES: RouteInfo[] = [
     class: ""
   },
   {
-    path: "/push-notifications",
-    title: "Push Notifications",
-    rtlTitle: "الإشعارات",
-    icon: "icon-mobile",
-    class: ""
-  },
-  {
     path: "/user-profile",
-    title: "User Profile",
+    title: "Profil utilisateur",
     rtlTitle: "الملف الشخصي",
     icon: "icon-single-02",
     class: ""
+  },
+  {
+    path: "/charges/payment-decision",
+    title: "Décision de paiement",
+    rtlTitle: "قرار الدفع",
+    icon: "",
+    class: "",
+    hidden: true
+  },
+  {
+    path: "/charges/create",
+    title: "Nouvelle prédiction",
+    rtlTitle: "",
+    icon: "",
+    class: "",
+    hidden: true
+  },
+  {
+    path: "/events/create",
+    title: "Nouvel événement",
+    rtlTitle: "",
+    icon: "",
+    class: "",
+    hidden: true
+  },
+  {
+    path: "/events/edit",
+    title: "Modifier l'événement",
+    rtlTitle: "",
+    icon: "",
+    class: "",
+    hidden: true
+  },
+  {
+    path: "/events/view",
+    title: "Détail de l'événement",
+    rtlTitle: "",
+    icon: "",
+    class: "",
+    hidden: true
   }
 ];
 
@@ -96,11 +137,8 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => {
-      // Si aucun rôle requis, afficher toujours
-      if (!menuItem.requiredRole) {
-        return true;
-      }
-      // Vérifier si l'utilisateur a le rôle requis
+      if (menuItem.hidden) return false;
+      if (!menuItem.requiredRole) return true;
       return this.authService.hasRole(menuItem.requiredRole);
     });
   }

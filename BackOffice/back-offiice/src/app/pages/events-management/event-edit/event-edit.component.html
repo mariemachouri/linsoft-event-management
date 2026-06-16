@@ -182,9 +182,6 @@
                 min="0"
                 placeholder="0 = unlimited"
               />
-              <small class="form-text text-muted">
-                Leave 0 for unlimited participants
-              </small>
             </div>
 
             <!-- Événement en ligne (formation / workshop) -->
@@ -197,9 +194,6 @@
                   Formation / événement EN LIGNE
                 </span>
               </label>
-              <small class="form-text text-muted">
-                Activez pour ajouter un lien Google Meet. Ce lien reste privé (visible admin uniquement) et sera envoyé par email aux inscrits.
-              </small>
             </div>
 
             <!-- Lien Google Meet (si en ligne) -->
@@ -214,9 +208,6 @@
                 formControlName="meetingLink"
                 placeholder="https://meet.google.com/abc-defg-hij"
               />
-              <small class="form-text text-muted">
-                🔒 Privé — envoyé uniquement par email aux participants/visiteurs inscrits.
-              </small>
               <div *ngIf="f['meetingLink'].touched && f['meetingLink'].errors" class="text-danger small mt-1">
                 <span *ngIf="f['meetingLink'].errors['required']">Le lien est requis pour un événement en ligne.</span>
                 <span *ngIf="f['meetingLink'].errors['pattern']">Lien invalide (doit commencer par http:// ou https://).</span>

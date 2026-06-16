@@ -18,6 +18,8 @@ services:
       - KC_HOSTNAME_URL=http://localhost:8180
       - KC_HOSTNAME_ADMIN_URL=http://localhost:8180
     command: start-dev
+    volumes:
+      - ./keycloak-theme/themes:/opt/keycloak/themes
     ports:
       - "8180:8080"
     depends_on:

@@ -3,8 +3,8 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h4 class="card-title">Charges by Event</h4>
-          <p class="card-category">Manage charges associated with each event</p>
+          <h4 class="card-title">Charges par événement</h4>
+          <p class="card-category">Gérez les charges associées à chaque événement</p>
         </div>
         <div class="card-body">
 
@@ -19,9 +19,9 @@
           <div class="row mb-4">
             <div class="col-md-6">
               <div class="form-group">
-                <label><strong>Select an event</strong></label>
+                <label><strong>Sélectionner un événement</strong></label>
                 <select class="form-control" [(ngModel)]="selectedEventId" (change)="onEventChange()">
-                  <option value="">-- Choose an event --</option>
+                  <option value="">-- Choisir un événement --</option>
                   <option *ngFor="let ev of events" [value]="ev.id">
                     {{ ev.title || ev.name }}
                   </option>
@@ -30,7 +30,7 @@
             </div>
             <div class="col-md-6 d-flex align-items-end" *ngIf="selectedEventId">
               <button class="btn btn-primary btn-sm mb-3" (click)="openAdd()">
-                <i class="tim-icons icon-simple-add"></i> Add a charge
+                <i class="tim-icons icon-simple-add"></i> Ajouter une charge
               </button>
             </div>
           </div>
@@ -38,15 +38,15 @@
           <!-- Formulaire ajout / modification -->
           <div class="card border mb-4" *ngIf="showForm">
             <div class="card-body">
-              <h5>{{ editMode ? 'Edit charge' : 'New charge for: ' + selectedEventName }}</h5>
+              <h5>{{ editMode ? 'Modifier la charge' : 'Nouvelle charge pour : ' + selectedEventName }}</h5>
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Charge type (catalog)</label>
+                    <label>Type de charge (catalogue)</label>
                     <select class="form-control" [(ngModel)]="form.catalogItemId" (change)="onCatalogChange()">
-                      <option value="">-- Select from catalog --</option>
+                      <option value="">-- Sélectionner du catalogue --</option>
                       <option *ngFor="let cat of catalogItems" [value]="cat.id">
-                        {{ cat.name }} — {{ cat.defaultUnitPrice | number:'1.2-2' }} €/{{ cat.unit }}
+                        {{ cat.name }} — {{ cat.defaultUnitPrice | number:'1.2-2' }} DT/{{ cat.unit }}
                       </option>
                     </select>
                   </div>
@@ -54,32 +54,32 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Description</label>
-                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Charge description" />
+                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Description de la charge" />
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label>Quantity</label>
+                    <label>Quantité</label>
                     <input type="number" class="form-control" [(ngModel)]="form.quantity" min="1" (input)="onQuantityChange()" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label>Unit price (€)</label>
+                    <label>Prix unitaire (DT)</label>
                     <input type="number" class="form-control" [(ngModel)]="form.unitPrice" min="0" step="0.01" (input)="onUnitPriceChange()" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label>Total amount (auto-calculated)</label>
+                    <label>Montant total (calculé auto)</label>
                     <input type="number" class="form-control" [value]="autoAmount" readonly style="background:#f5f5f5;" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label>Status</label>
+                    <label>Statut</label>
                     <select class="form-control" [(ngModel)]="form.status">
                       <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
                     </select>
@@ -88,36 +88,36 @@
               </div>
               <div class="d-flex gap-2">
                 <button class="btn btn-success btn-sm" (click)="save()">
-                  {{ editMode ? 'Save' : 'Add' }}
+                  {{ editMode ? 'Enregistrer' : 'Ajouter' }}
                 </button>
-                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Annuler</button>
               </div>
             </div>
           </div>
 
           <!-- Tableau des charges de l'event sélectionné -->
-          <div *ngIf="selectedEventId && loading" class="text-center py-4">Loading...</div>
+          <div *ngIf="selectedEventId && loading" class="text-center py-4">Chargement...</div>
 
           <div *ngIf="selectedEventId && !loading && charges.length === 0 && !showForm" class="text-center py-4 text-muted">
-            No charges for this event yet.
+            Aucune charge pour cet événement.
           </div>
 
           <div *ngIf="selectedEventId && !loading && charges.length > 0">
-            <h6 class="text-muted mb-2">Charges for: <strong>{{ selectedEventName }}</strong></h6>
+            <h6 class="text-muted mb-2">Charges pour : <strong>{{ selectedEventName }}</strong></h6>
             <ng-container *ngTemplateOutlet="chargesTable; context: { charges: charges, showEvent: false }"></ng-container>
           </div>
 
-          <!-- Historique global : toutes les charges tous events confondus -->
+          <!-- Historique global -->
           <div *ngIf="!selectedEventId && allCharges.length > 0" class="mt-2">
             <h6 class="text-primary mb-3">
-              <i class="tim-icons icon-notes mr-2"></i> All charges history ({{ allCharges.length }} entries)
+              <i class="tim-icons icon-notes mr-2"></i> Historique de toutes les charges ({{ allCharges.length }} entrées)
             </h6>
             <ng-container *ngTemplateOutlet="chargesTable; context: { charges: allCharges, showEvent: true }"></ng-container>
           </div>
 
           <div *ngIf="!selectedEventId && allCharges.length === 0" class="text-center py-5 text-muted">
             <i class="tim-icons icon-notes" style="font-size: 3rem;"></i>
-            <p class="mt-2">No charges yet. Select an event to add charges.</p>
+            <p class="mt-2">Aucune charge enregistrée. Sélectionnez un événement pour ajouter des charges.</p>
           </div>
 
           <!-- Template réutilisable pour le tableau -->
@@ -125,12 +125,12 @@
             <table class="table table-hover">
               <thead class="text-primary">
                 <tr>
-                  <th *ngIf="showEvent">Event</th>
+                  <th *ngIf="showEvent">Événement</th>
                   <th>Description</th>
-                  <th>Qty</th>
-                  <th>Unit price</th>
+                  <th>Qté</th>
+                  <th>Prix unitaire</th>
                   <th>Total</th>
-                  <th>Status</th>
+                  <th>Statut</th>
                   <th class="text-right">Actions</th>
                 </tr>
               </thead>
@@ -139,29 +139,29 @@
                   <td *ngIf="showEvent"><small class="text-muted">{{ getEventName(charge.eventId) }}</small></td>
                   <td>{{ charge.description || charge.item || '—' }}</td>
                   <td>{{ charge.quantity || 1 }}</td>
-                  <td>{{ (charge.unitPrice || 0) | number:'1.2-2' }} €</td>
-                  <td><strong>{{ (charge.amount || 0) | number:'1.2-2' }} €</strong></td>
+                  <td>{{ (charge.unitPrice || 0) | number:'1.2-2' }} DT</td>
+                  <td><strong>{{ (charge.amount || 0) | number:'1.2-2' }} DT</strong></td>
                   <td>
                     <span class="badge" [ngClass]="statusClass(charge.status || 'PENDING')">
                       {{ charge.status || 'PENDING' }}
                     </span>
                   </td>
                   <td class="text-right">
-                    <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(charge)"
+                    <button class="btn btn-sm btn-info mr-1" title="Modifier" (click)="openEdit(charge)"
                       *ngIf="charge.status !== 'REJECTED' && charge.status !== 'PAID'">
                       <i class="tim-icons icon-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-success mr-1" title="Approve"
+                    <button class="btn btn-sm btn-success mr-1" title="Approuver"
                       (click)="updateStatus(charge, 'APPROVED')"
                       *ngIf="charge.status === 'PENDING'">
                       <i class="tim-icons icon-check-2"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning mr-1" title="Cancel charge"
+                    <button class="btn btn-sm btn-warning mr-1" title="Annuler la charge"
                       (click)="cancelCharge(charge)"
                       *ngIf="charge.status === 'PENDING' || charge.status === 'APPROVED'">
                       <i class="tim-icons icon-simple-remove"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(charge)"
+                    <button class="btn btn-sm btn-danger" title="Supprimer" (click)="delete(charge)"
                       *ngIf="charge.status === 'REJECTED'">
                       <i class="tim-icons icon-trash-simple"></i>
                     </button>
@@ -170,8 +170,8 @@
               </tbody>
               <tfoot *ngIf="!showEvent">
                 <tr class="font-weight-bold">
-                  <td colspan="4" class="text-right">Total active:</td>
-                  <td colspan="3">{{ getTotalAmount() | number:'1.2-2' }} EUR</td>
+                  <td colspan="4" class="text-right">Total actif :</td>
+                  <td colspan="3">{{ getTotalAmount() | number:'1.2-2' }} TND</td>
                 </tr>
               </tfoot>
             </table>

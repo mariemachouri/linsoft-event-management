@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { 
-  ChargePredictionService, 
+import {
+  ChargePredictionService,
   ChargePrediction,
   ChargeStatus
 } from '../../core/services/charge-prediction.service';
 import { AuthService } from '../../core/services/auth.service';
+import { EventService, Event as EventModel } from '../../core/services/event.service';
 
 @Component({
   selector: 'app-charges-management',
@@ -14,6 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class ChargesManagementComponent implements OnInit {
   predictions: ChargePrediction[] = [];
+  events: EventModel[] = [];
   loading = false;
   errorMessage = '';
   isAdmin = false;
@@ -34,12 +36,19 @@ export class ChargesManagementComponent implements OnInit {
   constructor(
     private chargePredictionService: ChargePredictionService,
     private authService: AuthService,
+    private eventService: EventService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole('admin');
     this.loadPredictions();
+    this.eventService.getAllEvents().subscribe({ next: (events) => this.events = events, error: () => {} });
+  }
+
+  getEventName(eventId: string): string {
+    const event = this.events.find(e => e.id === eventId);
+    return event ? (event.title || event.name || eventId) : eventId;
   }
 
   loadPredictions(): void {

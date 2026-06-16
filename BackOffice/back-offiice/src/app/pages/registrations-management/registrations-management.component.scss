@@ -1,10 +1,10 @@
-$navy: #2A3652;
+$navy: rgba(255,255,255,0.07);
 $coral: #FF5276;
-$bg: #f5f7fa;
+$bg: rgba(255,255,255,0.05);
 $white: #fff;
-$text: #2c3e50;
-$muted: #6c757d;
-$border: #e4e9f0;
+$text: #e2e8f0;
+$muted: rgba(255,255,255,0.50);
+$border: rgba(255,255,255,0.10);
 
 :host { display: block; width: 100%; }
 
@@ -15,7 +15,9 @@ $border: #e4e9f0;
   justify-content: space-between;
   margin-bottom: 24px;
   padding: 22px 28px;
-  background: $navy;
+  background: rgba(204,31,36,0.18);
+  border: 1px solid rgba(204,31,36,0.30);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   color: $white;
 
@@ -24,7 +26,7 @@ $border: #e4e9f0;
     color: $white !important; margin: 0;
   }
   .page-subtitle {
-    font-size: 0.8rem; color: #fff !important; margin: 4px 0 0;
+    font-size: 0.8rem; color: rgba(255,255,255,0.70) !important; margin: 4px 0 0;
   }
 }
 
@@ -33,21 +35,24 @@ $border: #e4e9f0;
   padding: 10px 22px; border-radius: 8px;
   font-size: 0.82rem; font-weight: 700;
   cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
-  transition: background 0.2s;
+  transition: background 0.2s; box-shadow: 0 4px 14px rgba(255,82,118,0.35);
   &:hover { background: #e83d61; }
 }
 
 // ── Banners ───────────────────────────────────────────────
 .alert-success-banner {
-  background: #eafaf1; border-left: 4px solid #27ae60;
-  padding: 12px 16px; border-radius: 8px; color: #1e7e34;
-  margin-bottom: 16px; font-size: 0.9rem;
+  background: rgba(39,174,96,0.15); border-left: 4px solid #27ae60;
+  border: 1px solid rgba(39,174,96,0.30);
+  padding: 12px 16px; border-radius: 8px; color: #86efac;
+  margin-bottom: 16px; font-size: 0.9rem; backdrop-filter: blur(8px);
   i { margin-right: 8px; }
 }
 .alert-error-banner {
-  background: #fff2f4; border-left: 4px solid $coral;
-  padding: 12px 16px; border-radius: 8px; color: $text;
+  background: rgba(204,31,36,0.15); border-left: 4px solid $coral;
+  border: 1px solid rgba(204,31,36,0.30);
+  padding: 12px 16px; border-radius: 8px; color: #fca5a5;
   margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+  backdrop-filter: blur(8px);
   button { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 18px; color: $muted; }
 }
 
@@ -79,32 +84,34 @@ $border: #e4e9f0;
 
 // ── Table ─────────────────────────────────────────────────
 .registrations-table-wrapper {
-  background: $white;
-  border-radius: 12px;
-  border: 1px solid $border;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
   overflow: hidden;
-  box-shadow: 0 2px 14px rgba(42,54,82,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.30);
 }
 
 .reg-table {
   width: 100%; border-collapse: collapse;
 
   thead tr {
-    background: $navy;
+    background: rgba(204,31,36,0.20);
     th {
       padding: 14px 16px;
       font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px;
       text-transform: uppercase; color: #fff !important;
-      border-bottom: 2px solid $border;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
       &.text-center { text-align: center; }
     }
   }
 
   .reg-row {
-    border-bottom: 1px solid $border;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     transition: background 0.15s;
     &:last-child { border-bottom: none; }
-    &:hover { background: #f5f7fa; }
+    &:hover { background: rgba(255,255,255,0.08); }
 
     td { padding: 14px 16px; vertical-align: middle; font-size: 0.88rem; color: $text; }
   }
@@ -138,10 +145,10 @@ $border: #e4e9f0;
   display: inline-block; padding: 4px 12px;
   border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3px;
 
-  &.status-pending    { background: #fff8e1; color: #e65100; }
-  &.status-confirmed  { background: #e8f5e9; color: #2e7d32; }
-  &.status-waitlisted { background: #e3f2fd; color: #1565c0; }
-  &.status-cancelled  { background: #fce4ec; color: #b71c1c; }
+  &.status-pending    { background: rgba(245,124,0,0.18); color: #fcd34d; border: 1px solid rgba(245,124,0,0.35); }
+  &.status-confirmed  { background: rgba(46,125,50,0.18); color: #86efac; border: 1px solid rgba(46,125,50,0.35); }
+  &.status-waitlisted { background: rgba(21,101,192,0.18); color: #7dd3fc; border: 1px solid rgba(21,101,192,0.35); }
+  &.status-cancelled  { background: rgba(183,28,28,0.18); color: #fca5a5; border: 1px solid rgba(183,28,28,0.35); }
 }
 
 // ── Actions ───────────────────────────────────────────────
@@ -151,13 +158,13 @@ $border: #e4e9f0;
   display: inline-flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; border-radius: 8px; border: none;
   cursor: pointer; margin: 0 3px;
-  font-size: 0.82rem; transition: opacity 0.15s, transform 0.15s;
-  &:hover { opacity: 0.85; transform: translateY(-1px); }
+  font-size: 0.82rem; transition: all 0.15s;
+  &:hover { transform: translateY(-2px); }
 
-  &.confirm-btn  { background: #e8f5e9; color: #2e7d32; }
-  &.cancel-btn   { background: #fff8e1; color: #e65100; }
-  &.edit-btn     { background: #e3f2fd; color: #1565c0; }
-  &.delete-btn   { background: #fce4ec; color: #b71c1c; }
+  &.confirm-btn  { background: rgba(46,125,50,0.18); color: #86efac; border: 1px solid rgba(46,125,50,0.30); &:hover { background: rgba(46,125,50,0.35); } }
+  &.cancel-btn   { background: rgba(245,124,0,0.18); color: #fcd34d; border: 1px solid rgba(245,124,0,0.30); &:hover { background: rgba(245,124,0,0.35); } }
+  &.edit-btn     { background: rgba(21,101,192,0.18); color: #7dd3fc; border: 1px solid rgba(21,101,192,0.30); &:hover { background: rgba(21,101,192,0.35); } }
+  &.delete-btn   { background: rgba(183,28,28,0.18); color: #fca5a5; border: 1px solid rgba(183,28,28,0.30); &:hover { background: rgba(183,28,28,0.35); } }
 }
 
 // ── Empty state ───────────────────────────────────────────
@@ -193,29 +200,29 @@ $border: #e4e9f0;
   overflow-x: auto;
 }
 
-// Table hover styles for better readability
+// Table hover styles
 .table {
   tbody tr {
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: #f4f6fb !important;
+      background-color: rgba(255,255,255,0.07) !important;
 
       td {
-        color: #2c3e50 !important;
+        color: #e2e8f0 !important;
 
         strong {
-          color: #2c3e50 !important;
+          color: #e2e8f0 !important;
         }
       }
     }
   }
 
   td {
-    color: #2c3e50;
+    color: #e2e8f0;
 
     strong {
-      color: #2c3e50;
+      color: #e2e8f0;
     }
   }
 }

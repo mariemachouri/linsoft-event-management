@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Registration {
@@ -23,100 +24,95 @@ export interface Notification {
   createdAt?: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class RegistrationService {
 
-  private registrationsApiUrl = environment.services.registrations;
-  private notificationsApiUrl = environment.services.notifications;
+  private readonly registrationsUrl = environment.services.registrations;
+  private readonly notificationsUrl  = environment.services.notifications;
+  private readonly TTL = 60_000;
 
-  constructor(private http: HttpClient) { }
+  private regCache$: Observable<Registration[]> | null = null;
+  private regCacheAt = 0;
 
-  // ===== REGISTRATIONS =====
+  constructor(private http: HttpClient) {}
 
-  /**
-   * Récupérer toutes les inscriptions
-   */
+  // ── REGISTRATIONS ────────────────────────────────────────
+
   getAllRegistrations(): Observable<Registration[]> {
-    return this.http.get<Registration[]>(this.registrationsApiUrl);
+    if (!this.regCache$ || Date.now() - this.regCacheAt > this.TTL) {
+      this.regCache$ = this.http.get<Registration[]>(this.registrationsUrl).pipe(shareReplay(1));
+      this.regCacheAt = Date.now();
+    }
+    return this.regCache$;
   }
 
-  /**
-   * Récupérer une inscription par ID
-   */
+  invalidateCache(): void {
+    this.regCache$ = null;
+  }
+
   getRegistrationById(id: string): Observable<Registration> {
-    return this.http.get<Registration>(`${this.registrationsApiUrl}/${id}`);
+    return this.http.get<Registration>(`${this.registrationsUrl}/${id}`);
   }
 
-  /**
-   * Créer une nouvelle inscription
-   */
   createRegistration(registration: Registration): Observable<Registration> {
-    return this.http.post<Registration>(this.registrationsApiUrl, registration);
+    return this.http.post<Registration>(this.registrationsUrl, registration).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
   updateRegistration(id: string, registration: Registration): Observable<Registration> {
-    return this.http.put<Registration>(`${this.registrationsApiUrl}/${id}`, registration);
+    return this.http.put<Registration>(`${this.registrationsUrl}/${id}`, registration).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
   updateStatus(id: string, status: string): Observable<Registration> {
-    return this.http.put<Registration>(`${this.registrationsApiUrl}/${id}/status`, { status });
+    return this.http.put<Registration>(`${this.registrationsUrl}/${id}/status`, { status }).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
   confirmRegistration(id: string): Observable<Registration> {
-    return this.http.post<Registration>(`${this.registrationsApiUrl}/${id}/confirm`, {});
+    return this.http.post<Registration>(`${this.registrationsUrl}/${id}/confirm`, {}).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
   cancelRegistration(id: string): Observable<Registration> {
-    return this.http.post<Registration>(`${this.registrationsApiUrl}/${id}/cancel`, {});
+    return this.http.post<Registration>(`${this.registrationsUrl}/${id}/cancel`, {}).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
   deleteRegistration(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.registrationsApiUrl}/${id}`);
+    return this.http.delete<void>(`${this.registrationsUrl}/${id}`).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
-  /**
-   * Récupérer le nombre d'inscriptions pour un événement
-   */
   getRegistrationCountByEvent(eventId: string): Observable<number> {
-    return this.http.get<number>(`${this.registrationsApiUrl}/event/${eventId}/count`);
+    return this.http.get<number>(`${this.registrationsUrl}/event/${eventId}/count`);
   }
 
-  // ===== NOTIFICATIONS =====
+  // ── NOTIFICATIONS ────────────────────────────────────────
 
-  /**
-   * Récupérer toutes les notifications
-   */
   getAllNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(this.notificationsApiUrl);
+    return this.http.get<Notification[]>(this.notificationsUrl);
   }
 
-  /**
-   * Récupérer les notifications par utilisateur
-   */
   getUserNotifications(userId: string): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${this.notificationsApiUrl}?userId=${userId}`);
+    return this.http.get<Notification[]>(`${this.notificationsUrl}?userId=${userId}`);
   }
 
-  /**
-   * Créer une notification
-   */
   createNotification(notification: Notification): Observable<Notification> {
-    return this.http.post<Notification>(this.notificationsApiUrl, notification);
+    return this.http.post<Notification>(this.notificationsUrl, notification);
   }
 
-  /**
-   * Marquer une notification comme lue
-   */
   markAsRead(id: string): Observable<void> {
-    return this.http.put<void>(`${this.notificationsApiUrl}/${id}/read`, {});
+    return this.http.put<void>(`${this.notificationsUrl}/${id}/read`, {});
   }
 
-  /**
-   * Supprimer une notification
-   */
   deleteNotification(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.notificationsApiUrl}/${id}`);
+    return this.http.delete<void>(`${this.notificationsUrl}/${id}`);
   }
 }

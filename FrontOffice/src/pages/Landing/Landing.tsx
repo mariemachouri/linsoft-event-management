@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Eye, User, Users, ShieldCheck } from 'lucide-react';
+import { Eye, User, Users } from 'lucide-react';
 import './Landing.css';
 
 const BACKOFFICE_URL = 'http://localhost:4200';
@@ -35,20 +35,11 @@ const roles = [
     path: '/login',
   },
   {
-    key: 'organizer',
-    label: 'Organisateur',
-    description: 'Gérer vos événements',
+    key: 'team',
+    label: 'Équipe LinSoft',
+    description: 'Organisateur & administrateur — se connecter',
     icon: Users,
-    color: '#f59e0b',
-    action: 'external',
-    path: BACKOFFICE_LOGIN_URL,
-  },
-  {
-    key: 'admin',
-    label: 'Administrateur',
-    description: 'Accès complet au système',
-    icon: ShieldCheck,
-    color: '#10b981',
+    color: '#2A3652',
     action: 'external',
     path: BACKOFFICE_LOGIN_URL,
   },

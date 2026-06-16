@@ -70,8 +70,17 @@ export default function Register() {
       showToast('success', 'Compte créé avec succès ! Bienvenue 🎉');
       navigate('/home', { replace: true });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      showToast('error', msg ?? 'Une erreur est survenue lors de la création du compte.');
+      const e = err as { response?: { status?: number; data?: { message?: string } } };
+      const status = e?.response?.status;
+      const backendMsg = e?.response?.data?.message;
+      let msg: string;
+      if (status === 409) {
+        // Conflit : nom d'utilisateur ou email déjà pris
+        msg = 'Ce nom d\'utilisateur ou cet email est déjà utilisé. Essayez de vous connecter ou choisissez d\'autres identifiants.';
+      } else {
+        msg = backendMsg ?? 'Une erreur est survenue lors de la création du compte.';
+      }
+      showToast('error', msg);
     } finally {
       setLoading(false);
     }

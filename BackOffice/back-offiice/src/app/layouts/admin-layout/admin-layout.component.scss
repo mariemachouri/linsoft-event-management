@@ -102,7 +102,7 @@
   background: transparent !important;
 }
 
-/* ── Feuille de contenu : surface claire givrée flottant dans le cadre photo ── */
+/* ── Contenu : transparent pour laisser voir la photo sombre du wrapper ── */
 .wrapper .main-panel > .content {
   flex: 1 0 auto;
   position: relative;
@@ -110,17 +110,11 @@
   margin: 85px 18px 18px;
   padding: 26px 24px 30px;
   border-radius: 20px;
-  background: rgba(245, 247, 250, 0.94) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32),
-              inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent !important;
   width: auto !important;
   max-width: none !important;
   animation: fadeIn 0.5s ease;
 
-  // Force la card à prendre toute la largeur disponible
   > .card {
     width: 100% !important;
     max-width: none !important;

@@ -4,9 +4,9 @@
       <div class="card">
         <div class="card-header">
           <div class="d-flex justify-content-between align-items-center">
-            <h4 class="card-title">Charge Catalog</h4>
+            <h4 class="card-title">Catalogue des charges</h4>
             <button class="btn btn-primary btn-sm" (click)="openAdd()">
-              <i class="tim-icons icon-simple-add"></i> Add charge type
+              <i class="tim-icons icon-simple-add"></i> Ajouter un type de charge
             </button>
           </div>
         </div>
@@ -22,17 +22,17 @@
           <!-- Formulaire ajout / modification -->
           <div class="card border mb-4" *ngIf="showForm">
             <div class="card-body">
-              <h5>{{ editMode ? 'Edit' : 'Add' }} item</h5>
+              <h5>{{ editMode ? 'Modifier' : 'Ajouter' }} un article</h5>
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Name *</label>
-                    <input type="text" class="form-control" [(ngModel)]="form.name" placeholder="e.g. HD Projector" />
+                    <label>Nom *</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.name" placeholder="ex. Projecteur HD" />
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Category</label>
+                    <label>Catégorie</label>
                     <select class="form-control" [(ngModel)]="form.category">
                       <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
                     </select>
@@ -43,14 +43,14 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label>Description</label>
-                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Short description" />
+                    <input type="text" class="form-control" [(ngModel)]="form.description" placeholder="Courte description" />
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Unit</label>
+                    <label>Unité</label>
                     <select class="form-control" [(ngModel)]="form.unit">
                       <option *ngFor="let u of units" [value]="u">{{ u }}</option>
                     </select>
@@ -58,43 +58,43 @@
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Default unit price (€)</label>
+                    <label>Prix unitaire par défaut (DT)</label>
                     <input type="number" class="form-control" [(ngModel)]="form.defaultUnitPrice" min="0" step="0.01" />
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Currency</label>
-                    <input type="text" class="form-control" [(ngModel)]="form.currency" placeholder="EUR" />
+                    <label>Devise</label>
+                    <input type="text" class="form-control" [(ngModel)]="form.currency" placeholder="TND" />
                   </div>
                 </div>
               </div>
               <div class="d-flex gap-2">
                 <button class="btn btn-success btn-sm" (click)="save()">
-                  {{ editMode ? 'Save' : 'Add' }}
+                  {{ editMode ? 'Enregistrer' : 'Ajouter' }}
                 </button>
-                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelForm()">Annuler</button>
               </div>
             </div>
           </div>
 
           <!-- Tableau du catalogue -->
           <div *ngIf="loading" class="text-center py-4">
-            <i class="tim-icons icon-refresh-02"></i> Loading...
+            <i class="tim-icons icon-refresh-02"></i> Chargement...
           </div>
 
           <div *ngIf="!loading && items.length === 0 && !showForm" class="text-center py-4 text-muted">
-            No items in the catalog. Add charge types to get started.
+            Aucun article dans le catalogue. Ajoutez des types de charges pour commencer.
           </div>
 
           <table class="table table-hover" *ngIf="!loading && items.length > 0">
             <thead class="text-primary">
               <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Unit</th>
-                <th>Unit price</th>
-                <th>Status</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Unité</th>
+                <th>Prix unitaire</th>
+                <th>Statut</th>
                 <th class="text-right">Actions</th>
               </tr>
             </thead>
@@ -103,17 +103,17 @@
                 <td><strong>{{ item.name }}</strong><br /><small class="text-muted">{{ item.description }}</small></td>
                 <td><span class="badge badge-info">{{ item.category }}</span></td>
                 <td>{{ item.unit }}</td>
-                <td>{{ item.defaultUnitPrice | number:'1.2-2' }} {{ item.currency || 'EUR' }}</td>
+                <td>{{ item.defaultUnitPrice | number:'1.2-2' }} {{ item.currency || 'TND' }}</td>
                 <td>
                   <span class="badge" [ngClass]="item.active ? 'badge-success' : 'badge-secondary'">
-                    {{ item.active ? 'Active' : 'Inactive' }}
+                    {{ item.active ? 'Actif' : 'Inactif' }}
                   </span>
                 </td>
                 <td class="text-right">
-                  <button class="btn btn-sm btn-info mr-1" title="Edit" (click)="openEdit(item)">
+                  <button class="btn btn-sm btn-info mr-1" title="Modifier" (click)="openEdit(item)">
                     <i class="tim-icons icon-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger" title="Delete" (click)="delete(item)">
+                  <button class="btn btn-sm btn-danger" title="Supprimer" (click)="delete(item)">
                     <i class="tim-icons icon-trash-simple"></i>
                   </button>
                 </td>

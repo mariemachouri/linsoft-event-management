@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 
+import { WelcomeComponent } from "../../pages/welcome/welcome.component";
 import { DashboardComponent } from "../../pages/dashboard/dashboard.component";
 import { IconsComponent } from "../../pages/icons/icons.component";
 import { MapComponent } from "../../pages/map/map.component";
@@ -23,10 +24,11 @@ import { ChargePaymentDecisionComponent } from "../../pages/charges-management/c
 import { ChargeCatalogComponent } from "../../pages/charges-management/charge-catalog/charge-catalog.component";
 import { ChargeItemsComponent } from "../../pages/charges-management/charge-items/charge-items.component";
 import { NotificationsManagementComponent } from "../../pages/notifications-management/notifications-management.component";
-import { PushNotificationsComponent } from "../../pages/push-notifications/push-notifications.component";
 import { RoleGuard } from "../../core/guards/role.guard";
 
 export const AdminLayoutRoutes: Routes = [
+  { path: "", redirectTo: "welcome", pathMatch: "full" },
+  { path: "welcome", component: WelcomeComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "events", component: EventsManagementComponent },
   {
@@ -75,8 +77,7 @@ export const AdminLayoutRoutes: Routes = [
     // data: { roles: ['admin', 'event-organizer'] }
   },
   { path: "notifications", component: NotificationsManagementComponent },
-  { path: "push-notifications", component: PushNotificationsComponent },
-  { 
+  {
     path: "users", 
     component: UsersListComponent,
     canActivate: [RoleGuard],

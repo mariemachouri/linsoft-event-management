@@ -56,12 +56,9 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/home" className="navbar__logo" onClick={() => setMenuOpen(false)}>
-          <div className="navbar__logo-icon">
-            <Calendar size={18} strokeWidth={2.5} />
-          </div>
+          <img src="/linsoft-white.webp" alt="LinSoft" className="navbar__logo-img" />
           <div className="navbar__logo-text">
-            <span className="navbar__logo-main">Event<span className="navbar__logo-accent">Management</span></span>
-            <span className="navbar__logo-by">by LinSoft</span>
+            <span className="navbar__logo-main">Gestion d'<span className="navbar__logo-accent">évènements</span></span>
           </div>
         </Link>
 

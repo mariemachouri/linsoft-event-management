@@ -1,5 +1,22 @@
 /* Le bouton burger a été déplacé dans la sidebar */
 
+/* ── Dropdown navbar : icônes toujours visibles ── */
+:host ::ng-deep .dropdown-menu .dropdown-item .tim-icons {
+  opacity: 1 !important;
+  font-size: 16px !important;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .dropdown-menu .nav-item:nth-child(1) .tim-icons { color: #1d8cf8 !important; }
+:host ::ng-deep .dropdown-menu .nav-item:nth-child(2) .tim-icons { color: #ff8d72 !important; }
+:host ::ng-deep .dropdown-menu .nav-item:last-child  .tim-icons  { color: #fd5d93 !important; }
+
+:host ::ng-deep .dropdown-menu .dropdown-item:hover .tim-icons {
+  filter: brightness(1.2);
+}
+
 /* ── Avatar navbar : photo ronde, recadrée proprement ── */
 :host ::ng-deep .navbar .photo {
   width: 34px;

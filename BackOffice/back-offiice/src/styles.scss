@@ -1,117 +1,90 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* ===== IMPORTATION CHARTE GRAPHIQUE LINSOFT ===== */
+/* ===== VARIABLES LINSOFT ===== */
 @import 'assets/scss/linsoft-theme.scss';
-/* Déclenchement de la recompilation */
-
-/* ===== VARIABLES GLOBALES (COMPATIBILITÉ) ===== */
-$primary-color: $linsoft-primary;
-$secondary-color: $linsoft-gray;
-$success-color: $linsoft-success;
-$danger-color: $linsoft-danger;
-$warning-color: $linsoft-warning;
-$info-color: $linsoft-info;
-
-$transition-speed: $linsoft-transition-base;
-$border-radius: $linsoft-border-radius-lg;
 
 /* ===== ANIMATIONS GLOBALES ===== */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-/* ===== STYLES GLOBAUX LINSOFT ===== */
-* {
-  transition: color $transition-speed ease, background-color $transition-speed ease;
-}
-
+/* ===== BODY ===== */
 body {
-  background: $linsoft-background;  // #f5f7fa — fond clair comme www.linsoft.xyz
+  background: #0a0a14;
   min-height: 100vh;
-  font-family: $linsoft-font-family;
-  color: $linsoft-gray-dark;
-  font-size: $linsoft-font-size-base;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  color: #e2e8f0;
+  font-size: 14px;
 }
 
-/* ===== MAIN PANEL — FOND CLAIR ===== */
+/* ===== MAIN PANEL & CONTENT — transparent pour laisser passer la photo ===== */
 .main-panel {
-  background: $linsoft-background !important;
+  background: transparent !important;
 }
 
 .content {
-  animation: fadeIn 0.5s ease-in-out;
-  padding: 30px 15px;
-  background: $linsoft-background;
+  animation: fadeIn 0.45s ease-in-out;
+  background: transparent !important;
 }
 
-/* ===== CARTES LINSOFT — BLANCHES AVEC OMBRE LÉGÈRE ===== */
+/* ===== CARTES — dark glassmorphism (style FrontOffice) ===== */
 .card {
-  border: none;
-  overflow: hidden;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(42, 54, 82, 0.1);
+  background: rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
   margin-bottom: 20px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(255, 255, 255, 0.18) !important;
+  }
 
   .card-header {
-    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
-    color: $linsoft-white;
-    border: none;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
     padding: 20px 24px;
-    border-radius: 8px 8px 0 0;
 
-    .card-title {
-      color: $linsoft-white;
-      font-weight: 700;
-      font-size: 18px;
+    .card-title,
+    h2.card-title,
+    h3.card-title {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      font-size: 17px;
       margin: 0;
     }
 
     .card-category {
-      color: rgba(255, 255, 255, 0.85);
+      color: #94a3b8 !important;
       font-size: 13px;
-      font-weight: 400;
       margin-top: 4px;
     }
   }
 
   .card-body {
+    background: transparent !important;
+    color: #e2e8f0 !important;
     padding: 24px;
-    color: $linsoft-gray-dark;
   }
 
   .card-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 16px 24px;
     display: flex;
     gap: 12px;
@@ -119,148 +92,180 @@ body {
   }
 }
 
-// Texte sombre dans les cartes en mode white-content
-.white-content .card .card-body,
-.white-content h1, .white-content h2, .white-content h3,
-.white-content h4, .white-content h5, .white-content h6,
-.white-content p, .white-content td, .white-content th,
-.white-content label {
-  color: $linsoft-gray-dark !important;
+/* ===== TYPOGRAPHIE ===== */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+  font-weight: 600;
 }
 
-/* ===== BOUTONS LINSOFT ===== */
-.btn {
-  border-radius: 6px;
+p {
+  color: #cbd5e1;
+}
+
+label {
+  color: #94a3b8;
   font-weight: 600;
-  font-size: 13px;
-  padding: 10px 20px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.3s ease;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.text-muted {
+  color: #64748b !important;
+}
+
+/* ===== BOUTONS ===== */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
   border: none;
   cursor: pointer;
 
   &.btn-primary {
-    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
-    color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba(42, 54, 82, 0.3);
-
+    background: linear-gradient(135deg, #a01820 0%, #cc1f24 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(204, 31, 36, 0.35);
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba(42, 54, 82, 0.4);
+      box-shadow: 0 6px 20px rgba(204, 31, 36, 0.50);
       transform: translateY(-1px);
     }
   }
 
-  &.btn-danger, &.btn-coral {
-    background: linear-gradient(135deg, $linsoft-accent-alt 0%, $linsoft-accent 100%);
-    color: $linsoft-white;
-    box-shadow: 0 2px 8px rgba(255, 82, 118, 0.3);
-
+  &.btn-danger {
+    background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(229, 57, 53, 0.30);
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 16px rgba(255, 82, 118, 0.45);
+      box-shadow: 0 6px 20px rgba(229, 57, 53, 0.45);
       transform: translateY(-1px);
     }
   }
 
   &.btn-success {
-    background: linear-gradient(135deg, darken($linsoft-success, 10%) 0%, $linsoft-success 100%);
-    color: $linsoft-white;
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(46, 125, 50, 0.30);
+    &:hover:not(:disabled) { transform: translateY(-1px); }
   }
 
   &.btn-info {
-    background: linear-gradient(135deg, darken($linsoft-info, 10%) 0%, $linsoft-info 100%);
-    color: $linsoft-white;
+    background: linear-gradient(135deg, #0277bd 0%, #0288d1 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(2, 136, 209, 0.30);
+    &:hover:not(:disabled) { transform: translateY(-1px); }
   }
 
   &.btn-warning {
-    background: linear-gradient(135deg, darken($linsoft-warning, 5%) 0%, $linsoft-warning 100%);
-    color: $linsoft-white;
+    background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
+    color: #ffffff;
+    &:hover:not(:disabled) { transform: translateY(-1px); }
+  }
+
+  &.btn-secondary {
+    background: rgba(255, 255, 255, 0.10);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.18);
+    }
   }
 
   &.btn-outline-primary {
     background: transparent;
-    border: 2px solid $linsoft-primary;
-    color: $linsoft-primary;
-
+    border: 1.5px solid rgba(204, 31, 36, 0.6) !important;
+    color: #ff6b6b;
     &:hover:not(:disabled) {
-      background: $linsoft-primary;
-      color: $linsoft-white;
+      background: rgba(204, 31, 36, 0.15);
+      border-color: #cc1f24 !important;
     }
   }
 
-  i { font-size: 15px; }
+  i { font-size: 14px; }
 }
 
 /* ===== FORMULAIRES ===== */
 .form-group {
   margin-bottom: 20px;
-
-  label {
-    font-weight: 600;
-    color: $linsoft-gray-dark;
-    margin-bottom: 8px;
-    display: block;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
 }
 
 .form-control {
-  border: 1px solid #dde2ec;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
   padding: 10px 14px;
   font-size: 14px;
-  background: #ffffff;
-  color: $linsoft-gray-dark;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.30) !important;
+  }
 
   &:focus {
-    border-color: $linsoft-primary;
-    box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.12);
+    border-color: rgba(204, 31, 36, 0.70) !important;
+    box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.12) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
     outline: none;
+    color: #ffffff !important;
   }
 
   &:disabled {
-    background-color: #f8f9fa;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(255, 255, 255, 0.30) !important;
     cursor: not-allowed;
   }
+}
+
+select.form-control option {
+  background: #1a2035;
+  color: #e2e8f0;
 }
 
 /* ===== TABLEAUX ===== */
 .table {
   border-collapse: collapse;
   margin: 0;
-  background: #ffffff;
+  background: transparent !important;
+  width: 100%;
 
   thead {
-    background: linear-gradient(135deg, $linsoft-primary-dark 0%, $linsoft-primary 100%);
-
     th {
-      color: #ffffff;
+      background: rgba(204, 31, 36, 0.20) !important;
+      color: #ffffff !important;
       font-weight: 600;
-      border: none;
+      border: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
       padding: 14px 16px;
       text-align: left;
       text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 0.5px;
+      font-size: 11px;
+      letter-spacing: 0.6px;
     }
   }
 
   tbody {
     tr {
-      border-bottom: 1px solid #e9ecef;
-      transition: background-color 0.2s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+      transition: background 0.2s ease;
 
       &:hover {
-        background-color: #f4f6fb;
+        background: rgba(255, 255, 255, 0.07) !important;
       }
 
       td {
         padding: 14px 16px;
         vertical-align: middle;
-        color: $linsoft-gray-dark;
+        color: #e2e8f0 !important;
+
+        strong, span, a { color: #e2e8f0 !important; }
+        a:hover { color: #ff6b6b !important; }
       }
     }
   }
@@ -268,18 +273,35 @@ body {
 
 /* ===== ALERTES ===== */
 .alert {
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   padding: 14px 18px;
   display: flex;
   align-items: center;
   gap: 12px;
   animation: slideInLeft 0.4s ease-out;
+  backdrop-filter: blur(10px);
 
-  &.alert-danger  { background-color: #fef0f0; color: #c0392b; border-left: 4px solid #c0392b; }
-  &.alert-success { background-color: #edfaf4; color: #1e8449;  border-left: 4px solid #1e8449; }
-  &.alert-info    { background-color: #eaf4fc; color: #1a6fa8;  border-left: 4px solid #1a6fa8; }
-  &.alert-warning { background-color: #fef9ec; color: #b7770d;  border-left: 4px solid #b7770d; }
+  &.alert-danger  {
+    background: rgba(204, 31, 36, 0.18) !important;
+    border: 1px solid rgba(204, 31, 36, 0.35) !important;
+    color: #fca5a5 !important;
+  }
+  &.alert-success {
+    background: rgba(46, 125, 50, 0.18) !important;
+    border: 1px solid rgba(46, 125, 50, 0.35) !important;
+    color: #86efac !important;
+  }
+  &.alert-info {
+    background: rgba(2, 136, 209, 0.18) !important;
+    border: 1px solid rgba(2, 136, 209, 0.35) !important;
+    color: #7dd3fc !important;
+  }
+  &.alert-warning {
+    background: rgba(245, 124, 0, 0.18) !important;
+    border: 1px solid rgba(245, 124, 0, 0.35) !important;
+    color: #fcd34d !important;
+  }
 }
 
 /* ===== BADGES ===== */
@@ -289,63 +311,21 @@ body {
   font-weight: 600;
   font-size: 11px;
 
-  &.badge-primary { background: $linsoft-primary; color: #fff; }
-  &.badge-success { background: $linsoft-success;  color: #fff; }
-  &.badge-danger  { background: $linsoft-accent;   color: #fff; }
-  &.badge-info    { background: $linsoft-info;     color: #fff; }
-  &.badge-warning { background: $linsoft-warning;  color: #fff; }
+  &.badge-primary { background: rgba(42, 54, 82, 0.80);  color: #e2e8f0; border: 1px solid rgba(255,255,255,0.15); }
+  &.badge-success { background: rgba(46, 125, 50, 0.70);  color: #86efac; border: 1px solid rgba(46,125,50,0.4); }
+  &.badge-danger  { background: rgba(204, 31, 36, 0.70);  color: #fca5a5; border: 1px solid rgba(204,31,36,0.4); }
+  &.badge-info    { background: rgba(2, 136, 209, 0.70);  color: #7dd3fc; border: 1px solid rgba(2,136,209,0.4); }
+  &.badge-warning { background: rgba(245, 124, 0, 0.70);  color: #fcd34d; border: 1px solid rgba(245,124,0,0.4); }
 }
 
 /* ===== SPINNER ===== */
 .spinner-border {
   border-width: 3px;
-  animation: spin 1s linear infinite;
+  border-color: rgba(255,255,255,0.15);
+  border-top-color: #cc1f24;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ===== SIDEBAR MINI ===== */
-body.sidebar-mini {
-  .wrapper {
-    .sidebar {
-      transform: translateX(-260px);
-
-      .sidebar-wrapper {
-        .nav {
-          li a p {
-            opacity: 0;
-            transform: translateX(-25px);
-            position: absolute;
-            width: 0;
-          }
-        }
-
-        .logo .logo-normal {
-          opacity: 0;
-          transform: translateX(-25px);
-        }
-      }
-    }
-
-    .main-panel {
-      margin-left: 0;
-      width: 100%;
-    }
-  }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .card { margin-bottom: 20px; }
-  .btn-group { flex-direction: column; }
-  .table { font-size: 12px; td, th { padding: 10px; } }
-}
-
-/* =====================================================
-   SEARCH & FILTER BAR — Shared component style
-   ===================================================== */
+/* ===== SEARCH & FILTER BAR ===== */
 .search-filter-bar {
   display: flex;
   align-items: center;
@@ -363,7 +343,7 @@ body.sidebar-mini {
       left: 13px;
       top: 50%;
       transform: translateY(-50%);
-      color: #6c757d;
+      color: rgba(255, 255, 255, 0.45);
       font-size: 13px;
       pointer-events: none;
     }
@@ -371,19 +351,20 @@ body.sidebar-mini {
     .search-input {
       padding-left: 38px;
       height: 40px;
-      border-radius: 8px;
-      border: 1px solid #e4e9f0;
-      background: #ffffff;
-      color: #2c3e50;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
       font-size: 14px;
 
       &:focus {
-        border-color: #2A3652;
-        box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.08);
+        border-color: rgba(204, 31, 36, 0.60);
+        box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.10);
         outline: none;
+        background: rgba(255, 255, 255, 0.12);
       }
 
-      &::placeholder { color: #adb5bd; }
+      &::placeholder { color: rgba(255, 255, 255, 0.30); }
     }
   }
 
@@ -391,249 +372,49 @@ body.sidebar-mini {
     width: auto;
     min-width: 150px;
     height: 40px;
-    border-radius: 8px;
-    border: 1px solid #e4e9f0;
-    background: #ffffff;
-    color: #2c3e50;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
     font-size: 13px;
     padding: 0 12px;
     cursor: pointer;
 
+    option { background: #1a2035; color: #e2e8f0; }
+
     &:focus {
-      border-color: #2A3652;
-      box-shadow: 0 0 0 3px rgba(42, 54, 82, 0.08);
+      border-color: rgba(204, 31, 36, 0.60);
+      box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.10);
       outline: none;
     }
   }
 
   .results-count {
     font-size: 13px;
-    color: #6c757d;
+    color: rgba(255, 255, 255, 0.45);
     font-weight: 500;
     white-space: nowrap;
     margin-left: auto;
-    padding: 0 4px;
   }
 }
 
-/* =====================================================
-   FORCE LIGHT THEME — OVERRIDE DARK COMPONENTS
-   Neutralise tous les dark backgrounds codés en dur
-   dans les composants Angular (matching linsoft.xyz)
-   ===================================================== */
-.white-content {
-
-  // ── Fond général : transparent pour laisser voir la photo ──
-  background: transparent !important;
-
-  .main-panel {
-    background: transparent !important;
-  }
-
-  .content {
-    background: transparent !important;
-  }
-
-  // ── Cards : blanches, ombres élégantes, hover fluide ──
-  .card,
-  .card:not(.card-white) {
-    background: #ffffff !important;
-    box-shadow: 0 6px 24px rgba(13, 19, 32, 0.10),
-                0 1px 3px rgba(13, 19, 32, 0.06) !important;
-    border: 1px solid rgba(42, 54, 82, 0.06) !important;
-    border-radius: 14px !important;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 40px rgba(13, 19, 32, 0.16),
-                  0 2px 6px rgba(13, 19, 32, 0.08) !important;
-    }
-  }
-
-  .card .card-body {
-    background: #ffffff !important;
-    color: #2c3e50 !important;
-  }
-
-  // card-footer clair
-  .card .card-footer {
-    background: #f8f9fa !important;
-    border-top: 1px solid #e9ecef !important;
-  }
-
-  // ── Tableaux : texte sombre ────────────────────────
-  .table {
-    background: #ffffff !important;
-
-    td, th {
-      color: #2c3e50 !important;
-    }
-
-    td strong,
-    td span,
-    td a {
-      color: #2c3e50 !important;
-    }
-
-    tbody tr:hover {
-      background-color: #f4f6fb !important;
-
-      td, td strong, td span {
-        color: #2c3e50 !important;
-      }
-    }
-  }
-
-  // ── Stats boxes ────────────────────────────────────
-  .stats-box {
-    background: #ffffff !important;
-    border: 1px solid #e9ecef !important;
-    box-shadow: 0 2px 8px rgba(42, 54, 82, 0.08) !important;
-
-    h5 { color: #6c757d !important; }
-    h3 { color: #2c3e50 !important; }
-    small { color: #adb5bd !important; }
-  }
-
-  // ── Titres généraux ────────────────────────────────
-  h1, h2, h3, h4, h5, h6 {
-    color: #2c3e50 !important;
-  }
-
-  p, span, label, li {
-    color: #4a5568;
-  }
-
-  // card-header : garde le gradient navy + texte blanc
-  .card .card-header {
-    h5.card-category {
-      color: rgba(255, 255, 255, 0.85) !important;
-    }
-    h2.card-title,
-    h3.card-title,
-    .card-title {
-      color: #ffffff !important;
-    }
-  }
-
-  // ── Formulaires ────────────────────────────────────
-  .form-control {
-    background: #ffffff !important;
-    color: #2c3e50 !important;
-    border-color: #dde2ec !important;
-
-    &::placeholder {
-      color: #adb5bd !important;
-    }
-  }
-
-  // ── Navbar : verre dépoli sombre (style FrontOffice) ──
-  // Spécificité .navbar.navbar-transparent pour battre la règle du thème
-  // black-dashboard (chargé après styles.scss) qui force transparent.
-  .navbar,
-  .navbar.navbar-transparent,
-  .navbar.navbar-absolute {
-    background: rgba(17, 22, 34, 0.55) !important;
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  }
-
-  .navbar .navbar-brand,
-  .navbar.navbar-transparent .navbar-brand {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.3px;
-  }
-
-  .navbar .nav-link,
-  .navbar i,
-  .navbar .navbar-minimize button i,
-  .navbar p,
-  .navbar.navbar-transparent .navbar-nav li a:not(.dropdown-item) {
-    color: rgba(255, 255, 255, 0.92) !important;
-  }
-
-  .navbar .nav-link:hover i {
-    color: #ff6d88 !important;
-  }
-
-  // ── Footer : verre dépoli + texte clair lisible sur la photo ──
-  .footer {
-    background: rgba(17, 22, 34, 0.45) !important;
-    backdrop-filter: blur(14px) saturate(150%);
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 14px;
-    margin: 10px 18px 16px;
-    padding: 4px 10px;
-  }
-
-  // Liens du footer (LinSoft / À propos / Contact) — spécificité > thème
-  .white-content .footer .nav .nav-link,
-  .footer .nav .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-
-    &:hover {
-      color: #ff6d88 !important;
-    }
-  }
-
-  // Copyright (battre .white-content .footer .copyright du thème)
-  .footer .container-fluid .copyright,
-  .footer .container-fluid .copyright a {
-    color: rgba(255, 255, 255, 0.78) !important;
-  }
-
-  .footer .container-fluid .copyright a:hover {
-    color: #ff6d88 !important;
-  }
-
-  .footer .container-fluid .copyright i {
-    color: #ff5276 !important;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────
-   Sidebar masquée : décaler le titre de la navbar pour
-   libérer le bouton rouge flottant (sinon il recouvre le nom)
-   ───────────────────────────────────────────────────────── */
-body.sidebar-mini .navbar .navbar-wrapper,
-body.sidebar-mini .navbar-wrapper {
-  padding-left: 64px !important;
-  transition: padding-left 0.35s cubic-bezier(0.685, 0.0473, 0.346, 1);
-}
-
-/* Titre de page bien lisible sur le verre dépoli */
-.navbar .navbar-brand {
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-}
-
-/* ─────────────────────────────────────────────────────────
-   SIDEBAR — libellés du menu en blanc lisible
-   (bat la règle .white-content p { color:$black-states } du thème)
-   ───────────────────────────────────────────────────────── */
+/* ===== SIDEBAR — libellés blancs ===== */
 .sidebar .sidebar-wrapper .nav li a p,
 .sidebar .nav li a p,
 .sidebar .nav li a {
-  color: rgba(255, 255, 255, 0.88) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
   font-weight: 500 !important;
 }
 
 .sidebar .nav li a i {
-  color: rgba(255, 255, 255, 0.80) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
-/* Survol */
 .sidebar .nav li a:hover p,
 .sidebar .nav li a:hover i {
   color: #ffffff !important;
 }
 
-/* Item actif : accent corail LinSoft */
 .sidebar .nav li.active > a,
 .sidebar .nav li.active > a p,
 .sidebar .nav li.active > a i {
@@ -642,36 +423,265 @@ body.sidebar-mini .navbar-wrapper {
 }
 
 .sidebar .nav li.active > a {
-  background: rgba(255, 82, 118, 0.16) !important;
+  background: rgba(204, 31, 36, 0.20) !important;
   border-radius: 10px;
-  box-shadow: inset 3px 0 0 #ff5276;
+  box-shadow: inset 3px 0 0 #cc1f24;
 }
 
-.white-content {
-  // ── Dropdown menus ─────────────────────────────────
-  .dropdown-menu {
-    background: #ffffff !important;
-    box-shadow: 0 4px 20px rgba(42, 54, 82, 0.15) !important;
-    border: 1px solid #e9ecef !important;
+/* ===== NAVBAR — verre sombre ===== */
+.navbar,
+.navbar.navbar-transparent,
+.navbar.navbar-absolute {
+  background: rgba(10, 14, 24, 0.60) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
 
-    .dropdown-item {
-      color: #2c3e50 !important;
+.navbar .navbar-brand,
+.navbar.navbar-transparent .navbar-brand {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
 
-      &:hover {
-        background: #f4f6fb !important;
-        color: #2A3652 !important;
-      }
-    }
-  }
+.navbar .nav-link,
+.navbar i,
+.navbar .navbar-minimize button i,
+.navbar p,
+.navbar.navbar-transparent .navbar-nav li a:not(.dropdown-item) {
+  color: rgba(255, 255, 255, 0.90) !important;
+}
 
-  // ── Badge-group buttons (dashboard tabs) ───────────
-  .btn-group-toggle .btn:not(.active) {
-    border-color: rgba(42, 54, 82, 0.25) !important;
-    color: #2c3e50 !important;
-    background: transparent !important;
+.navbar .nav-link:hover i {
+  color: #ff6b6b !important;
+}
+
+/* ===== DROPDOWN MENUS ===== */
+.dropdown-menu {
+  background: rgba(15, 20, 35, 0.92) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.60) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 14px !important;
+  padding: 8px !important;
+
+  .dropdown-item {
+    color: #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    transition: background 0.15s, color 0.15s !important;
+
+    .tim-icons { color: rgba(255,255,255,0.60) !important; }
 
     &:hover {
-      background: rgba(42, 54, 82, 0.06) !important;
+      background: rgba(204, 31, 36, 0.18) !important;
+      color: #ffffff !important;
+
+      .tim-icons { color: #ff6b6b !important; }
     }
   }
+
+  .dropdown-divider {
+    margin: 6px 8px !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
+/* ===== FOOTER — verre sombre ===== */
+.footer {
+  background: rgba(10, 14, 24, 0.45) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px;
+  margin: 10px 18px 16px;
+  padding: 4px 10px;
+
+  .nav .nav-link {
+    color: rgba(255, 255, 255, 0.70) !important;
+    &:hover { color: #ff6b6b !important; }
+  }
+
+  .container-fluid .copyright,
+  .container-fluid .copyright a {
+    color: rgba(255, 255, 255, 0.65) !important;
+  }
+
+  .container-fluid .copyright a:hover { color: #ff6b6b !important; }
+  .container-fluid .copyright i { color: #cc1f24 !important; }
+}
+
+/* ===== SIDEBAR MINI — décaler le titre navbar ===== */
+body.sidebar-mini .navbar .navbar-wrapper,
+body.sidebar-mini .navbar-wrapper {
+  padding-left: 64px !important;
+  transition: padding-left 0.35s cubic-bezier(0.685, 0.0473, 0.346, 1);
+}
+
+/* ===== WHITE-CONTENT override (classe active sur .wrapper dans admin-layout) ===== */
+/* Neutralise les règles "light" du Black Dashboard et impose le dark glassmorphism */
+.white-content {
+  background: transparent !important;
+
+  .main-panel,
+  .content {
+    background: transparent !important;
+  }
+
+  .card,
+  .card:not(.card-white) {
+    background: rgba(255, 255, 255, 0.07) !important;
+    backdrop-filter: blur(14px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.40) !important;
+  }
+
+  .card .card-body {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+  }
+
+  .card .card-header {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+
+    h5.card-category            { color: #94a3b8 !important; }
+    h2.card-title, h3.card-title,
+    .card-title                 { color: #ffffff !important; }
+  }
+
+  .card .card-footer {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+  p { color: #cbd5e1; }
+  label { color: #94a3b8; }
+
+  .table {
+    background: transparent !important;
+
+    thead th {
+      background: rgba(204, 31, 36, 0.20) !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+
+      &:hover { background: rgba(255, 255, 255, 0.07) !important; }
+
+      td,
+      td strong,
+      td span,
+      td a { color: #e2e8f0 !important; }
+    }
+  }
+
+  .stats-box {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30) !important;
+
+    h5 { color: #94a3b8 !important; }
+    h3 { color: #ffffff !important; }
+    small { color: #64748b !important; }
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.30) !important; }
+    &:focus {
+      border-color: rgba(204, 31, 36, 0.70) !important;
+      box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.12) !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+    }
+  }
+
+  .navbar,
+  .navbar.navbar-transparent,
+  .navbar.navbar-absolute {
+    background: rgba(10, 14, 24, 0.60) !important;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .navbar .navbar-brand,
+  .navbar.navbar-transparent .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .navbar .nav-link,
+  .navbar i,
+  .navbar .navbar-minimize button i,
+  .navbar p,
+  .navbar.navbar-transparent .navbar-nav li a:not(.dropdown-item) {
+    color: rgba(255, 255, 255, 0.90) !important;
+  }
+
+  .footer {
+    background: rgba(10, 14, 24, 0.45) !important;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px;
+    margin: 10px 18px 16px;
+    padding: 4px 10px;
+
+    .nav .nav-link           { color: rgba(255, 255, 255, 0.70) !important; }
+    .container-fluid .copyright,
+    .container-fluid .copyright a { color: rgba(255, 255, 255, 0.65) !important; }
+    .container-fluid .copyright i { color: #cc1f24 !important; }
+  }
+
+  .btn-group-toggle .btn:not(.active) {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+
+    &:hover { background: rgba(255, 255, 255, 0.12) !important; }
+  }
+
+  .dropdown-menu {
+    background: rgba(15, 20, 35, 0.92) !important;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 14px !important;
+
+    .dropdown-item {
+      color: #e2e8f0 !important;
+      &:hover {
+        background: rgba(204, 31, 36, 0.18) !important;
+        color: #ffffff !important;
+      }
+    }
+
+    .dropdown-divider {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .card { margin-bottom: 16px; }
+  .table { font-size: 12px; td, th { padding: 10px; } }
 }

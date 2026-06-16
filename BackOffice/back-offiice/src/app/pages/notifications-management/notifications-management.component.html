@@ -1,13 +1,13 @@
 <div class="content">
   <div class="card">
         <div class="card-header">
-          <h4 class="card-title">Notifications Management</h4>
-          <p class="card-category">Manage all system notifications</p>
+          <h4 class="card-title">Gestion des notifications</h4>
+          <p class="card-category">Gérez toutes les notifications du système</p>
         </div>
         <div class="card-body">
           <div *ngIf="loading" class="text-center">
             <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
+              <span class="sr-only">Chargement...</span>
             </div>
           </div>
 
@@ -22,34 +22,34 @@
             <div class="search-input-wrapper">
               <i class="tim-icons icon-zoom-split"></i>
               <input type="text" class="form-control search-input"
-                placeholder="Search by user ID, message..."
+                placeholder="Rechercher par ID utilisateur, message..."
                 [(ngModel)]="searchQuery" />
             </div>
             <select class="form-control filter-select" [(ngModel)]="filterType">
-              <option value="">All types</option>
+              <option value="">Tous les types</option>
               <option value="EMAIL">Email</option>
               <option value="SMS">SMS</option>
               <option value="PUSH">Push</option>
             </select>
             <select class="form-control filter-select" [(ngModel)]="filterStatus">
-              <option value="">All statuses</option>
-              <option value="SENT">Sent</option>
-              <option value="PENDING">Pending</option>
-              <option value="FAILED">Failed</option>
+              <option value="">Tous les statuts</option>
+              <option value="SENT">Envoyé</option>
+              <option value="PENDING">En attente</option>
+              <option value="FAILED">Échoué</option>
             </select>
-            <span class="results-count">{{ filteredNotifications.length }} result(s)</span>
+            <span class="results-count">{{ filteredNotifications.length }} résultat(s)</span>
           </div>
 
           <div class="table-responsive" *ngIf="!loading">
             <table class="table tablesorter">
               <thead class="text-primary">
                 <tr>
-                  <th>User ID</th>
-                  <th>Message</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Created At</th>
-                  <th class="text-center">Actions</th>
+                  <th style="color:#fff !important;">Utilisateur</th>
+                  <th style="color:#fff !important;">Message</th>
+                  <th style="color:#fff !important;">Type</th>
+                  <th style="color:#fff !important;">Statut</th>
+                  <th style="color:#fff !important;">Date d'envoi</th>
+                  <th class="text-center" style="color:#fff !important;">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -57,33 +57,35 @@
                   <td>{{ notification.recipientId }}</td>
                   <td>{{ notification.message }}</td>
                   <td>
-                    <span class="badge" [class.badge-info]="notification.type === 'EMAIL'" 
+                    <span class="badge" [class.badge-info]="notification.type === 'EMAIL'"
                           [class.badge-warning]="notification.type === 'SMS'"
                           [class.badge-primary]="notification.type === 'PUSH'">
                       {{ notification.type }}
                     </span>
                   </td>
                   <td>
-                    <span class="badge" 
-                          [class.badge-success]="notification.status === 'SENT'" 
+                    <span class="badge"
+                          [class.badge-success]="notification.status === 'SENT'"
                           [class.badge-warning]="notification.status === 'PENDING'"
                           [class.badge-danger]="notification.status === 'FAILED'">
-                      {{ notification.status }}
+                      {{ notification.status === 'SENT' ? 'Envoyé' :
+                         notification.status === 'PENDING' ? 'En attente' :
+                         notification.status === 'FAILED' ? 'Échoué' : notification.status }}
                     </span>
                   </td>
                   <td>{{ notification.sendAt | date:'short' }}</td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-warning" *ngIf="notification.status === 'FAILED'" 
-                            (click)="retryNotification(notification.id!)" title="Retry">
+                    <button class="btn btn-sm btn-warning" *ngIf="notification.status === 'FAILED'"
+                            (click)="retryNotification(notification.id!)" title="Réessayer">
                       <i class="tim-icons icon-refresh-01"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteNotification(notification.id!)" title="Delete">
+                    <button class="btn btn-sm btn-danger" (click)="deleteNotification(notification.id!)" title="Supprimer">
                       <i class="tim-icons icon-trash-simple"></i>
                     </button>
                   </td>
                 </tr>
                 <tr *ngIf="notifications.length === 0">
-                  <td colspan="6" class="text-center">No notifications found</td>
+                  <td colspan="6" class="text-center">Aucune notification trouvée</td>
                 </tr>
               </tbody>
             </table>

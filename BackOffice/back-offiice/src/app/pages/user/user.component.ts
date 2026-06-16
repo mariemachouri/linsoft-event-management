@@ -72,9 +72,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
   getPrimaryRole(): string {
     const roles = this.currentUser?.roles || [];
-    if (roles.includes('admin')) return 'Administrator';
-    if (roles.includes('event-organizer')) return 'Event Organizer';
-    return roles[0] || 'User';
+    if (roles.includes('admin')) return 'Administrateur';
+    if (roles.includes('event-organizer')) return 'Organisateur';
+    return 'Utilisateur';
   }
 
   ngOnDestroy() {

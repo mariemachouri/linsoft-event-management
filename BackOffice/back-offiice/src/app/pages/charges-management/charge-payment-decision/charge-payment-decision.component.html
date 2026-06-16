@@ -52,32 +52,8 @@
               </div>
             </div>
 
-            <!-- Informations complémentaires -->
-            <div class="row mb-4">
-              <div class="col-md-12">
-                <div class="alert alert-info">
-                  <h6><i class="tim-icons icon-alert-circle-exc"></i> Informations importantes</h6>
-                  <ul class="mb-0">
-                    <li>Modèle IA: <strong>{{ prediction.predictionResult?.aiModel }}</strong></li>
-                    <li>Événement ID: <strong>{{ prediction.eventId }}</strong></li>
-                    <li>Organisateur ID: <strong>{{ prediction.organizerId }}</strong></li>
-                    <li>Statut actuel: <strong>{{ prediction.status }}</strong></li>
-                    <li *ngIf="getTotalCost() > 5000" class="text-warning">
-                      ⚠️ Montant > 5000€ - Une approbation admin sera requise
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
             <!-- Formulaire de décision -->
             <form [formGroup]="decisionForm" (ngSubmit)="onSubmit()">
-              <div class="row">
-                <div class="col-md-12">
-                  <h5>Sélection du mode de paiement</h5>
-                </div>
-              </div>
-
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
@@ -87,20 +63,6 @@
                         {{ getPaymentMethodLabel(method) }}
                       </option>
                     </select>
-                    <small class="form-text text-muted">
-                      Choisissez le mode de paiement approprié pour cet événement
-                    </small>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="alert alert-secondary mt-4">
-                    <small>
-                      <strong>Guide des modes de paiement:</strong><br>
-                      • <strong>En ligne:</strong> Paiement anticipé par carte/virement<br>
-                      • <strong>Sur place:</strong> Paiement le jour de l'événement<br>
-                      • <strong>Hybride:</strong> Acompte en ligne + solde sur place
-                    </small>
                   </div>
                 </div>
               </div>
@@ -115,22 +77,6 @@
                            *ngIf="decisionForm.get('reason')?.touched && decisionForm.get('reason')?.invalid">
                       La justification est requise (minimum 10 caractères)
                     </small>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Affichage de la décision existante -->
-              <div class="row" *ngIf="prediction.paymentDecision">
-                <div class="col-md-12">
-                  <div class="alert alert-warning">
-                    <h6><i class="tim-icons icon-alert-circle-exc"></i> Décision existante</h6>
-                    <p class="mb-0">
-                      Mode: <strong>{{ getPaymentMethodLabel(prediction.paymentDecision.paymentMethod) }}</strong><br>
-                      Décidé par: <strong>{{ prediction.paymentDecision.decidedBy }}</strong><br>
-                      Date: <strong>{{ prediction.paymentDecision.decisionDate | date:'medium' }}</strong><br>
-                      Raison: {{ prediction.paymentDecision.reason }}<br>
-                      Approbation requise: <strong>{{ prediction.paymentDecision.requiresApproval ? 'Oui' : 'Non' }}</strong>
-                    </p>
                   </div>
                 </div>
               </div>

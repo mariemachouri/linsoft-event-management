@@ -94,7 +94,7 @@ export class AuthService {
     const logoutUrl =
       `http://localhost:8180/realms/event-mgmt/protocol/openid-connect/logout` +
       `?client_id=backoffice-client` +
-      `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4300/')}`;
+      `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4200/')}`;
     window.location.href = logoutUrl;
   }
 }

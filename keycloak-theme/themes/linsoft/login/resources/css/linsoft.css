@@ -1,0 +1,260 @@
+/* ── LinSoft Keycloak Login Theme ─────────────────────────────── */
+
+/* ── Background full-page ────────────────────────────────────── */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #0d1117 url('../img/linsoft-bg.jpg') center center / cover no-repeat fixed;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Overlay dégradé sombre avec teinte navy LinSoft */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 15, 30, 0.82) 0%,
+    rgba(26, 32, 53, 0.78) 50%,
+    rgba(204, 31, 36, 0.12) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Grille décorative en arrière-plan */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Layout container ─────────────────────────────────────────── */
+#kc-container-wrapper,
+.login-pf-page,
+.login-pf body {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header (titre realm) ─────────────────────────────────────── */
+#kc-header {
+  display: none;
+}
+
+/* Logo LinSoft synthétique au-dessus de la carte */
+#kc-container::before {
+  content: '';
+  display: block;
+  width: 160px;
+  height: 48px;
+  margin: 0 auto 1.5rem;
+  background: url('../img/linsoft-bg.jpg') no-repeat center;
+  background-size: contain;
+  opacity: 0.9;
+}
+
+/* ── Carte de connexion ───────────────────────────────────────── */
+.card-pf,
+#kc-form-wrapper {
+  position: relative !important;
+  z-index: 2 !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255,255,255,0.1) !important;
+  padding: 2.5rem 2rem !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Barre rouge en haut de la carte */
+.card-pf::before,
+#kc-form-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #cc1f24, #e53935);
+  border-radius: 16px 16px 0 0;
+}
+
+/* ── Titre "Sign in to your account" ─────────────────────────── */
+#kc-page-title,
+.login-pf .card-pf .card-pf-title,
+h1#kc-page-title {
+  color: #1a2035 !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  text-align: center;
+  margin-bottom: 1.75rem !important;
+  letter-spacing: -0.3px;
+}
+
+/* Ligne rouge sous le titre */
+#kc-page-title::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: #cc1f24;
+  border-radius: 2px;
+  margin: 0.5rem auto 0;
+}
+
+/* ── Labels ───────────────────────────────────────────────────── */
+.control-label,
+label {
+  color: #374151 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;
+}
+
+/* ── Champs de saisie ─────────────────────────────────────────── */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  border-radius: 10px !important;
+  border: 1.5px solid #e5e7eb !important;
+  padding: 0.65rem 1rem !important;
+  font-size: 0.9rem !important;
+  color: #111827 !important;
+  background: #f9fafb !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+  height: auto !important;
+}
+
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #cc1f24 !important;
+  box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.12) !important;
+  background: #ffffff !important;
+  outline: none !important;
+}
+
+/* ── Bouton Sign In ───────────────────────────────────────────── */
+#kc-login,
+.btn-primary,
+input[type="submit"] {
+  background: linear-gradient(135deg, #cc1f24, #e53935) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  padding: 0.75rem 1.5rem !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
+  box-shadow: 0 4px 16px rgba(204, 31, 36, 0.35) !important;
+  text-transform: none !important;
+}
+
+#kc-login:hover,
+.btn-primary:hover,
+input[type="submit"]:hover {
+  opacity: 0.92 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 22px rgba(204, 31, 36, 0.45) !important;
+}
+
+#kc-login:active,
+.btn-primary:active {
+  transform: translateY(0) !important;
+}
+
+/* ── Remember me / Forgot password ───────────────────────────── */
+#rememberMe {
+  accent-color: #cc1f24;
+}
+
+a,
+#kc-reset-flow-link,
+.kc-forgot-password a {
+  color: #cc1f24 !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #a01519 !important;
+  text-decoration: underline;
+}
+
+/* ── Séparateur "Or sign in with" ────────────────────────────── */
+#kc-social-providers h5,
+.login-pf-signup,
+.kc-social-section h5 {
+  color: #6b7280 !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  text-align: center;
+  margin: 1.25rem 0 !important;
+  position: relative;
+}
+
+#kc-social-providers h5::before,
+#kc-social-providers h5::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: #e5e7eb;
+}
+#kc-social-providers h5::before { left: 0; }
+#kc-social-providers h5::after  { right: 0; }
+
+/* ── Boutons sociaux ──────────────────────────────────────────── */
+.kc-social-item,
+.zocial,
+.kc-social-provider-logo {
+  border-radius: 10px !important;
+  border: 1.5px solid #e5e7eb !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  transition: border-color 0.2s ease, background 0.2s ease !important;
+  padding: 0.6rem 1rem !important;
+}
+
+.kc-social-item:hover,
+.zocial:hover {
+  border-color: #cc1f24 !important;
+  background: #fff5f5 !important;
+}
+
+/* ── Messages d'erreur ────────────────────────────────────────── */
+.alert-error,
+.pf-m-danger {
+  background: #fef2f2 !important;
+  border: 1.5px solid #fca5a5 !important;
+  border-radius: 10px !important;
+  color: #dc2626 !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* ── Pied de page ─────────────────────────────────────────────── */
+#kc-info,
+.login-pf-footer {
+  color: rgba(255,255,255,0.45) !important;
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: 1.5rem;
+}

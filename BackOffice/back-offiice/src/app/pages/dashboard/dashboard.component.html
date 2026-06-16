@@ -1,307 +1,279 @@
 <div class="content">
 
-  <!-- ================================================================ -->
-  <!-- GRAPHIQUE PRINCIPAL DE PERFORMANCE                                -->
-  <!-- ================================================================ -->
+  <!-- ── BARRE DE FILTRES ──────────────────────────────────── -->
+  <div class="dashboard-filters mb-4">
+    <div class="filter-left">
+      <h4 class="dashboard-title">Tableau de bord</h4>
+      <span class="dashboard-date">{{ today | date:'EEEE d MMMM yyyy':'':'fr' }}</span>
+    </div>
+    <div class="filter-right">
+      <div class="period-tabs">
+        <button class="period-btn" [class.active]="selectedPeriod === 'day'"   (click)="setPeriod('day')">Aujourd'hui</button>
+        <button class="period-btn" [class.active]="selectedPeriod === 'week'"  (click)="setPeriod('week')">7 jours</button>
+        <button class="period-btn" [class.active]="selectedPeriod === 'month'" (click)="setPeriod('month')">Ce mois</button>
+        <button class="period-btn" [class.active]="selectedPeriod === 'year'"  (click)="setPeriod('year')">Année</button>
+      </div>
+      <select class="category-filter" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="">Toutes catégories</option>
+        <option *ngFor="let cat of eventCategories" [value]="cat">{{ cat }}</option>
+      </select>
+      <button class="btn-refresh" (click)="loadDashboardData()" title="Actualiser">
+        <i class="tim-icons icon-refresh-01"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── KPI CARDS ─────────────────────────────────────────── -->
+  <div class="row kpi-row mb-4" *ngIf="!loading">
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-blue" style="animation-delay:0s">
+        <div class="kpi-icon"><i class="tim-icons icon-calendar-60"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Événements</span>
+          <span class="kpi-value">{{ getFilteredEvents().length }}</span>
+          <span class="kpi-trend" [class.up]="eventsGrowth >= 0" [class.down]="eventsGrowth < 0">
+            {{ eventsGrowth >= 0 ? '↑' : '↓' }} {{ eventsGrowth | number:'1.0-1' }}% vs période préc.
+          </span>
+        </div>
+        <div class="kpi-chart-mini"><canvas id="kpiEventsChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-pink" style="animation-delay:0.08s">
+        <div class="kpi-icon"><i class="tim-icons icon-notes"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Inscriptions</span>
+          <span class="kpi-value">{{ getFilteredRegistrations().length }}</span>
+          <span class="kpi-trend" [class.up]="registrationsGrowth >= 0" [class.down]="registrationsGrowth < 0">
+            {{ registrationsGrowth >= 0 ? '↑' : '↓' }} {{ registrationsGrowth | number:'1.0-1' }}% vs période préc.
+          </span>
+        </div>
+        <div class="kpi-chart-mini"><canvas id="kpiRegsChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-green" style="animation-delay:0.16s">
+        <div class="kpi-icon"><i class="tim-icons icon-single-02"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Utilisateurs</span>
+          <span class="kpi-value">{{ users?.length || 0 }}</span>
+          <span class="kpi-trend up">↑ Comptes actifs</span>
+        </div>
+        <div class="kpi-chart-mini"><canvas id="kpiUsersChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-orange" style="animation-delay:0.24s">
+        <div class="kpi-icon"><i class="tim-icons icon-check-2"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Taux de confirmation</span>
+          <span class="kpi-value">{{ getConfirmationRate() }}%</span>
+          <span class="kpi-trend" [class.up]="getConfirmationRate() >= 50" [class.down]="getConfirmationRate() < 50">
+            {{ confirmedRegistrations }} confirmées
+          </span>
+        </div>
+        <div class="kpi-chart-mini"><canvas id="kpiRateChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PERFORMANCE + CATÉGORIES ──────────────────────────── -->
   <div class="row">
-    <div class="col-12">
+    <div class="col-lg-8">
       <div class="card card-chart">
         <div class="card-header">
-          <div class="row">
-            <div class="col-sm-6 text-left">
-              <h5 class="card-category">Total Inscriptions</h5>
-              <h2 class="card-title">Performance</h2>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="card-category">Évolution dans le temps</h5>
+              <h3 class="card-title">Performance mensuelle</h3>
             </div>
-            <div class="col-sm-6">
-              <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
-                <label class="btn btn-sm btn-primary btn-simple"
-                       [class.active]="activeTab === 'accounts'"
-                       (click)="switchTab('accounts')">
-                  <input type="radio" name="opts" checked>
-                  <span class="d-none d-sm-block">Inscriptions</span>
-                  <span class="d-block d-sm-none"><i class="tim-icons icon-single-02"></i></span>
-                </label>
-                <label class="btn btn-sm btn-primary btn-simple"
-                       [class.active]="activeTab === 'purchases'"
-                       (click)="switchTab('purchases')">
-                  <input type="radio" class="d-none" name="opts">
-                  <span class="d-none d-sm-block">Événements</span>
-                  <span class="d-block d-sm-none"><i class="tim-icons icon-gift-2"></i></span>
-                </label>
-                <label class="btn btn-sm btn-primary btn-simple"
-                       [class.active]="activeTab === 'sessions'"
-                       (click)="switchTab('sessions')">
-                  <input type="radio" class="d-none" name="opts">
-                  <span class="d-none d-sm-block">Sessions</span>
-                  <span class="d-block d-sm-none"><i class="tim-icons icon-tap-02"></i></span>
-                </label>
-              </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-sm btn-primary btn-simple" [class.active]="activeTab === 'accounts'" (click)="switchTab('accounts')">
+                <span class="d-none d-sm-block">Inscriptions</span>
+              </label>
+              <label class="btn btn-sm btn-primary btn-simple" [class.active]="activeTab === 'purchases'" (click)="switchTab('purchases')">
+                <span class="d-none d-sm-block">Événements</span>
+              </label>
+              <label class="btn btn-sm btn-primary btn-simple" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
+                <span class="d-none d-sm-block">Activité globale</span>
+              </label>
             </div>
           </div>
         </div>
         <div class="card-body">
-          <div class="chart-area">
-            <canvas id="performanceChart" height="400"></canvas>
+          <div class="chart-area" style="height:280px"><canvas id="performanceChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-category">Répartition</h5>
+          <h3 class="card-title">Par catégorie</h3>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height:220px"><canvas id="categoryChart"></canvas></div>
+          <div class="category-legend mt-2">
+            <div class="cat-item" *ngFor="let cat of categoryStats; let i = index">
+              <span class="cat-dot" [style.background]="catColors[i % catColors.length]"></span>
+              <span class="cat-name">{{ cat.name }}</span>
+              <span class="cat-count">{{ cat.count }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ================================================================ -->
-  <!-- KPI MINI-CARTES                                                   -->
-  <!-- ================================================================ -->
+  <!-- ── STATUTS + ACTIVITÉ RÉCENTE ────────────────────────── -->
   <div class="row">
     <div class="col-lg-4">
       <div class="card card-chart">
         <div class="card-header">
-          <h5 class="card-category">Total Inscriptions</h5>
-          <h3 class="card-title">
-            <i class="tim-icons icon-bell-55 text-primary"></i>
-            {{ formatNumber(totalShipments) }}
-          </h3>
+          <h5 class="card-category">Suivi des statuts</h5>
+          <h3 class="card-title">Inscriptions</h3>
         </div>
-        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="shipmentsChart"></canvas></div></div>
+        <div class="card-body">
+          <div class="chart-area" style="height:200px"><canvas id="statusChart"></canvas></div>
+          <div class="status-stats mt-3">
+            <div class="stat-row">
+              <span class="stat-dot" style="background:#00f2c3"></span>
+              <span class="stat-label">Confirmées</span>
+              <span class="stat-val">{{ confirmedRegistrations }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-dot" style="background:#ffc864"></span>
+              <span class="stat-label">En attente</span>
+              <span class="stat-val">{{ pendingRegistrations }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-dot" style="background:#fd5d93"></span>
+              <span class="stat-label">Annulées</span>
+              <span class="stat-val">{{ cancelledRegistrations }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-lg-4">
-      <div class="card card-chart">
-        <div class="card-header">
-          <h5 class="card-category">Revenus du jour</h5>
-          <h3 class="card-title">
-            <i class="tim-icons icon-delivery-fast text-info"></i>
-            {{ dailySales }}€
-          </h3>
-        </div>
-        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="salesChart"></canvas></div></div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-chart">
-        <div class="card-header">
-          <h5 class="card-category">Événements complétés</h5>
-          <h3 class="card-title">
-            <i class="tim-icons icon-send text-success"></i>
-            {{ formatNumber(completedTasks) }}
-          </h3>
-        </div>
-        <div class="card-body"><div class="chart-area" style="height:120px"><canvas id="tasksChart"></canvas></div></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Chargement / erreur -->
-  <div *ngIf="loading" class="row">
-    <div class="col-12">
-      <div class="alert alert-info">
-        <i class="tim-icons icon-refresh-01"></i> Chargement des données…
-      </div>
-    </div>
-  </div>
-  <div *ngIf="error" class="row">
-    <div class="col-12">
-      <div class="alert alert-warning">
-        <i class="tim-icons icon-alert-circle-exc"></i> {{ error }}
-      </div>
-    </div>
-  </div>
-
-  <!-- ================================================================ -->
-  <!-- SOURCES DE DONNÉES                                                -->
-  <!-- ================================================================ -->
-  <div class="row" *ngIf="!loading">
-    <div class="col-12">
+    <div class="col-lg-8">
       <div class="card">
-        <div class="card-header"><h4 class="card-title">📊 Sources de données</h4></div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-3">
-              <div class="stats-box">
-                <i class="tim-icons icon-calendar-60 text-primary"></i>
-                <h5>Événements</h5><h3>{{ events?.length || 0 }}</h3>
-                <small>Total événements</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stats-box">
-                <i class="tim-icons icon-single-02 text-info"></i>
-                <h5>Utilisateurs</h5><h3>{{ users?.length || 0 }}</h3>
-                <small>Comptes actifs</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stats-box">
-                <i class="tim-icons icon-notes text-success"></i>
-                <h5>Inscriptions</h5><h3>{{ registrations?.length || 0 }}</h3>
-                <small>Total inscriptions</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stats-box">
-                <i class="tim-icons icon-chart-bar-32 text-warning"></i>
-                <h5>Complétés</h5><h3>{{ completedTasks }}</h3>
-                <small>Événements passés</small>
-              </div>
-            </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-category">Dernières actions</h5>
+            <h3 class="card-title" style="font-size:1.2rem;margin:0;">Activité récente</h3>
+          </div>
+          <span class="badge badge-primary px-3 py-2" style="border-radius:20px;font-size:11px;">{{ recentActivity.length }} entrées</span>
+        </div>
+        <div class="card-body p-0">
+          <div class="activity-table-wrapper">
+            <table class="table activity-table mb-0">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of recentActivity">
+                  <td>
+                    <span class="activity-type-badge" [class]="item.type === 'inscription' ? 'badge-type-reg' : 'badge-type-evt'">
+                      {{ item.type === 'inscription' ? 'Inscription' : 'Événement' }}
+                    </span>
+                  </td>
+                  <td class="activity-desc">{{ item.description }}</td>
+                  <td class="activity-date">{{ item.date | date:'dd/MM/yy HH:mm' }}</td>
+                  <td><span class="status-pill" [class]="'status-' + item.status">{{ item.statusLabel }}</span></td>
+                </tr>
+                <tr *ngIf="recentActivity.length === 0">
+                  <td colspan="4" class="text-center text-muted py-3">Aucune activité récente</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ================================================================ -->
-  <!-- 🤖 PRÉVISION IA — HOLT-WINTERS / POLYNOMIALE                    -->
-  <!-- ================================================================ -->
-  <div class="row" *ngIf="forecastResult">
-    <div class="col-12">
+  <!-- ── SÉPARATEUR SECTION IA ─────────────────────────────── -->
+  <div class="section-divider" *ngIf="forecastResult || healthScore || anomalies.length || clusterResult || correlationMatrix || aiRecommendations.length">
+    <div class="divider-line"></div>
+    <span class="divider-label">🤖 Analyse intelligente</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ── PRÉVISIONS + SANTÉ ─────────────────────────────────── -->
+  <div class="row" *ngIf="forecastResult || healthScore">
+
+    <div class="col-lg-7" *ngIf="forecastResult">
       <div class="card card-ai-forecast">
         <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col-sm-8 text-left">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
               <h4 class="card-title">
-                🤖 Prévision IA — <span class="model-badge">{{ forecastResult.model | uppercase }}</span>
+                <span class="ai-emoji-float">🔮</span> Prévisions des inscriptions
+                <span class="ai-live">En direct</span>
               </h4>
-              <p class="card-category">Prédiction des 3 prochains mois avec intervalles de confiance à 95%</p>
+              <p class="card-category">Projection des 3 prochains mois</p>
             </div>
-            <div class="col-sm-4 text-right">
-              <div class="accuracy-badges">
-                <span class="acc-badge" [class.acc-good]="forecastResult.mape < 15" [class.acc-fair]="forecastResult.mape >= 15 && forecastResult.mape < 30" [class.acc-poor]="forecastResult.mape >= 30">
-                  MAPE: {{ forecastResult.mape }}%
-                </span>
-                <span class="acc-badge acc-rmse">RMSE: {{ forecastResult.rmse }}</span>
-                <span class="acc-badge acc-conf">Confiance: {{ (forecastResult.confidence * 100).toFixed(0) }}%</span>
-              </div>
+            <div class="accuracy-badges">
+              <span class="acc-badge"
+                [class.acc-good]="forecastResult.mape < 15"
+                [class.acc-fair]="forecastResult.mape >= 15 && forecastResult.mape < 40"
+                [class.acc-poor]="forecastResult.mape >= 40">
+                {{
+                  forecastResult.mape < 15 ? '✓ Très précis' :
+                  forecastResult.mape < 40 ? '~ Précision correcte' :
+                  '⚡ En apprentissage'
+                }}
+              </span>
+              <span class="acc-badge acc-conf">Fiabilité {{ (forecastResult.confidence * 100).toFixed(0) }}%</span>
             </div>
           </div>
         </div>
         <div class="card-body">
           <div class="forecast-values mb-3">
             <div class="forecast-pill" *ngFor="let f of forecastResult.forecast; let i = index">
-              <span class="pill-label">M+{{ i + 1 }}</span>
+              <span class="pill-label">{{ i === 0 ? 'Mois prochain' : 'Dans ' + (i + 1) + ' mois' }}</span>
               <span class="pill-value">{{ f }}</span>
               <span class="pill-range">{{ forecastResult.lowerBound[i] }} – {{ forecastResult.upperBound[i] }}</span>
             </div>
           </div>
-          <div class="chart-area" style="height:260px">
-            <canvas id="forecastChart"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================================================================ -->
-  <!-- 🔍 ANOMALIES   |   🎯 CLUSTERS K-MEANS                          -->
-  <!-- ================================================================ -->
-  <div class="row" *ngIf="anomalies.length || clusterResult">
-    <!-- Anomaly Chart -->
-    <div class="col-lg-8">
-      <div class="card card-ai-section">
-        <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col-8">
-              <h4 class="card-title">
-                🔍 Détection d'Anomalies
-                <span class="anomaly-count" *ngIf="anomalyCount > 0">{{ anomalyCount }} détectée(s)</span>
-                <span class="no-anomaly" *ngIf="anomalyCount === 0">✅ Aucune anomalie</span>
-              </h4>
-              <p class="card-category">Méthode combinée IQR + Z-Score (seuil 2.5σ)</p>
-            </div>
-            <div class="col-4 text-right">
-              <div class="anomaly-legend">
-                <span class="legend-dot" style="background:#1d8cf8"></span> Normal
-                <span class="legend-dot" style="background:#ffc864; margin-left:8px"></span> Faible
-                <span class="legend-dot" style="background:#ff8d72; margin-left:8px"></span> Moyen
-                <span class="legend-dot" style="background:#fd5d93; margin-left:8px"></span> Élevé
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-area" style="height:200px">
-            <canvas id="anomalyChart"></canvas>
-          </div>
-          <!-- Liste des anomalies détectées -->
-          <div class="anomaly-list mt-3" *ngIf="anomalyCount > 0">
-            <ng-container *ngFor="let a of anomalies">
-              <div class="anomaly-item"
-                   *ngIf="a.isAnomaly"
-                   [class.anomaly-high]="a.severity === 'high'"
-                   [class.anomaly-med]="a.severity === 'medium'"
-                   [class.anomaly-low]="a.severity === 'low'">
-                <span class="anomaly-month">{{ MONTHS[a.index] }}</span>
-                <span class="anomaly-val">{{ a.value }}</span>
-                <span class="anomaly-dir">{{ a.direction === 'spike' ? '▲ Pic' : '▼ Creux' }}</span>
-                <span class="anomaly-z">z={{ a.zScore }}</span>
-                <span class="anomaly-sev">{{ a.severity | uppercase }}</span>
-              </div>
-            </ng-container>
-          </div>
+          <div class="chart-area" style="height:200px"><canvas id="forecastChart"></canvas></div>
         </div>
       </div>
     </div>
 
-    <!-- Cluster Chart -->
-    <div class="col-lg-4" *ngIf="clusterResult">
-      <div class="card card-ai-section">
-        <div class="card-header">
-          <h4 class="card-title">🎯 Clustering K-Means</h4>
-          <p class="card-category">Segmentation des performances mensuelles (k=3)</p>
-        </div>
-        <div class="card-body">
-          <div class="chart-area" style="height:200px">
-            <canvas id="clusterChart"></canvas>
-          </div>
-          <div class="cluster-details mt-3">
-            <div class="cluster-row" *ngFor="let c of clusterResult?.clusters">
-              <div class="cluster-dot" [style.background]="c.color"></div>
-              <div class="cluster-info">
-                <span class="cluster-label">
-                  {{ c.label === 'high-performance' ? 'Haute performance' :
-                     c.label === 'medium-performance' ? 'Performance moyenne' : 'Basse performance' }}
-                </span>
-                <div class="cluster-bar">
-                  <div class="cluster-fill" [style.width.%]="c.percentage" [style.background]="c.color"></div>
-                </div>
-                <span class="cluster-pct">{{ c.size }} mois • centroïde {{ c.centroid }}</span>
-              </div>
-            </div>
-            <p class="silhouette-score mt-2">
-              Score Silhouette: <strong>{{ clusterResult?.silhouetteScore }}</strong>
-              <span class="sil-hint">{{ clusterResult?.silhouetteScore >= 0.5 ? '✅ Bonne séparation' : '⚠ Clusters proches' }}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================================================================ -->
-  <!-- 💡 HEALTH SCORE   |   🔗 MATRICE DE CORRÉLATION                 -->
-  <!-- ================================================================ -->
-  <div class="row" *ngIf="healthScore || correlationMatrix">
-
-    <!-- Health Score 5 dimensions -->
     <div class="col-lg-5" *ngIf="healthScore">
       <div class="card card-ai-insights">
         <div class="card-header">
           <h4 class="card-title">
-            <i class="tim-icons icon-atom"></i> Score de Santé IA
+            <i class="tim-icons icon-atom ai-icon-spin"></i> Santé de la plateforme
             <span class="trend-badge" [class]="getTrendClass()">
-              {{ getTrendIcon() }} {{ healthScore.trend === 'improving' ? 'Progression' : healthScore.trend === 'declining' ? 'En baisse' : 'Stable' }}
+              {{ getTrendIcon() }}
+              {{ healthScore.trend === 'improving' ? 'En progression' : healthScore.trend === 'declining' ? 'En baisse' : 'Stable' }}
             </span>
           </h4>
         </div>
         <div class="card-body">
           <div class="health-score-container">
-            <!-- Cercle score global -->
-            <div class="score-circle" [ngClass]="getHealthScoreClass()">
-              <i class="tim-icons" [ngClass]="getHealthScoreIcon()"></i>
-              <h2>{{ healthScore.score }}/100</h2>
-              <p class="status-text">{{ healthScore.status | uppercase }}</p>
+            <div class="score-circle-wrapper">
+              <div class="orbit-ring orbit-ring-1"></div>
+              <div class="orbit-ring orbit-ring-2"></div>
+              <div class="score-circle" [ngClass]="getHealthScoreClass()">
+                <i class="tim-icons" [ngClass]="getHealthScoreIcon()"></i>
+                <h2>{{ healthScore.score }}/100</h2>
+                <p class="status-text">
+                  {{ healthScore.status === 'excellent' ? 'Excellent' :
+                     healthScore.status === 'good'      ? 'Bien' :
+                     healthScore.status === 'fair'      ? 'Moyen' : 'Faible' }}
+                </p>
+              </div>
             </div>
-
-            <!-- 5 dimensions -->
             <div class="dimensions mt-3">
               <div class="dim-row">
                 <span class="dim-label">Engagement</span>
@@ -329,91 +301,157 @@
                 <span class="dim-val">{{ healthScore.dimensions.efficiency }}/10</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <!-- Recommandations -->
-            <div class="score-details mt-3">
-              <h5>Recommandations IA :</h5>
-              <ul class="recommendation-list">
-                <li *ngFor="let rec of healthScore.recommendations">{{ rec }}</li>
-              </ul>
+  <!-- ── DONNÉES INHABITUELLES + TENDANCES ─────────────────── -->
+  <div class="row" *ngIf="anomalies.length || clusterResult">
+
+    <div class="col-lg-8">
+      <div class="card card-ai-section">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="card-title"><span class="ai-emoji-radar">🔍</span> Détection des anomalies
+                <span class="anomaly-count" *ngIf="anomalyCount > 0">{{ anomalyCount }} détectée(s)</span>
+                <span class="no-anomaly" *ngIf="anomalyCount === 0">✅ Tout est normal</span>
+              </h4>
+              <p class="card-category">Surveillance automatique des valeurs inhabituelles</p>
+            </div>
+            <div class="anomaly-legend">
+              <span class="legend-dot" style="background:#1d8cf8"></span> Normal
+              <span class="legend-dot" style="background:#ffc864;margin-left:8px"></span> Légère
+              <span class="legend-dot" style="background:#ff8d72;margin-left:8px"></span> Modérée
+              <span class="legend-dot" style="background:#fd5d93;margin-left:8px"></span> Forte
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-area chart-area-ai" style="height:180px">
+            <canvas id="anomalyChart"></canvas>
+            <div class="chart-scanner"></div>
+          </div>
+          <div class="anomaly-list mt-3" *ngIf="anomalyCount > 0">
+            <ng-container *ngFor="let a of anomalies">
+              <div class="anomaly-item" *ngIf="a.isAnomaly"
+                   [class.anomaly-high]="a.severity === 'high'"
+                   [class.anomaly-med]="a.severity === 'medium'"
+                   [class.anomaly-low]="a.severity === 'low'">
+                <span class="anomaly-month">{{ MONTHS[a.index] }}</span>
+                <span class="anomaly-val">{{ a.value }}</span>
+                <span class="anomaly-dir">{{ a.direction === 'spike' ? '↑ Pic' : '↓ Creux' }}</span>
+                <span class="anomaly-sev">{{ a.severity === 'high' ? 'Forte' : a.severity === 'medium' ? 'Modérée' : 'Légère' }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4" *ngIf="clusterResult">
+      <div class="card card-ai-section">
+        <div class="card-header">
+          <h4 class="card-title">📊 Analyse des tendances <span class="ai-live">IA</span></h4>
+          <p class="card-category">Regroupement intelligent des mois</p>
+        </div>
+        <div class="card-body">
+          <div class="chart-area" style="height:180px"><canvas id="clusterChart"></canvas></div>
+          <div class="cluster-details mt-3">
+            <div class="cluster-row" *ngFor="let c of clusterResult?.clusters">
+              <div class="cluster-dot" [style.background]="c.color"></div>
+              <div class="cluster-info">
+                <span class="cluster-label">
+                  {{ c.label === 'high-performance' ? 'Mois performants' :
+                     c.label === 'medium-performance' ? 'Mois moyens' : 'Mois en retrait' }}
+                </span>
+                <div class="cluster-bar"><div class="cluster-fill" [style.width.%]="c.percentage" [style.background]="c.color"></div></div>
+                <span class="cluster-pct">{{ c.size }} mois · moy. {{ c.centroid }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RELATIONS + RECOMMANDATIONS IA ────────────────────── -->
+  <div class="row" *ngIf="correlationMatrix || aiRecommendations.length">
+
+    <div class="col-lg-5" *ngIf="correlationMatrix">
+      <div class="card card-ai-section">
+        <div class="card-header">
+          <h4 class="card-title">🔗 Liens entre indicateurs <span class="ai-live">IA</span></h4>
+          <p class="card-category">Relations statistiques entre vos données</p>
+        </div>
+        <div class="card-body">
+          <table class="corr-table">
+            <thead>
+              <tr><th></th><th *ngFor="let l of correlationMatrix.labels">{{ l }}</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of correlationMatrix.matrix; let i = index">
+                <td class="corr-label">{{ correlationMatrix.labels[i] }}</td>
+                <td *ngFor="let val of row" class="corr-cell"
+                    [style.background]="getCorrelationColor(val)"
+                    [title]="'Corrélation : ' + val">
+                  {{ val === 1 ? '—' : val }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="strong-correlations mt-3" *ngIf="correlationMatrix.strongCorrelations.length > 0">
+            <h6>Relations importantes :</h6>
+            <div class="corr-pill" *ngFor="let sc of correlationMatrix.strongCorrelations"
+                 [class.positive]="sc.type === 'positive'"
+                 [class.negative]="sc.type === 'negative'">
+              {{ sc.a }} ↔ {{ sc.b }} : <strong>{{ sc.value }}</strong>
+              <span>{{ sc.type === 'positive' ? '↑ Lien positif' : '↓ Lien inverse' }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Corrélation + Smart Insights -->
-    <div class="col-lg-7">
-
-      <!-- Matrice de corrélation -->
-      <div class="card card-ai-section" *ngIf="correlationMatrix">
+    <div class="col-lg-7" *ngIf="aiRecommendations.length">
+      <div class="card card-ai-insights">
         <div class="card-header">
-          <h4 class="card-title">🔗 Matrice de Corrélation de Pearson</h4>
-          <p class="card-category">Relations statistiques entre les métriques</p>
-        </div>
-        <div class="card-body">
-          <table class="corr-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th *ngFor="let l of correlationMatrix.labels">{{ l }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of correlationMatrix.matrix; let i = index">
-                <td class="corr-label">{{ correlationMatrix.labels[i] }}</td>
-                <td *ngFor="let val of row"
-                    class="corr-cell"
-                    [style.background]="getCorrelationColor(val)"
-                    [title]="'r = ' + val">
-                  {{ val === 1 ? '—' : val }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="strong-correlations mt-3" *ngIf="correlationMatrix.strongCorrelations.length > 0">
-            <h6>Corrélations significatives (|r| ≥ 0.5) :</h6>
-            <div class="corr-pill" *ngFor="let sc of correlationMatrix.strongCorrelations"
-                 [class.positive]="sc.type === 'positive'"
-                 [class.negative]="sc.type === 'negative'">
-              {{ sc.a }} ↔ {{ sc.b }} : <strong>{{ sc.value }}</strong>
-              <span>{{ sc.type === 'positive' ? '📈 Corrélation positive' : '📉 Corrélation inverse' }}</span>
-            </div>
-          </div>
-          <p class="no-corr mt-2" *ngIf="correlationMatrix.strongCorrelations.length === 0">
-            Aucune corrélation forte détectée (|r| &lt; 0.5)
-          </p>
-        </div>
-      </div>
-
-      <!-- Smart Insights -->
-      <div class="card card-ai-insights mt-0">
-        <div class="card-header">
-          <h4 class="card-title">
-            <i class="tim-icons icon-chart-pie-36"></i> Smart Insights
-          </h4>
+          <h4 class="card-title"><i class="tim-icons icon-chart-pie-36 ai-icon-pulse"></i> Recommandations IA <span class="ai-live">En direct</span></h4>
         </div>
         <div class="card-body">
           <div class="insights-container">
-            <h5>Analyse Prédictive :</h5>
-            <div class="insight-item" *ngFor="let rec of aiRecommendations">
+            <div class="insight-item" *ngFor="let rec of aiRecommendations; let i = index" [style.animation-delay]="(i * 0.07) + 's'">
               <div class="insight-icon"><i class="tim-icons icon-bulb-63"></i></div>
               <div class="insight-text">{{ rec }}</div>
             </div>
-
             <div class="mt-3" *ngIf="predictions?.length > 0">
-              <h5>Prévisions — 3 prochains mois :</h5>
+              <h5>Estimations pour les 3 prochains mois :</h5>
               <div class="predictions-box">
                 <span class="badge badge-primary" *ngFor="let p of predictions; let i = index">
-                  M+{{ i + 1 }}: {{ p }}
+                  {{ i === 0 ? 'Mois prochain' : 'Dans ' + (i + 1) + ' mois' }} : {{ p }}
                 </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- ── LOADING / ERREUR ───────────────────────────────────── -->
+  <div *ngIf="loading" class="row">
+    <div class="col-12">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Chargement des données…</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="error" class="row">
+    <div class="col-12">
+      <div class="alert alert-warning"><i class="tim-icons icon-alert-circle-exc"></i> {{ error }}</div>
     </div>
   </div>
 

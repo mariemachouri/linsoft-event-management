@@ -1,79 +1,163 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Github, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react';
 import './Footer.css';
+
+const OFFICES = [
+  {
+    flag: '/flags/tn.svg',
+    country: 'Tunisie',
+    address: '05 Rue Omar Khayem, Immeuble ZAHRA, Zone d\'activité La Goulette-Lac 3 Tunis, 2060',
+    mapsUrl: 'https://maps.google.com/?q=La+Goulette+Tunis',
+    phone: '+216 31 332 200',
+  },
+  {
+    flag: '/flags/ma.svg',
+    country: 'Maroc',
+    address: '1er étage, Florida, Centre Park, Bureau N°15, 2 Bd Zoulikha Nasri, Casablanca, Maroc',
+    mapsUrl: 'https://maps.google.com/?q=Casablanca+Maroc',
+    phone: '+212 52 25 84 021',
+  },
+  {
+    flag: '/flags/dz.svg',
+    country: 'Algérie',
+    address: 'Business Center, Techno Parc Sidi Abdellah, Alger, Algérie',
+    mapsUrl: 'https://maps.google.com/?q=Techno+Parc+Sidi+Abdellah+Alger',
+    phone: '+213 (0) 661 50 59 50',
+  },
+  {
+    flag: '/flags/ly.svg',
+    country: 'Libye',
+    address: '02, rue Hawata, HI Andalus, Tripoli, Libye',
+    mapsUrl: 'https://maps.google.com/?q=Tripoli+Libye',
+    phone: '+218 94 347 6060',
+  },
+];
+
+const QUICK_LINKS_COL1 = [
+  { label: 'Accueil',    to: '/' },
+  { label: 'Ressources', to: '/events' },
+  { label: 'Carrières',  to: '#' },
+];
+
+const QUICK_LINKS_COL2 = [
+  { label: 'À propos',    to: '#' },
+  { label: 'Événements',  to: '/events' },
+  { label: 'Contact',     to: '#' },
+];
+
+const SOCIALS = [
+  { icon: Linkedin,  label: 'LinkedIn',  href: 'https://www.linkedin.com/company/linsoft' },
+  { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/linsoft' },
+  { icon: Facebook,  label: 'Facebook',  href: 'https://www.facebook.com/linsoft' },
+  { icon: Youtube,   label: 'YouTube',   href: 'https://www.youtube.com/@linsoft' },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="footer">
-      <div className="footer__inner">
-        {/* Brand */}
-        <div className="footer__brand">
-          <Link to="/" className="footer__logo">
-            <div className="footer__logo-icon">
-              <Calendar size={18} strokeWidth={2.5} />
+
+      {/* ── Top Row : Logo · Links · Socials ── */}
+      <div className="footer__top">
+        <div className="footer__top-inner">
+
+          {/* Logo */}
+          <div className="footer__brand">
+            <Link to="/">
+              <img src="/linsoft-white.webp" alt="LinSoft" className="footer__logo-img" />
+            </Link>
+          </div>
+
+          {/* Liens rapides */}
+          <div className="footer__links-block">
+            <h4 className="footer__block-title">Liens Rapides</h4>
+            <div className="footer__links-cols">
+              <ul className="footer__links-list">
+                {QUICK_LINKS_COL1.map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to}>{l.label}</Link>
+                  </li>
+                ))}
+              </ul>
+              <ul className="footer__links-list">
+                {QUICK_LINKS_COL2.map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to}>{l.label}</Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="footer__logo-text">
-              <span>Event<span className="footer__logo-accent">Management</span></span>
-              <small className="footer__logo-by">by LinSoft</small>
+          </div>
+
+          {/* Suivez-nous */}
+          <div className="footer__social-block">
+            <h4 className="footer__block-title">Suivez-nous</h4>
+            <div className="footer__social-row">
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="footer__social-btn"
+                  aria-label={label}
+                >
+                  <Icon size={17} strokeWidth={1.8} />
+                </a>
+              ))}
             </div>
-          </Link>
-          <p className="footer__tagline">
-            Découvrez, rejoignez et progressez avec les événements professionnels LinSoft — ateliers, conférences, webinaires et plus.
-          </p>
-          <div className="footer__socials">
-            <a href="#" className="footer__social-btn" aria-label="LinkedIn">
-              <Linkedin size={16} />
-            </a>
-            <a href="#" className="footer__social-btn" aria-label="GitHub">
-              <Github size={16} />
-            </a>
-            <a href="mailto:contact@linsoft.com" className="footer__social-btn" aria-label="Email">
-              <Mail size={16} />
-            </a>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Divider ── */}
+      <div className="footer__divider" />
+
+      {/* ── Offices ── */}
+      <div className="footer__offices">
+        <div className="footer__offices-inner">
+          <h3 className="footer__offices-title">Nos Bureaux</h3>
+          <div className="footer__offices-grid">
+            {OFFICES.map((o) => (
+              <div key={o.country} className="office-card">
+                <div className="office-card__header">
+                  <img src={o.flag} alt={o.country} className="office-card__flag" />
+                  <span className="office-card__country">{o.country}</span>
+                </div>
+                <p className="office-card__address">{o.address}</p>
+                <a
+                  href={o.mapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="office-card__map-link"
+                >
+                  <MapPin size={13} />
+                  Voir sur la carte
+                </a>
+                <div className="office-card__contact">
+                  <span className="office-card__contact-item">
+                    <Phone size={13} />
+                    {o.phone}
+                  </span>
+                  <span className="office-card__contact-item">
+                    <Mail size={13} />
+                    contact@linsoft.com
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Navigation */}
-        <div className="footer__section">
-          <h4 className="footer__section-title">Navigation</h4>
-          <ul className="footer__links">
-            <li><Link to="/">Accueil</Link></li>
-            <li><Link to="/events">Événements</Link></li>
-            <li><Link to="/dashboard">Mes inscriptions</Link></li>
-            <li><Link to="/profile">Mon profil</Link></li>
-          </ul>
-        </div>
-
-        {/* Contact */}
-        <div className="footer__section">
-          <h4 className="footer__section-title">Contact</h4>
-          <ul className="footer__contact-list">
-            <li>
-              <MapPin size={14} />
-              <span>Algiers, Algeria</span>
-            </li>
-            <li>
-              <Phone size={14} />
-              <span>+213 (0) 23 456 789</span>
-            </li>
-            <li>
-              <Mail size={14} />
-              <span>contact@linsoft.com</span>
-            </li>
-          </ul>
-        </div>
       </div>
 
-      {/* Bottom Bar */}
+      {/* ── Bottom bar ── */}
+      <div className="footer__divider" />
       <div className="footer__bottom">
-        <span>© {year} Event Management — Powered by</span>
-        <a href="https://www.linsoft.com" target="_blank" rel="noreferrer" className="footer__linsoft-link">
-          LinSoft
-        </a>
-        <span>· Tous droits réservés</span>
+        <span>© {year} LinSoft — Tous droits réservés</span>
       </div>
+
     </footer>
   );
 }

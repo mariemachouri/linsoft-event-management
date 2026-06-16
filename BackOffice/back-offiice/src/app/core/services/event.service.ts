@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export type EventCategory = 'CONFERENCE' | 'WORKSHOP' | 'MEETUP' | 'SEMINAR';
@@ -14,8 +15,8 @@ export interface Event {
   location?: string;
   startDate?: string;
   endDate?: string;
-  startAt?: string;   // backend alias for startDate
-  endAt?: string;     // backend alias for endDate
+  startAt?: string;
+  endAt?: string;
   maxParticipants?: number;
   currentParticipants?: number;
   registrationsCount?: number;
@@ -32,54 +33,52 @@ export interface Event {
   updatedAt?: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class EventService {
 
-  private eventsApiUrl = environment.services.events;
+  private readonly apiUrl = environment.services.events;
+  private readonly TTL = 60_000; // 60 secondes
 
-  constructor(private http: HttpClient) { }
+  private cache$: Observable<Event[]> | null = null;
+  private cacheAt = 0;
 
-  /**
-   * Récupérer tous les événements
-   */
+  constructor(private http: HttpClient) {}
+
   getAllEvents(): Observable<Event[]> {
-    return this.http.get<Event[]>(this.eventsApiUrl);
+    if (!this.cache$ || Date.now() - this.cacheAt > this.TTL) {
+      this.cache$ = this.http.get<Event[]>(this.apiUrl).pipe(shareReplay(1));
+      this.cacheAt = Date.now();
+    }
+    return this.cache$;
   }
 
-  /**
-   * Récupérer un événement par ID
-   */
+  invalidateCache(): void {
+    this.cache$ = null;
+  }
+
   getEventById(id: string): Observable<Event> {
-    return this.http.get<Event>(`${this.eventsApiUrl}/${id}`);
+    return this.http.get<Event>(`${this.apiUrl}/${id}`);
   }
 
-  /**
-   * Créer un nouvel événement
-   */
   createEvent(event: Event): Observable<Event> {
-    return this.http.post<Event>(this.eventsApiUrl, event);
+    return this.http.post<Event>(this.apiUrl, event).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
-  /**
-   * Mettre à jour un événement
-   */
   updateEvent(id: string, event: Event): Observable<Event> {
-    return this.http.put<Event>(`${this.eventsApiUrl}/${id}`, event);
+    return this.http.put<Event>(`${this.apiUrl}/${id}`, event).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
-  /**
-   * Supprimer un événement
-   */
   deleteEvent(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.eventsApiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.invalidateCache())
+    );
   }
 
-  /**
-   * Récupérer le nombre d'événements
-   */
   getEventCount(): Observable<number> {
-    return this.http.get<number>(`${this.eventsApiUrl}/count`);
+    return this.http.get<number>(`${this.apiUrl}/count`);
   }
 }

@@ -5,12 +5,12 @@
         <div class="card-header">
           <div class="row">
             <div class="col-8">
-              <h4 class="card-title">Charge Management (AI Predictions)</h4>
+              <h4 class="card-title">Gestion des charges (Prédictions IA)</h4>
             </div>
             <div class="col-4 text-right">
               <button class="btn btn-primary btn-sm" (click)="createPrediction()">
                 <i class="tim-icons icon-simple-add"></i>
-                New Prediction
+                Nouvelle prédiction
               </button>
             </div>
           </div>
@@ -19,7 +19,7 @@
           <!-- Chargement -->
           <div *ngIf="loading" class="text-center">
             <span class="spinner-border spinner-border-lg"></span>
-            <p>Loading predictions...</p>
+            <p>Chargement des prédictions...</p>
           </div>
 
           <!-- Message d'erreur -->
@@ -30,7 +30,7 @@
           <!-- Liste vide -->
           <div *ngIf="!loading && predictions.length === 0" class="alert alert-info">
             <i class="tim-icons icon-alert-circle-exc"></i>
-            No charge predictions found. Create a new one to get started.
+            Aucune prédiction trouvée. Créez-en une pour commencer.
           </div>
 
           <!-- Search & Filter Bar -->
@@ -38,17 +38,17 @@
             <div class="search-input-wrapper">
               <i class="tim-icons icon-zoom-split"></i>
               <input type="text" class="form-control search-input"
-                placeholder="Search by event ID, organizer..."
+                placeholder="Rechercher par ID événement, organisateur..."
                 [(ngModel)]="searchQuery" />
             </div>
             <select class="form-control filter-select" [(ngModel)]="filterStatus">
-              <option value="">All statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="APPROVED">Approved</option>
-              <option value="PAID">Paid</option>
-              <option value="REJECTED">Rejected</option>
+              <option value="">Tous les statuts</option>
+              <option value="PENDING">En attente</option>
+              <option value="APPROVED">Approuvé</option>
+              <option value="PAID">Payé</option>
+              <option value="REJECTED">Rejeté</option>
             </select>
-            <span class="results-count">{{ filteredPredictions.length }} result(s)</span>
+            <span class="results-count">{{ filteredPredictions.length }} résultat(s)</span>
           </div>
 
           <!-- Table des prédictions -->
@@ -56,23 +56,23 @@
             <table class="table tablesorter">
               <thead class="text-primary">
                 <tr>
-                  <th>Event ID</th>
-                  <th>Organizer</th>
-                  <th>Predicted Cost</th>
-                  <th>AI Confidence</th>
-                  <th>AI Model</th>
-                  <th>Status</th>
-                  <th>Payment Method</th>
-                  <th>Approval</th>
-                  <th>Date</th>
-                  <th class="text-right">Actions</th>
+                  <th style="color:#fff !important;">Événement</th>
+                  <th style="color:#fff !important;">Organisateur</th>
+                  <th style="color:#fff !important;">Coût prédit</th>
+                  <th style="color:#fff !important;">Confiance IA</th>
+                  <th style="color:#fff !important;">Modèle IA</th>
+                  <th style="color:#fff !important;">Statut</th>
+                  <th style="color:#fff !important;">Mode de paiement</th>
+                  <th style="color:#fff !important;">Approbation</th>
+                  <th style="color:#fff !important;">Date</th>
+                  <th class="text-right" style="color:#fff !important;">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let prediction of filteredPredictions">
-                  <!-- ID Événement -->
+                  <!-- Événement -->
                   <td>
-                    <small class="text-muted">{{ prediction.eventId }}</small>
+                    <span>{{ getEventName(prediction.eventId) }}</span>
                   </td>
 
                   <!-- Organisateur -->
@@ -118,17 +118,17 @@
                       {{ prediction.paymentDecision.paymentMethod }}
                     </span>
                     <span *ngIf="!prediction.paymentDecision" class="text-muted">
-                      Not defined
+                      Non défini
                     </span>
                   </td>
 
                   <!-- Approbation requise -->
                   <td>
                     <span *ngIf="requiresApproval(prediction)" class="badge badge-warning">
-                      <i class="tim-icons icon-alert-circle-exc"></i> Required
+                      <i class="tim-icons icon-alert-circle-exc"></i> Requise
                     </span>
                     <span *ngIf="!requiresApproval(prediction)" class="text-muted">
-                      No
+                      Non
                     </span>
                   </td>
 
@@ -169,11 +169,11 @@
             <div class="col-md-12">
               <div class="alert alert-secondary">
                 <small>
-                  <strong>Status legend:</strong><br>
-                  <span class="badge badge-warning">Pending</span> Prediction created, awaiting decision/approval<br>
-                  <span class="badge badge-success">Approved</span> Prediction approved by an administrator<br>
-                  <span class="badge badge-info">Paid</span> Payment completed<br>
-                  <span class="badge badge-danger">Rejected</span> Prediction rejected by an administrator
+                  <strong>Légende des statuts :</strong><br>
+                  <span class="badge badge-warning">En attente</span> Prédiction créée, en attente de décision/approbation<br>
+                  <span class="badge badge-success">Approuvé</span> Prédiction approuvée par un administrateur<br>
+                  <span class="badge badge-info">Payé</span> Paiement effectué<br>
+                  <span class="badge badge-danger">Rejeté</span> Prédiction rejetée par un administrateur
                 </small>
               </div>
             </div>
@@ -184,7 +184,7 @@
             <div class="col-md-12">
               <div class="alert alert-info">
                 <i class="tim-icons icon-alert-circle-exc"></i>
-                <strong>Admin note:</strong> Predictions with an amount > 5000€ require your approval.
+                <strong>Note admin :</strong> Les prédictions d'un montant > 5000 DT nécessitent votre approbation.
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AdminLayoutRoutes } from "./admin-layout.routing";
+import { WelcomeComponent } from "../../pages/welcome/welcome.component";
 import { DashboardComponent } from "../../pages/dashboard/dashboard.component";
 import { IconsComponent } from "../../pages/icons/icons.component";
 import { MapComponent } from "../../pages/map/map.component";
@@ -28,7 +29,6 @@ import { ChargePaymentDecisionComponent } from "../../pages/charges-management/c
 import { ChargeCatalogComponent } from "../../pages/charges-management/charge-catalog/charge-catalog.component";
 import { ChargeItemsComponent } from "../../pages/charges-management/charge-items/charge-items.component";
 import { NotificationsManagementComponent } from "../../pages/notifications-management/notifications-management.component";
-import { PushNotificationsComponent } from "../../pages/push-notifications/push-notifications.component";
 // import { RtlComponent } from "../../pages/rtl/rtl.component";
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
@@ -43,6 +43,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     NgbModule,
   ],
   declarations: [
+    WelcomeComponent,
     DashboardComponent,
     UserComponent,
     TablesComponent,
@@ -66,7 +67,6 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     ChargeCatalogComponent,
     ChargeItemsComponent,
     NotificationsManagementComponent,
-    PushNotificationsComponent,
     // RtlComponent
   ]
 })

@@ -1,129 +1,177 @@
-<div class="content users-container">
-  <!-- En-tête -->
-  <div class="page-header mb-5">
-    <div class="header-content">
-      <h1 class="page-title">👥 Gestion des Utilisateurs</h1>
-      <p class="page-subtitle">Gérez et administrez tous les utilisateurs du système</p>
+<div class="content users-wrapper">
+
+  <!-- ── Hero Header ─────────────────────────────────────── -->
+  <div class="hero-header">
+    <div class="hero-left">
+      <div class="hero-icon-wrap">
+        <i class="tim-icons icon-single-02"></i>
+      </div>
+      <div class="hero-text">
+        <h1 class="hero-title">Gestion des Utilisateurs</h1>
+        <p class="hero-sub">Gérez les comptes et les permissions de votre équipe</p>
+      </div>
     </div>
-    <div class="header-action">
-      <button class="btn btn-primary" routerLink="/users/create">
-        <i class="tim-icons icon-add"></i>Nouvel Utilisateur
-      </button>
-    </div>
+    <button class="btn-linsoft" routerLink="/users/create">
+      <i class="tim-icons icon-add"></i>
+      <span>Nouvel Utilisateur</span>
+    </button>
   </div>
 
-  <!-- Messages d'erreur -->
-  <div *ngIf="error" class="alert alert-danger mb-4">
+  <!-- ── Erreur ───────────────────────────────────────────── -->
+  <div *ngIf="error" class="error-banner">
     <i class="tim-icons icon-simple-remove"></i>
     <span>{{ error }}</span>
+    <button (click)="error = ''" class="close-banner">&times;</button>
   </div>
 
-  <!-- Carte principale -->
-  <div class="card">
-    <div class="card-header">
-      <div class="d-flex justify-content-between align-items-center w-100">
-        <div>
-          <h5 class="card-title">Liste des Utilisateurs</h5>
-          <p class="card-subtitle">Tous les utilisateurs enregistrés dans le système</p>
-        </div>
-        <span class="badge badge-primary" *ngIf="users.length > 0">
-          {{ users.length }} utilisateur(s)
-        </span>
+  <!-- ── KPI Stats ────────────────────────────────────────── -->
+  <div class="kpi-row" *ngIf="!loading && users.length > 0">
+    <div class="kpi-card kpi-total">
+      <div class="kpi-accent"></div>
+      <div class="kpi-icon-wrap">👥</div>
+      <div class="kpi-body">
+        <span class="kpi-num">{{ users.length }}</span>
+        <span class="kpi-label">Total utilisateurs</span>
       </div>
     </div>
+    <div class="kpi-card kpi-admin">
+      <div class="kpi-accent"></div>
+      <div class="kpi-icon-wrap">🛡️</div>
+      <div class="kpi-body">
+        <span class="kpi-num">{{ totalAdmins }}</span>
+        <span class="kpi-label">Administrateurs</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-active">
+      <div class="kpi-accent"></div>
+      <div class="kpi-icon-wrap">✅</div>
+      <div class="kpi-body">
+        <span class="kpi-num">{{ users.length }}</span>
+        <span class="kpi-label">Comptes actifs</span>
+      </div>
+    </div>
+  </div>
 
-    <div class="card-body">
-      <!-- État de Chargement -->
-      <div *ngIf="loading" class="loading-state">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Chargement...</span>
+  <!-- ── Main Card ────────────────────────────────────────── -->
+  <div class="main-card">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-block">
+      <div class="ls-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring inner"></div>
+      </div>
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && users.length === 0" class="empty-block">
+      <div class="empty-icon">👤</div>
+      <h3>Aucun utilisateur trouvé</h3>
+      <p>Commencez par créer un premier compte utilisateur</p>
+      <button class="btn-linsoft mt-16" routerLink="/users/create">
+        <i class="tim-icons icon-add"></i>
+        <span>Créer un utilisateur</span>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && users.length > 0" class="table-section">
+
+      <!-- Search bar -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="tim-icons icon-zoom-split search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Rechercher par nom, email, identifiant..."
+            [(ngModel)]="searchQuery"
+          />
+          <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery = ''">
+            <i class="tim-icons icon-simple-remove"></i>
+          </button>
         </div>
-        <p>Chargement des utilisateurs...</p>
+        <div class="search-meta">
+          <span class="results-pill">
+            <span class="results-num">{{ filteredUsers.length }}</span>
+            utilisateur{{ filteredUsers.length !== 1 ? 's' : '' }}
+          </span>
+        </div>
       </div>
 
-      <!-- Aucun utilisateur -->
-      <div *ngIf="!loading && users.length === 0" class="empty-state">
-        <i class="tim-icons icon-single-02"></i>
-        <h3>Aucun utilisateur trouvé</h3>
-        <p>Commencez par créer un nouvel utilisateur</p>
-        <button class="btn btn-primary mt-3" routerLink="/users/create">
-          <i class="tim-icons icon-add"></i>Créer un utilisateur
-        </button>
-      </div>
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th class="th-num">#</th>
+              <th class="th-user">Utilisateur</th>
+              <th class="th-email">Email</th>
+              <th class="th-role">Rôle</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let user of filteredUsers; let i = index"
+              class="user-row"
+              [style.animation-delay]="(i * 45) + 'ms'"
+            >
+              <!-- Numéro -->
+              <td class="td-num">{{ i + 1 }}</td>
 
-      <!-- Tableau Utilisateurs -->
-      <div *ngIf="!loading && users.length > 0" class="table-wrapper">
-
-        <!-- Search Bar -->
-        <div class="search-filter-bar">
-          <div class="search-input-wrapper">
-            <i class="tim-icons icon-zoom-split"></i>
-            <input type="text" class="form-control search-input"
-              placeholder="Search by username, email, name..."
-              [(ngModel)]="searchQuery" />
-          </div>
-          <span class="results-count">{{ filteredUsers.length }} result(s)</span>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-hover users-table">
-            <thead>
-              <tr>
-                <th class="text-center">
-                  <input type="checkbox" class="form-check-input" />
-                </th>
-                <th><i class="tim-icons icon-single-02"></i> Utilisateur</th>
-                <th><i class="tim-icons icon-email-85"></i> Email</th>
-                <th><i class="tim-icons icon-single-copy-04"></i> Prénom</th>
-                <th><i class="tim-icons icon-single-copy-04"></i> Nom</th>
-                <th class="text-center"><i class="tim-icons icon-settings"></i> Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let user of filteredUsers" class="user-row">
-                <td class="text-center">
-                  <input type="checkbox" class="form-check-input" />
-                </td>
-                <td>
+              <!-- Utilisateur -->
+              <td class="td-user">
+                <div class="user-cell">
+                  <div class="avatar" [style.background]="getAvatarGradient(user.username)">
+                    {{ getInitials(user) }}
+                  </div>
                   <div class="user-info">
-                    <div class="user-avatar">
-                      {{ user.username?.charAt(0).toUpperCase() }}
-                    </div>
-                    <strong class="username">{{ user.username }}</strong>
+                    <span class="u-username">{{ user.username }}</span>
+                    <span class="u-fullname" *ngIf="user.firstName || user.lastName">
+                      {{ user.firstName }} {{ user.lastName }}
+                    </span>
                   </div>
-                </td>
-                <td>
-                  <span class="user-email">{{ user.email || '-' }}</span>
-                </td>
-                <td>
-                  <span class="text-muted">{{ user.firstName || '-' }}</span>
-                </td>
-                <td>
-                  <span class="text-muted">{{ user.lastName || '-' }}</span>
-                </td>
-                <td class="text-center">
-                  <div class="action-buttons">
-                    <button
-                      class="btn btn-sm btn-info"
-                      (click)="editUser(user.id)"
-                      title="Éditer"
-                    >
-                      <i class="tim-icons icon-pencil"></i>
-                    </button>
-                    <button
-                      class="btn btn-sm btn-danger"
-                      (click)="deleteUser(user.id)"
-                      title="Supprimer"
-                    >
-                      <i class="tim-icons icon-trash-simple"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </td>
+
+              <!-- Email -->
+              <td class="td-email">
+                <span class="email-text">{{ user.email || '—' }}</span>
+              </td>
+
+              <!-- Rôle -->
+              <td class="td-role">
+                <span class="role-badge" [class.role-admin]="isAdmin(user)">
+                  <span class="role-dot"></span>
+                  {{ getPrimaryRole(user) }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="td-actions">
+                <div class="act-group">
+                  <button class="act-btn act-edit" (click)="editUser(user.id)" title="Modifier">
+                    <i class="tim-icons icon-pencil"></i>
+                  </button>
+                  <button class="act-btn act-delete" (click)="deleteUser(user.id)" title="Supprimer">
+                    <i class="tim-icons icon-trash-simple"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Aucun résultat après recherche -->
+        <div *ngIf="filteredUsers.length === 0 && searchQuery" class="no-results">
+          <span class="no-results-icon">🔍</span>
+          <p>Aucun résultat pour "<strong>{{ searchQuery }}</strong>"</p>
         </div>
       </div>
+
     </div>
   </div>
+
 </div>

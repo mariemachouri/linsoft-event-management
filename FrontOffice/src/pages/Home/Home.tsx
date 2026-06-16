@@ -61,9 +61,14 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const now       = new Date();
   const published = events.filter((e) => e.status === 'PUBLISHED');
-  const featured  = published.slice(0, 3);
-  const trending  = published
+  const upcoming  = published.filter((e) => {
+    const start = e.startDate || e.startAt;
+    return start ? new Date(start) > now : true;
+  });
+  const featured  = upcoming.slice(0, 3);
+  const trending  = upcoming
     .sort((a, b) => (b.currentParticipants ?? 0) - (a.currentParticipants ?? 0))
     .slice(0, 4);
 
@@ -198,7 +203,7 @@ export default function Home() {
           ) : featured.length === 0 ? (
             <div className="section__empty">
               <Calendar size={40} strokeWidth={1.5} />
-              <p>Aucun événement publié pour l'instant.</p>
+              <p>Aucun événement à venir pour l'instant.</p>
               <Link to="/events" className="btn-primary-sm">Parcourir quand même</Link>
             </div>
           ) : (

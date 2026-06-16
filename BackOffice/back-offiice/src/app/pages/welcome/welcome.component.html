@@ -1,0 +1,54 @@
+<div class="wp-root">
+
+  <!-- ── Fond photo + overlay ───────────────────────────── -->
+  <div class="wp-bg"></div>
+  <div class="wp-overlay"></div>
+
+  <!-- ── Contenu ────────────────────────────────────────── -->
+  <div class="wp-content">
+
+    <!-- Logo + titre -->
+    <div class="wp-hero">
+      <img src="assets/img/logo-linsoftt.webp" alt="LinSoft" class="wp-logo" />
+      <span class="wp-greeting">{{ greeting }},&nbsp;<strong>{{ firstName }}</strong>&nbsp;👋</span>
+      <span class="wp-subtitle">Portail d'administration · {{ currentDate }}</span>
+    </div>
+
+    <!-- Label section -->
+    <div class="wp-label">
+      <span class="wp-label__dot"></span>
+      <span class="wp-label__text">ACCÈS RAPIDE</span>
+    </div>
+
+    <!-- Grille de cartes -->
+    <div class="wp-grid">
+      <div
+        *ngFor="let card of visibleCards; let i = index"
+        class="wp-card"
+        [style.animation-delay]="(i * 55) + 'ms'"
+        (click)="navigateTo(card.route)"
+      >
+        <!-- Icône colorée -->
+        <div class="wp-card__icon" [style.background]="card.color + '28'" [style.border-color]="card.color + '55'">
+          <span [style.color]="card.color" [innerHTML]="card.safeSvg"></span>
+        </div>
+
+        <!-- Texte -->
+        <span class="wp-card__title">{{ card.title }}</span>
+        <span class="wp-card__sub">{{ card.subtitle }}</span>
+
+        <!-- Flèche -->
+        <span class="wp-card__arrow" [style.color]="card.color">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+
+        <!-- Barre basse au hover -->
+        <span class="wp-card__bar" [style.background]="card.color"></span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="wp-footer">© 2026 LinSoft — Leader in IT Training &amp; Consulting</div>
+
+  </div>
+</div>

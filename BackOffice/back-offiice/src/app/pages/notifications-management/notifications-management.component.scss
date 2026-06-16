@@ -29,23 +29,23 @@
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: #f4f6fb !important;
+      background-color: rgba(255,255,255,0.07) !important;
 
       td {
-        color: #2c3e50 !important;
+        color: #e2e8f0 !important;
 
         strong {
-          color: #2c3e50 !important;
+          color: #e2e8f0 !important;
         }
       }
     }
   }
 
   td {
-    color: #2c3e50;
+    color: #e2e8f0;
 
     strong {
-      color: #2c3e50;
+      color: #e2e8f0;
     }
   }
 }
