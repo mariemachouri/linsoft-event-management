@@ -29,6 +29,7 @@ import { ChargePaymentDecisionComponent } from "../../pages/charges-management/c
 import { ChargeCatalogComponent } from "../../pages/charges-management/charge-catalog/charge-catalog.component";
 import { ChargeItemsComponent } from "../../pages/charges-management/charge-items/charge-items.component";
 import { NotificationsManagementComponent } from "../../pages/notifications-management/notifications-management.component";
+import { MapPickerComponent } from "../../shared/components/map-picker/map-picker.component";
 // import { RtlComponent } from "../../pages/rtl/rtl.component";
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
@@ -67,6 +68,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     ChargeCatalogComponent,
     ChargeItemsComponent,
     NotificationsManagementComponent,
+    MapPickerComponent,
     // RtlComponent
   ]
 })

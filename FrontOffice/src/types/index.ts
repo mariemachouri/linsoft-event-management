@@ -29,6 +29,8 @@ export interface Event {
   status: EventStatus;
   chargeIds?: string[];
   isOnline?: boolean;
+  locationLat?: number;
+  locationLng?: number;
   // meetingLink volontairement ABSENT côté public : le lien reste privé (admin)
   // et n'est transmis qu'à l'inscrit par email.
 }

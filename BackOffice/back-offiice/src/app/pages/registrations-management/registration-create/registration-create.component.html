@@ -3,19 +3,19 @@
     <div class="col-md-8 offset-md-2">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">✍️ Create New Registration</h3>
+          <h3 class="card-title">✍️ Créer une inscription</h3>
         </div>
         <div class="card-body">
-          
-          <!-- Loading data -->
+
+          <!-- Chargement -->
           <div *ngIf="loadingData" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
+              <span class="sr-only">Chargement...</span>
             </div>
-            <p class="mt-3 text-muted">Loading events and users...</p>
+            <p class="mt-3 text-muted">Chargement des événements et utilisateurs...</p>
           </div>
 
-          <!-- Error/Success messages -->
+          <!-- Messages d'erreur/succès -->
           <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="tim-icons icon-alert-circle-exc"></i>
             {{ error }}
@@ -32,30 +32,30 @@
             </button>
           </div>
 
-          <!-- Form -->
+          <!-- Formulaire -->
           <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!loadingData">
-            
-            <!-- Event -->
+
+            <!-- Événement -->
             <div class="form-group">
               <label for="eventId">
-                Event <span class="text-danger">*</span>
+                Événement <span class="text-danger">*</span>
               </label>
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 id="eventId"
                 formControlName="eventId"
                 [class.is-invalid]="f['eventId'].invalid && f['eventId'].touched"
               >
-                <option value="" disabled selected>Select an event</option>
+                <option value="" disabled selected>Sélectionner un événement</option>
                 <option *ngFor="let event of events" [value]="event.id">
                   {{ getEventDisplay(event) }}
                 </option>
               </select>
               <div *ngIf="f['eventId'].invalid && f['eventId'].touched" class="invalid-feedback">
-                <div *ngIf="f['eventId'].errors?.['required']">Event is required</div>
+                <div *ngIf="f['eventId'].errors?.['required']">L'événement est obligatoire</div>
               </div>
               <small class="form-text text-muted" *ngIf="events.length === 0">
-                ⚠️ No published events available. Create and publish an event first.
+                ⚠️ Aucun événement publié disponible. Créez et publiez un événement d'abord.
               </small>
             </div>
 
@@ -64,32 +64,32 @@
               <label for="participantId">
                 Participant <span class="text-danger">*</span>
               </label>
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 id="participantId"
                 formControlName="participantId"
                 [class.is-invalid]="f['participantId'].invalid && f['participantId'].touched"
               >
-                <option value="" disabled selected>Select a participant</option>
+                <option value="" disabled selected>Sélectionner un participant</option>
                 <option *ngFor="let user of users" [value]="user.id">
                   {{ getUserDisplay(user) }}
                 </option>
               </select>
               <div *ngIf="f['participantId'].invalid && f['participantId'].touched" class="invalid-feedback">
-                <div *ngIf="f['participantId'].errors?.['required']">Participant is required</div>
+                <div *ngIf="f['participantId'].errors?.['required']">Le participant est obligatoire</div>
               </div>
               <small class="form-text text-muted" *ngIf="users.length === 0">
-                ⚠️ No users available. Create users first.
+                ⚠️ Aucun utilisateur disponible. Créez des utilisateurs d'abord.
               </small>
             </div>
 
-            <!-- Status -->
+            <!-- Statut -->
             <div class="form-group">
               <label for="status">
-                Status <span class="text-danger">*</span>
+                Statut <span class="text-danger">*</span>
               </label>
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 id="status"
                 formControlName="status"
               >
@@ -104,35 +104,35 @@
               </small>
             </div>
 
-            <!-- Info box -->
+            <!-- Informations -->
             <div class="alert alert-info">
               <h5>ℹ️ Information</h5>
               <ul class="mb-0">
-                <li>The registration date will be automatically set to now</li>
-                <li>Default status is "Pending"</li>
-                <li>Only published events are listed</li>
+                <li>La date d'inscription sera automatiquement définie à maintenant</li>
+                <li>Le statut par défaut est « En attente »</li>
+                <li>Seuls les événements publiés sont listés</li>
               </ul>
             </div>
 
-            <!-- Action buttons -->
+            <!-- Boutons d'action -->
             <div class="form-group mt-4">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 class="btn btn-primary btn-lg"
                 [disabled]="loading || events.length === 0 || users.length === 0"
               >
                 <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
-                {{ loading ? 'Creating...' : 'Create Registration' }}
+                {{ loading ? 'Création en cours...' : 'Créer l\'inscription' }}
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn btn-secondary btn-lg ml-2"
                 (click)="cancel()"
                 [disabled]="loading"
               >
                 <i class="tim-icons icon-simple-remove"></i>
-                Cancel
+                Annuler
               </button>
             </div>
 

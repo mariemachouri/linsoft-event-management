@@ -1,20 +1,287 @@
-.badge-info    { background-color: #51cbce; }
-.badge-success { background-color: #6bd098; }
-.badge-secondary { background-color: #aaa; }
-.gap-2 { gap: 0.5rem; }
+// ── Variables ─────────────────────────────────────────────────
+$red:        #cc1f24;
+$red-glow:   rgba(204, 31, 36, 0.18);
+$red-border: rgba(204, 31, 36, 0.30);
+$coral:      #FF5276;
+$white:      #ffffff;
+$text:       #e2e8f0;
+$muted:      rgba(255,255,255,0.50);
+$border:     rgba(255,255,255,0.10);
+$radius:     14px;
+$radius-sm:  8px;
 
+// ── Card principale (wrapper glassmorphism) ───────────────────
+.card {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid $border !important;
+  border-radius: $radius !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.30) !important;
+  overflow: hidden;
+
+  // Carte formulaire imbriquée
+  &.border {
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-sm !important;
+
+    h5 {
+      color: $white !important;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    label {
+      color: rgba(255,255,255,0.75) !important;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .form-control {
+      background: rgba(255,255,255,0.08) !important;
+      border: 1px solid $border !important;
+      border-radius: $radius-sm !important;
+      color: $white !important;
+      font-size: 0.9rem;
+
+      &:focus {
+        border-color: $red !important;
+        box-shadow: 0 0 0 3px rgba(204,31,36,0.15) !important;
+        background: rgba(255,255,255,0.12) !important;
+      }
+      &::placeholder { color: $muted !important; }
+
+      option { background: #1a1f2e; color: $white; }
+    }
+  }
+}
+
+// ── Card Header (style page-header inscriptions) ──────────────
 .card-header {
+  background: $red-glow !important;
+  border-bottom: 1px solid $red-border !important;
+  backdrop-filter: blur(10px) !important;
+  padding: 20px 24px !important;
+  border-radius: $radius $radius 0 0 !important;
+
   .card-title {
-    color: #fff !important;
+    color: $white !important;
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
   }
+
   .card-category {
-    color: #fff !important;
+    color: rgba(255,255,255,0.65) !important;
+    font-size: 0.82rem !important;
   }
 }
 
-// Table headers always white
-table thead th {
-  color: #fff !important;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+// ── Card Body ─────────────────────────────────────────────────
+.card-body {
+  background: transparent !important;
+  padding: 24px !important;
 }
+
+// ── Bouton principal ──────────────────────────────────────────
+.btn-primary {
+  background: $red !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: $white !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  padding: 10px 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: 0 4px 14px rgba(204,31,36,0.35) !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    background: #a81820 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(204,31,36,0.45) !important;
+  }
+
+  i { margin-right: 6px; }
+}
+
+// ── Alertes ───────────────────────────────────────────────────
+.alert-success {
+  background: rgba(39,174,96,0.15) !important;
+  border: 1px solid rgba(39,174,96,0.30) !important;
+  border-left: 4px solid #27ae60 !important;
+  border-radius: $radius-sm !important;
+  color: #86efac !important;
+  backdrop-filter: blur(8px);
+  margin-bottom: 16px;
+}
+
+.alert-danger {
+  background: rgba(204,31,36,0.15) !important;
+  border: 1px solid $red-border !important;
+  border-left: 4px solid $red !important;
+  border-radius: $radius-sm !important;
+  color: #fca5a5 !important;
+  backdrop-filter: blur(8px);
+  margin-bottom: 16px;
+}
+
+// ── Table wrapper ─────────────────────────────────────────────
+.table-hover {
+  margin: 0 !important;
+  border-collapse: collapse !important;
+
+  // En-tête rouge (style inscriptions)
+  thead {
+    tr {
+      background: rgba(204,31,36,0.20) !important;
+    }
+
+    th {
+      color: #ffffff !important;
+      font-size: 0.76rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      padding: 14px 16px !important;
+      border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+      border-top: none !important;
+      background: transparent !important;
+    }
+  }
+
+  // Corps du tableau
+  tbody {
+    tr {
+      border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+      transition: background 0.15s ease !important;
+
+      &:last-child { border-bottom: none !important; }
+
+      &:hover {
+        background: rgba(255,255,255,0.08) !important;
+      }
+
+      td {
+        padding: 14px 16px !important;
+        vertical-align: middle !important;
+        color: $white !important;
+        border-top: none !important;
+        font-size: 0.88rem;
+
+        strong { color: $white !important; font-weight: 600; }
+        small  { color: $muted !important; font-size: 0.75rem; }
+      }
+    }
+  }
+}
+
+// ── Badges catégories ─────────────────────────────────────────
+.badge-info {
+  background: rgba(0,188,212,0.20) !important;
+  color: #67e8f9 !important;
+  border: 1px solid rgba(0,188,212,0.35) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 0.73rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.badge-success {
+  background: rgba(46,125,50,0.20) !important;
+  color: #86efac !important;
+  border: 1px solid rgba(46,125,50,0.35) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 0.73rem !important;
+  font-weight: 700 !important;
+}
+
+.badge-secondary {
+  background: rgba(255,255,255,0.10) !important;
+  color: $muted !important;
+  border: 1px solid $border !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 0.73rem !important;
+  font-weight: 700 !important;
+}
+
+// ── Boutons actions ───────────────────────────────────────────
+.btn-sm {
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border-radius: $radius-sm !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid transparent !important;
+  transition: all 0.18s ease !important;
+
+  i { font-size: 14px !important; margin: 0 !important; }
+}
+
+.btn-info {
+  background: rgba(21,101,192,0.20) !important;
+  border-color: rgba(21,101,192,0.35) !important;
+  color: #7dd3fc !important;
+
+  &:hover {
+    background: rgba(21,101,192,0.40) !important;
+    color: $white !important;
+    transform: translateY(-2px) !important;
+  }
+}
+
+.btn-danger {
+  background: rgba(204,31,36,0.20) !important;
+  border-color: $red-border !important;
+  color: #fca5a5 !important;
+
+  &:hover {
+    background: $red !important;
+    color: $white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(204,31,36,0.35) !important;
+  }
+}
+
+.btn-success {
+  background: rgba(46,125,50,0.25) !important;
+  border: 1px solid rgba(46,125,50,0.40) !important;
+  color: #86efac !important;
+  border-radius: $radius-sm !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    background: rgba(46,125,50,0.45) !important;
+    color: $white !important;
+  }
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid $border !important;
+  color: $muted !important;
+  border-radius: $radius-sm !important;
+
+  &:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: $white !important;
+  }
+}
+
+// ── Textes état vide / chargement ─────────────────────────────
+.text-center { color: $muted !important; }
+.text-muted  { color: $muted !important; }
+
+// ── Gap utility ───────────────────────────────────────────────
+.gap-2 { gap: 0.5rem; }

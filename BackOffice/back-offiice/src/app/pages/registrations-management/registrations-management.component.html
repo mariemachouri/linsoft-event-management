@@ -3,15 +3,23 @@
   <!-- Page Header -->
   <div class="page-header">
     <div>
-      <h4 class="page-title">Gestion des Inscriptions</h4>
+      <h4 class="page-title">Liste des Participants</h4>
+      <p class="page-subtitle">{{ totalParticipants }} participant(s) au total</p>
     </div>
-    <button class="btn-create" (click)="createRegistration()">
-      <i class="tim-icons icon-simple-add"></i>
-      Nouvelle inscription
-    </button>
+    <div class="header-stats">
+      <div class="stat-chip">
+        <span class="stat-value">{{ eventGroups.length }}</span>
+        <span class="stat-label">Événements</span>
+      </div>
+      <div class="stat-chip stat-chip--full" *ngIf="fullEventsCount > 0">
+        <i class="tim-icons icon-alert-circle-exc"></i>
+        <span class="stat-value">{{ fullEventsCount }}</span>
+        <span class="stat-label">Complet(s)</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Success / Error banners -->
+  <!-- Banners -->
   <div *ngIf="successMsg" class="alert-success-banner">
     <i class="tim-icons icon-check-2"></i> {{ successMsg }}
   </div>
@@ -22,108 +30,125 @@
 
   <!-- Loading -->
   <div *ngIf="loading" class="loading-state">
-    <div class="spinner-border" role="status"><span class="sr-only">Chargement...</span></div>
+    <div class="spinner-border" role="status"></div>
     <p>Chargement des inscriptions...</p>
   </div>
 
-  <!-- Search & Filter Bar -->
-  <div class="search-filter-bar" *ngIf="!loading">
+  <!-- Search -->
+  <div class="search-bar" *ngIf="!loading">
     <div class="search-input-wrapper">
       <i class="tim-icons icon-zoom-split"></i>
       <input type="text" class="form-control search-input"
-        placeholder="Rechercher par événement, participant..."
+        placeholder="Rechercher par événement, participant ou email..."
         [(ngModel)]="searchQuery" />
     </div>
-    <select class="form-control filter-select" [(ngModel)]="filterStatus">
-      <option value="">Tous les statuts</option>
-      <option value="PENDING">En attente</option>
-      <option value="CONFIRMED">Confirmé</option>
-      <option value="WAITLISTED">Liste d'attente</option>
-      <option value="CANCELLED">Annulé</option>
-    </select>
-    <span class="results-count">{{ filteredRegistrations.length }} résultat(s)</span>
+    <span class="results-count">{{ eventGroups.length }} événement(s) affiché(s)</span>
   </div>
 
-  <!-- Table -->
-  <div class="registrations-table-wrapper" *ngIf="!loading">
-    <table class="reg-table" *ngIf="filteredRegistrations.length > 0">
-      <thead>
-        <tr>
-          <th>Événement</th>
-          <th>Participant</th>
-          <th>Statut</th>
-          <th>Date d'inscription</th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let reg of filteredRegistrations" class="reg-row">
-          <!-- Event -->
-          <td>
-            <div class="cell-event">
-              <span class="event-name">{{ getEventName(reg.eventId) }}</span>
-            </div>
-          </td>
-          <!-- Participant -->
-          <td>
-            <div class="cell-participant">
-              <div class="participant-avatar">{{ getParticipantName(reg.participantId).charAt(0).toUpperCase() }}</div>
-              <div>
-                <span class="participant-name">{{ getParticipantName(reg.participantId) }}</span>
-                <span class="participant-email">{{ getParticipantEmail(reg.participantId) }}</span>
-              </div>
-            </div>
-          </td>
-          <!-- Status -->
-          <td>
-            <span class="status-badge" [ngClass]="getStatusBadgeClass(reg.status || 'PENDING')">
-              {{ getStatusLabel(reg.status || 'PENDING') }}
-            </span>
-          </td>
-          <!-- Date -->
-          <td class="date-cell">
-            {{ getRegistrationDate(reg) | date:'dd/MM/yyyy HH:mm' }}
-          </td>
-          <!-- Actions -->
-          <td class="actions-cell">
-            <button
-              *ngIf="canConfirm(reg.status || '')"
-              class="action-btn confirm-btn"
-              title="Confirmer"
-              (click)="confirmRegistration(reg.id!)">
-              <i class="tim-icons icon-check-2"></i>
-            </button>
-            <button
-              *ngIf="canCancel(reg.status || '')"
-              class="action-btn cancel-btn"
-              title="Annuler"
-              (click)="cancelRegistration(reg.id!)">
-              <i class="tim-icons icon-simple-remove"></i>
-            </button>
-            <button
-              class="action-btn edit-btn"
-              title="Modifier"
-              (click)="editRegistration(reg.id!)">
-              <i class="tim-icons icon-pencil"></i>
-            </button>
-            <button
-              class="action-btn delete-btn"
-              title="Supprimer"
-              (click)="deleteRegistration(reg.id!)">
-              <i class="tim-icons icon-trash-simple"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Event Groups -->
+  <div class="groups-list" *ngIf="!loading">
 
-    <!-- Empty state -->
-    <div class="empty-state" *ngIf="filteredRegistrations.length === 0 && !loading">
+    <!-- Empty state global -->
+    <div class="empty-state" *ngIf="eventGroups.length === 0">
       <i class="tim-icons icon-paper"></i>
       <p>Aucune inscription trouvée</p>
-      <button class="btn-create" (click)="createRegistration()">
-        <i class="tim-icons icon-simple-add"></i> Créer une inscription
-      </button>
+    </div>
+
+    <!-- One card per event -->
+    <div class="event-group" *ngFor="let group of eventGroups">
+
+      <!-- Group Header -->
+      <div class="group-header" (click)="toggleGroup(group)">
+        <div class="group-header-left">
+          <button class="collapse-btn" [class.collapsed]="group.collapsed">
+            <i class="tim-icons icon-minimal-down"></i>
+          </button>
+          <div class="group-event-info">
+            <span class="group-event-name">{{ getEventDisplayName(group.event) }}</span>
+            <div class="group-meta">
+              <span class="participant-count">
+                <i class="tim-icons icon-single-02"></i>
+                {{ group.registrations.length }} participant(s)
+              </span>
+              <span *ngIf="group.event.maxParticipants" class="capacity-info">
+                / {{ group.event.maxParticipants }} places
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FULL badge -->
+        <div class="full-badge" *ngIf="group.isFull">
+          <i class="tim-icons icon-alert-circle-exc"></i>
+          Toutes les places sont complètes pour cet événement
+        </div>
+
+        <div class="group-actions">
+          <span class="capacity-bar-wrap" *ngIf="group.event.maxParticipants">
+            <span class="capacity-bar">
+              <span class="capacity-fill"
+                [style.width.%]="(group.registrations.length / group.event.maxParticipants!) * 100"
+                [class.bar-full]="group.isFull">
+              </span>
+            </span>
+            <span class="capacity-text">
+              {{ group.registrations.length }}/{{ group.event.maxParticipants }}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Participants Table -->
+      <div class="group-body" *ngIf="!group.collapsed">
+        <table class="participants-table">
+          <thead>
+            <tr>
+              <th>Participant</th>
+              <th>Type</th>
+              <th>Email</th>
+              <th>Date d'inscription</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reg of group.registrations" class="participant-row">
+              <!-- Name + avatar -->
+              <td>
+                <div class="cell-participant">
+                  <div class="participant-avatar" [class.avatar-guest]="reg.isGuest">
+                    {{ getParticipantInitial(reg) }}
+                  </div>
+                  <span class="participant-name">{{ getParticipantName(reg) }}</span>
+                </div>
+              </td>
+              <!-- Type -->
+              <td>
+                <span class="type-badge" [class.type-guest]="reg.isGuest" [class.type-member]="!reg.isGuest">
+                  {{ reg.isGuest ? '👤 Visiteur' : '🎫 Participant' }}
+                </span>
+              </td>
+              <!-- Email -->
+              <td class="email-cell">{{ getParticipantEmail(reg) || '—' }}</td>
+              <!-- Date -->
+              <td class="date-cell">
+                {{ getRegistrationDate(reg) | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+              <!-- Actions -->
+              <td class="actions-cell">
+                <button class="action-btn cancel-btn" title="Annuler l'inscription"
+                  (click)="cancelRegistration(reg.id!, group)">
+                  <i class="tim-icons icon-simple-remove"></i>
+                </button>
+                <button class="action-btn delete-btn" title="Supprimer définitivement"
+                  (click)="deleteRegistration(reg.id!)">
+                  <i class="tim-icons icon-trash-simple"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 

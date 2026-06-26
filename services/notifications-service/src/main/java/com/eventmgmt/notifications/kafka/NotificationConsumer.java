@@ -75,6 +75,18 @@ public class NotificationConsumer {
      * Construit la section "lien de connexion" si l'événement est en ligne.
      * Retourne "" si l'événement n'est pas en ligne / pas de lien.
      */
+    private String getEventTitle(String eventId) {
+        try {
+            EventInfo info = EventInfo.find("eventId", eventId).firstResult();
+            if (info != null && info.title != null && !info.title.isBlank()) {
+                return info.title;
+            }
+        } catch (Exception ex) {
+            LOG.warnf("getEventTitle error for %s: %s", eventId, ex.getMessage());
+        }
+        return eventId;
+    }
+
     private String buildMeetingSection(String eventId) {
         try {
             EventInfo info = EventInfo.find("eventId", eventId).firstResult();
@@ -184,19 +196,18 @@ public class NotificationConsumer {
                     return;
                 }
 
+                String eventTitle = getEventTitle(message.getEventId());
                 String emailBody = String.format(
                     "Bonjour %s %s,\n\n" +
                     "Votre inscription en tant que visiteur a bien été enregistrée !\n\n" +
-                    "  • Numéro d'inscription : %s\n" +
-                    "  • Événement            : %s\n" +
-                    "  • Date d'inscription   : %s\n" +
+                    "  • Événement          : %s\n" +
+                    "  • Date d'inscription : %s\n" +
                     "%s\n" +
                     "Vous recevrez des notifications sur cet email et votre numéro de téléphone\n" +
                     "pour toutes les mises à jour concernant l'événement.\n\n" +
                     "Cordialement,\nL'équipe Event Management",
                     firstName, lastName,
-                    message.getRegistrationId(),
-                    message.getEventId(),
+                    eventTitle,
                     formatDate(message.getRegisteredAt()),
                     buildMeetingSection(message.getEventId())
                 );
@@ -208,8 +219,8 @@ public class NotificationConsumer {
                 // Also send SMS to guest phone
                 if (phone != null && !phone.isBlank()) {
                     String smsBody = String.format(
-                        "Bonjour %s, votre inscription à l'événement %s est confirmée ! Réf: %s",
-                        firstName, message.getEventId(), message.getRegistrationId()
+                        "Bonjour %s, votre inscription à l'événement « %s » est confirmée !",
+                        firstName, eventTitle
                     );
                     createAndSendSms(phone, smsBody);
                     LOG.infof("Guest SMS notification sent for registration %s → %s",
@@ -226,18 +237,17 @@ public class NotificationConsumer {
                 String phone = message.getParticipantPhone();
                 String name  = message.getParticipantName();
 
+                String eventTitle2 = getEventTitle(message.getEventId());
                 String body = String.format(
                     "Bonjour %s,\n\n" +
-                    "Votre inscription a bien été enregistrée.\n" +
-                    "  • Numéro d'inscription : %s\n" +
-                    "  • Événement            : %s\n" +
-                    "  • Date d'inscription   : %s\n" +
+                    "Votre inscription a bien été enregistrée.\n\n" +
+                    "  • Événement          : %s\n" +
+                    "  • Date d'inscription : %s\n" +
                     "%s\n" +
                     "Vous recevrez des rappels avant l'événement.\n\n" +
                     "Cordialement,\nL'équipe Event Management",
                     (name != null && !name.isBlank()) ? name : "",
-                    message.getRegistrationId(),
-                    message.getEventId(),
+                    eventTitle2,
                     formatDate(message.getRegisteredAt()),
                     buildMeetingSection(message.getEventId())
                 );
@@ -251,8 +261,8 @@ public class NotificationConsumer {
                     // SMS éventuel
                     if (phone != null && !phone.isBlank()) {
                         createAndSendSms(phone, String.format(
-                            "Votre inscription à l'événement %s est enregistrée ! Réf: %s",
-                            message.getEventId(), message.getRegistrationId()));
+                            "Votre inscription à l'événement « %s » est enregistrée !",
+                            eventTitle2));
                     }
                     // Abonnement aux rappels
                     subscribeReminder(message.getEventId(), recipient, phone, name, false);
@@ -278,13 +288,11 @@ public class NotificationConsumer {
 
             String body = String.format(
                 "Bonjour,\n\n" +
-                "Votre inscription a été CONFIRMÉE !\n" +
-                "  • Numéro d'inscription : %s\n" +
-                "  • Événement            : %s\n\n" +
+                "Votre inscription a été CONFIRMÉE !\n\n" +
+                "  • Événement : %s\n\n" +
                 "Nous avons hâte de vous voir à l'événement.\n\n" +
                 "Cordialement,\nL'équipe Event Management",
-                message.getRegistrationId(),
-                message.getEventId()
+                getEventTitle(message.getEventId())
             );
 
             createAndSend(message.getParticipantId(), body);

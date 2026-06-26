@@ -1,0 +1,103 @@
+@startuml Activite_CycleVie_Evenement
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #1A1A1A
+  ArrowColor #0054A6
+  ArrowFontColor #333333
+  DiamondBackgroundColor #FFF3CD
+  DiamondBorderColor #FFC107
+  DiamondFontColor #856404
+  StartColor #0054A6
+  EndColor #C00000
+}
+skinparam partition {
+  BackgroundColor #EEF4FB
+  BorderColor #4472C4
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+}
+
+title <b><color:#0054A6>Diagramme d'Activité – Cycle de Vie d'un Événement</color></b>
+
+|#EEF4FB|**Organisateur**|
+|#EAF6EC|**events-service**|
+|#FFF8E1|**Kafka / Notifications**|
+
+|**Organisateur**|
+start
+:Créer un nouvel événement ;
+note right
+  Saisie : titre, description,
+  date, lieu, capacité, budget
+end note
+
+|**events-service**|
+:Valider les données ;
+if (Données valides ?) then (oui)
+  :Enregistrer en MongoDB\n(statut: BROUILLON) ;
+  |**Organisateur**|
+  :Consulter et modifier\nl'événement ;
+  :Gérer les charges\n(catalogue + affectation) ;
+  :Prédire le coût (IA) ;
+  if (Budget validé ?) then (oui)
+    :Publier l'événement ;
+    |**events-service**|
+    :Changer statut → PUBLIE ;
+    :Publier event.created sur Kafka ;
+    |**Kafka / Notifications**|
+    :Notifier les abonnés ;
+    |**Organisateur**|
+    :Surveiller les inscriptions ;
+    repeat
+      :Attendre inscriptions ;
+      :Modifier si nécessaire ;
+      if (Modification majeure ?) then (oui)
+        |**events-service**|
+        :Publier event.updated sur Kafka ;
+        |**Kafka / Notifications**|
+        :Notifier les inscrits de la modification ;
+      endif
+    repeat while (Événement pas encore passé ?) is (en cours)
+    -> terminé;
+    if (Événement se déroule ?) then (normalement)
+      |**events-service**|
+      :Passer statut → TERMINE ;
+      |**Kafka / Notifications**|
+      :Envoyer feedback aux participants ;
+    else (annulation)
+      |**Organisateur**|
+      :Annuler l'événement ;
+      |**events-service**|
+      :Passer statut → ANNULE ;
+      :Publier event.cancelled sur Kafka ;
+      |**Kafka / Notifications**|
+      :Notifier TOUS les inscrits\nde l'annulation ;
+    endif
+  else (budget insuffisant)
+    |**Organisateur**|
+    :Ajuster les charges\nou le budget ;
+  endif
+else (non)
+  |**events-service**|
+  :Retourner erreurs de validation ;
+  |**Organisateur**|
+  :Corriger les données ;
+endif
+
+|**events-service**|
+:Archiver l'événement ;
+stop
+
+@enduml

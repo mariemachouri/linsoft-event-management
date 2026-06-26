@@ -1,0 +1,225 @@
+@startuml Diagramme_Objet
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam object {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  HeaderBackgroundColor #0054A6
+  HeaderFontColor #FFFFFF
+  HeaderFontStyle bold
+  FontColor #1A1A1A
+  ArrowColor #0054A6
+}
+skinparam note {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+}
+
+title <b><color:#0054A6>Diagramme d'Objets – Exemple concret : Événement "DevOps Summit Tunis 2026"</color></b>
+
+'=============================================================
+' ORGANISATEUR
+'=============================================================
+object "**benAli : User**" as U1 #C6EFCE {
+  id = "usr-001"
+  nom = "Ben Ali"
+  prenom = "Ahmed"
+  email = "ahmed.benali@linsoft.com"
+  role = ORGANISATEUR
+  actif = true
+}
+
+'=============================================================
+' PARTICIPANTS
+'=============================================================
+object "**maryem : User**" as U2 #BDD7EE {
+  id = "usr-002"
+  nom = "Achoury"
+  prenom = "Maryem"
+  email = "maryem@esprit.tn"
+  role = PARTICIPANT
+  actif = true
+}
+
+object "**karim : User**" as U3 #BDD7EE {
+  id = "usr-003"
+  nom = "Gharbi"
+  prenom = "Karim"
+  email = "karim@gmail.com"
+  role = PARTICIPANT
+  actif = true
+}
+
+'=============================================================
+' ÉVÉNEMENT
+'=============================================================
+object "**devopsSummit : Event**" as EV #D9E2F3 {
+  id = "ev-2026-001"
+  titre = "DevOps Summit Tunis 2026"
+  description = "Conférence internationale DevOps"
+  dateDebut = 2026-09-15 09:00
+  dateFin = 2026-09-15 18:00
+  lieu = "Hôtel El Mouradi, Tunis"
+  capaciteMax = 200
+  nbInscrits = 2
+  budgetEstime = 5000.0
+  statut = PUBLIE
+}
+
+'=============================================================
+' INSCRIPTIONS
+'=============================================================
+object "**insc1 : Registration**" as R1 #D4EDDA {
+  id = "reg-001"
+  eventId = "ev-2026-001"
+  participantId = "usr-002"
+  dateInscription = 2026-07-10 14:30
+  statut = CONFIRMEE
+  listeAttente = false
+}
+
+object "**insc2 : Registration**" as R2 #D4EDDA {
+  id = "reg-002"
+  eventId = "ev-2026-001"
+  participantId = "usr-003"
+  dateInscription = 2026-07-11 09:15
+  statut = CONFIRMEE
+  listeAttente = false
+}
+
+'=============================================================
+' CHARGES DU CATALOGUE
+'=============================================================
+object "**projecteur : Charge**" as C1 #FFF3CD {
+  id = "chg-001"
+  libelle = "Projecteur Full HD"
+  categorie = EQUIPEMENT
+  prixUnitaire = 150.0 TND
+  description = "Projecteur 4000 lumens"
+}
+
+object "**stylo : Charge**" as C2 #FFF3CD {
+  id = "chg-002"
+  libelle = "Stylo personnalisé LinSoft"
+  categorie = LOGISTIQUE
+  prixUnitaire = 1.5 TND
+  description = "Stylo avec logo LinSoft"
+}
+
+object "**traiteur : Charge**" as C3 #FFF3CD {
+  id = "chg-003"
+  libelle = "Pause-café + déjeuner"
+  categorie = RESTAURATION
+  prixUnitaire = 35.0 TND
+  description = "Par personne, buffet compris"
+}
+
+object "**micro : Charge**" as C4 #FFF3CD {
+  id = "chg-004"
+  libelle = "Microphone sans fil"
+  categorie = EQUIPEMENT
+  prixUnitaire = 80.0 TND
+  description = "Sennheiser sans fil"
+}
+
+'=============================================================
+' AFFECTATIONS (ChargeEvent)
+'=============================================================
+object "**ce1 : ChargeEvent**" as CE1 #E2D9F3 {
+  id = "ce-001"
+  chargeId = "chg-001"
+  eventId = "ev-2026-001"
+  quantite = 3
+  sousTotal = 450.0 TND  ← (150.0 × 3)
+}
+
+object "**ce2 : ChargeEvent**" as CE2 #E2D9F3 {
+  id = "ce-002"
+  chargeId = "chg-002"
+  eventId = "ev-2026-001"
+  quantite = 200
+  sousTotal = 300.0 TND  ← (1.5 × 200)
+}
+
+object "**ce3 : ChargeEvent**" as CE3 #E2D9F3 {
+  id = "ce-003"
+  chargeId = "chg-003"
+  eventId = "ev-2026-001"
+  quantite = 200
+  sousTotal = 7000.0 TND  ← (35.0 × 200)
+}
+
+object "**ce4 : ChargeEvent**" as CE4 #E2D9F3 {
+  id = "ce-004"
+  chargeId = "chg-004"
+  eventId = "ev-2026-001"
+  quantite = 2
+  sousTotal = 160.0 TND  ← (80.0 × 2)
+}
+
+'=============================================================
+' PRÉDICTION IA
+'=============================================================
+object "**pred1 : CoutPrediction**" as PRED #FFE5CC {
+  eventId = "ev-2026-001"
+  typeEvenement = "CONFERENCE"
+  nbParticipants = 200
+  dureeHeures = 9.0
+  localisation = "Tunis"
+  categoriesCharges = [EQUIPEMENT, LOGISTIQUE, RESTAURATION]
+  coutEstime = 8 250.0 TND
+  niveauConfiance = 89%
+  intervalle = [7 780 – 8 720] TND
+  dateCalcul = 2026-07-05 10:00
+}
+
+'=============================================================
+' NOTIFICATION
+'=============================================================
+object "**notif1 : Notification**" as N1 #FFE5CC {
+  id = "notif-001"
+  destinataireId = "usr-002"
+  eventId = "ev-2026-001"
+  type = CONFIRMATION_INSCRIPTION
+  canal = EMAIL
+  contenu = "Votre inscription au DevOps Summit est confirmée !"
+  dateEnvoi = 2026-07-10 14:30
+  statut = ENVOYEE
+}
+
+'=============================================================
+' RELATIONS
+'=============================================================
+U1 --> EV   : organise
+U2 --> R1   : effectue
+U3 --> R2   : effectue
+R1 --> EV   : concerne
+R2 --> EV   : concerne
+
+EV  --> CE1 : possède
+EV  --> CE2 : possède
+EV  --> CE3 : possède
+EV  --> CE4 : possède
+
+C1  --> CE1 : est affectée via
+C2  --> CE2 : est affectée via
+C3  --> CE3 : est affectée via
+C4  --> CE4 : est affectée via
+
+EV  --> PRED : estimé par
+
+R1  --> N1  : génère
+
+note bottom of PRED
+  <b>Coût calculé (charges) :</b>
+  450 + 300 + 7000 + 160 = <b>7 910 TND</b>
+  <b>Coût prédit (IA) : 8 250 TND</b>
+  Écart : +340 TND
+  → Charges supplémentaires à prévoir ?
+end note
+
+@enduml

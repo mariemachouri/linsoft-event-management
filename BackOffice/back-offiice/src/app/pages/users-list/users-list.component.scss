@@ -1,10 +1,9 @@
-// ── LinSoft Brand Variables ──────────────────────────────────
+// ── Variables (alignées sur registrations) ───────────────────
 $red:        #cc1f24;
 $red-dark:   #a81820;
-$red-glow:   rgba(204, 31, 36, 0.14);
-$navy:       #2A3652;
-$navy-mid:   #3d4f73;
-$navy-light: rgba(42, 54, 82, 0.08);
+$red-glow:   rgba(204, 31, 36, 0.18);
+$red-border: rgba(204, 31, 36, 0.30);
+$coral:      #FF5276;
 $bg:         rgba(255,255,255,0.05);
 $white:      #ffffff;
 $text:       #e2e8f0;
@@ -23,12 +22,14 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   min-height: 100vh;
 }
 
-// ── Hero Header ──────────────────────────────────────────────
+// ── Hero Header (même style que .page-header inscriptions) ───
 .hero-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(120deg, $navy 0%, $navy-mid 100%);
+  background: $red-glow;
+  border: 1px solid $red-border;
+  backdrop-filter: blur(10px);
   border-radius: $radius;
   padding: 22px 28px;
   margin-bottom: 22px;
@@ -41,7 +42,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     position: absolute;
     top: -32px; right: -32px;
     width: 110px; height: 110px;
-    background: rgba(204, 31, 36, 0.18);
+    background: rgba(204, 31, 36, 0.15);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -50,7 +51,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     position: absolute;
     bottom: -22px; left: 38%;
     width: 80px; height: 80px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -64,8 +65,8 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 
   .hero-icon-wrap {
     width: 52px; height: 52px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: $radius-sm;
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(4px);
@@ -76,21 +77,21 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 
   .hero-text {
     .hero-title {
-      color: $white;
+      color: $white !important;
       font-size: 1.35rem;
       font-weight: 700;
       margin: 0 0 4px;
       letter-spacing: -0.01em;
     }
     .hero-sub {
-      color: rgba(255, 255, 255, 0.62);
+      color: rgba(255, 255, 255, 0.65);
       font-size: 0.82rem;
       margin: 0;
     }
   }
 }
 
-// ── LinSoft Primary Button ────────────────────────────────────
+// ── Bouton principal LinSoft ──────────────────────────────────
 .btn-linsoft {
   display: inline-flex;
   align-items: center;
@@ -118,7 +119,6 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     color: $white !important;
   }
   &:active { transform: translateY(0); }
-  &.mt-16 { margin-top: 16px; }
 }
 
 // ── Error Banner ──────────────────────────────────────────────
@@ -127,7 +127,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   align-items: center;
   gap: 10px;
   background: rgba(204,31,36,0.15);
-  border: 1px solid rgba(204,31,36,0.30);
+  border: 1px solid $red-border;
   border-left: 4px solid $red;
   backdrop-filter: blur(8px);
   border-radius: $radius-sm;
@@ -145,7 +145,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     border: none;
     font-size: 20px;
     cursor: pointer;
-    color: #9b1c1c;
+    color: $muted;
     line-height: 1;
     padding: 0 2px;
     transition: color 0.2s;
@@ -165,7 +165,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   background: rgba(255,255,255,0.07) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid $border;
   border-radius: $radius;
   padding: 20px 22px;
   display: flex;
@@ -226,23 +226,23 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     .kpi-num       { color: $red; }
   }
   &.kpi-admin {
-    .kpi-accent    { background: $navy; }
-    .kpi-icon-wrap { background: $navy-light; }
-    .kpi-num       { color: $navy; }
+    .kpi-accent    { background: #7dd3fc; }
+    .kpi-icon-wrap { background: rgba(125, 211, 252, 0.10); }
+    .kpi-num       { color: #7dd3fc; }
   }
   &.kpi-active {
-    .kpi-accent    { background: #00a84a; }
-    .kpi-icon-wrap { background: rgba(0, 168, 74, 0.09); }
-    .kpi-num       { color: #00a84a; }
+    .kpi-accent    { background: #86efac; }
+    .kpi-icon-wrap { background: rgba(134, 239, 172, 0.10); }
+    .kpi-num       { color: #86efac; }
   }
 }
 
-// ── Main Card ─────────────────────────────────────────────────
+// ── Main Card (wrapper table) ─────────────────────────────────
 .main-card {
-  background: rgba(255,255,255,0.06) !important;
+  background: rgba(255,255,255,0.05) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid $border;
   border-radius: $radius;
   box-shadow: $shadow-card;
   overflow: hidden;
@@ -272,18 +272,14 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 
       &.inner {
         inset: 8px;
-        border-top-color: $navy;
+        border-top-color: rgba(255,255,255,0.30);
         animation-direction: reverse;
         animation-duration: 1.1s;
       }
     }
   }
 
-  p {
-    color: $muted;
-    font-size: 14px;
-    margin: 0;
-  }
+  p { color: $muted; font-size: 14px; margin: 0; }
 }
 
 // ── Empty State ───────────────────────────────────────────────
@@ -297,21 +293,18 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   text-align: center;
 
   .empty-icon { font-size: 58px; display: block; opacity: 0.35; margin-bottom: 6px; }
-  h3 { color: $navy; font-size: 1.1rem; font-weight: 600; margin: 0; }
+  h3 { color: $text !important; font-size: 1.1rem; font-weight: 600; margin: 0; }
   p  { color: $muted; font-size: 14px; margin: 0; }
 }
 
-// ── Table Section ─────────────────────────────────────────────
-.table-section { padding: 0; }
-
-// ── Search Bar ────────────────────────────────────────────────
+// ── Search Bar (style sombre comme inscriptions) ──────────────
 .search-bar {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
   border-bottom: 1px solid $border;
-  background: #fafbfd;
+  background: transparent;
 
   .search-input-wrap {
     flex: 1;
@@ -330,9 +323,9 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     .search-input {
       width: 100%;
       padding: 10px 40px 10px 40px;
-      border: 1.5px solid $border;
+      border: 1px solid $border;
       border-radius: $radius-sm;
-      background: $white;
+      background: rgba(255,255,255,0.07);
       font-size: 14px;
       color: $text;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -341,7 +334,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 
       &:focus {
         border-color: $red;
-        box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.07);
+        box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.12);
       }
       &::placeholder { color: $muted; }
     }
@@ -368,13 +361,14 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: $navy-light;
-      color: $navy;
+      background: rgba(255,255,255,0.08);
+      color: $text;
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 500;
       white-space: nowrap;
+      border: 1px solid $border;
 
       .results-num {
         font-weight: 800;
@@ -387,11 +381,10 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 // ── Users Table ───────────────────────────────────────────────
 .users-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
 
   thead tr {
-    background: linear-gradient(90deg, $navy 0%, $navy-mid 100%);
+    background: rgba(204,31,36,0.20);
 
     th {
       padding: 14px 18px;
@@ -399,8 +392,8 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: rgba(255, 255, 255, 0.78);
-      border: none;
+      color: #fff !important;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
       white-space: nowrap;
 
       &.th-num     { width: 52px; text-align: center; }
@@ -416,8 +409,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     &:last-child { border-bottom: none; }
 
     &:hover {
-      background: #f7f9fc;
-
+      background: rgba(255,255,255,0.08);
       .avatar { transform: scale(1.08) rotate(-2deg); }
       .act-btn { opacity: 1; transform: scale(1); }
     }
@@ -454,7 +446,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: transform 0.22s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -465,7 +457,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   gap: 2px;
 
   .u-username {
-    color: $navy;
+    color: #ffffff !important;
     font-weight: 600;
     font-size: 14px;
     line-height: 1.3;
@@ -478,7 +470,7 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
 
 // ── Email ─────────────────────────────────────────────────────
 .email-text {
-  color: #4a72b0;
+  color: rgba(255,255,255,0.70);
   font-size: 13.5px;
 }
 
@@ -491,21 +483,23 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  background: $navy-light;
-  color: $navy;
+  background: rgba(255,255,255,0.08);
+  color: $text;
+  border: 1px solid $border;
   letter-spacing: 0.02em;
   white-space: nowrap;
 
   .role-dot {
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: $navy;
+    background: $muted;
     flex-shrink: 0;
   }
 
   &.role-admin {
     background: $red-glow;
-    color: $red;
+    color: #fca5a5;
+    border-color: $red-border;
 
     .role-dot {
       background: $red;
@@ -528,27 +522,28 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s ease;
-  opacity: 0.6;
-  transform: scale(0.94);
+  opacity: 0.75;
+  transform: scale(0.95);
 
   i { font-size: 14px; }
 
   &.act-edit {
-    background: $navy-light;
-    color: $navy;
+    background: rgba(21,101,192,0.18);
+    color: #7dd3fc;
+    border: 1px solid rgba(21,101,192,0.30);
 
     &:hover {
-      background: $navy;
+      background: rgba(21,101,192,0.35);
       color: $white;
       opacity: 1;
       transform: scale(1);
-      box-shadow: 0 3px 12px rgba(42, 54, 82, 0.28);
     }
   }
 
   &.act-delete {
     background: $red-glow;
-    color: $red;
+    color: #fca5a5;
+    border: 1px solid $red-border;
 
     &:hover {
       background: $red;
@@ -566,14 +561,9 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   padding: 56px 20px;
   color: $muted;
 
-  .no-results-icon {
-    font-size: 40px;
-    display: block;
-    margin-bottom: 12px;
-    opacity: 0.5;
-  }
+  .no-results-icon { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.5; }
   p { font-size: 14px; margin: 0; }
-  strong { color: $navy; }
+  strong { color: $text; }
 }
 
 // ── Animations ────────────────────────────────────────────────
@@ -581,21 +571,17 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   from { opacity: 0; transform: translateY(-14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes rowEnter {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
 @keyframes pulse-dot {
   0%, 100% { transform: scale(1); opacity: 1; }
   50%       { transform: scale(1.5); opacity: 0.55; }
@@ -607,24 +593,17 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
-
     .btn-linsoft { width: 100%; justify-content: center; }
   }
-
   .kpi-row { grid-template-columns: 1fr; gap: 10px; }
-
   .search-bar {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
-
   .users-table {
     .th-email, .td-email { display: none; }
-
-    thead th,
-    tbody td { padding: 12px 10px; }
+    thead th, tbody td { padding: 12px 10px; }
   }
-
   .kpi-card .kpi-num { font-size: 1.5rem; }
 }

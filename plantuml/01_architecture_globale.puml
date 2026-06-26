@@ -1,0 +1,138 @@
+@startuml Architecture_Globale
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+skinparam rectangle {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+  RoundCorner 12
+}
+skinparam database {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+  BorderThickness 2
+  FontColor #856404
+}
+skinparam queue {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #155724
+}
+skinparam cloud {
+  BackgroundColor #E2D9F3
+  BorderColor #6F42C1
+  BorderThickness 2
+  FontColor #432874
+}
+skinparam arrow {
+  Color #0054A6
+  FontColor #0054A6
+  FontSize 10
+}
+skinparam note {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+}
+
+title <b><color:#0054A6>Architecture Globale – Plateforme Gestion d'Événements LinSoft</color></b>
+
+'── UTILISATEURS ──────────────────────────────────────────────
+actor "<b>Participant</b>" as P #LightCyan
+actor "<b>Organisateur</b>" as O #LightGreen
+actor "<b>Administrateur</b>" as A #FFD700
+
+'── FRONTENDS ─────────────────────────────────────────────────
+rectangle "**FrontOffice**\n<size:10>React :4300</size>" as FO #BDD7EE
+rectangle "**BackOffice**\n<size:10>Angular :4200</size>" as BO #C6EFCE
+
+'── KEYCLOAK ──────────────────────────────────────────────────
+cloud "**Keycloak**\n<size:10>OAuth2 / OIDC</size>" as KC
+
+'── API GATEWAY ───────────────────────────────────────────────
+rectangle "**API Gateway**\n<size:10>:8080 – Routage REST\nLoad Balancing</size>" as GW #4472C4
+
+'── MICROSERVICES ─────────────────────────────────────────────
+package "**Microservices Quarkus**" #E8F4FD {
+  rectangle "**events-service**\n<size:10>:8081</size>"         as ES  #D9E2F3
+  rectangle "**registrations-service**\n<size:10>:8082</size>"  as RS  #D9E2F3
+  rectangle "**users-service**\n<size:10>:8083</size>"          as US  #D9E2F3
+  rectangle "**notifications-service**\n<size:10>:8084</size>"  as NS  #FFE5CC
+  rectangle "**dashboard-service**\n<size:10>:8085</size>"      as DS  #E2D9F3
+  rectangle "**charges-service**\n<size:10>:8086 + IA</size>"   as CS  #D4EDDA
+}
+
+'── KAFKA ─────────────────────────────────────────────────────
+queue "**Apache Kafka**\nevent.* | registration.* | user.*" as KF
+
+'── BASES DE DONNÉES ──────────────────────────────────────────
+database "MongoDB\nevents" as DBE
+database "MongoDB\nregistrations" as DBR
+database "MongoDB\nusers" as DBU
+database "MongoDB\nnotifications" as DBN
+database "MongoDB\ndashboard" as DBD
+database "MongoDB\ncharges" as DBC
+
+'── OPENSHIFT ─────────────────────────────────────────────────
+cloud "**OpenShift**\nDocker + Kubernetes" as OSH
+
+'── CONNEXIONS ────────────────────────────────────────────────
+P --> FO : HTTP/HTTPS
+O --> BO : HTTP/HTTPS
+A --> BO : HTTP/HTTPS
+
+FO -right-> KC : Authentification
+BO -right-> KC : Authentification
+KC ..> GW : JWT Token
+
+FO --> GW : REST
+BO --> GW : REST
+
+GW --> ES : REST
+GW --> RS : REST
+GW --> US : REST
+GW --> CS : REST
+GW --> DS : REST
+
+ES --> KF  : publish\nevent.*
+RS --> KF  : publish\nregistration.*
+US --> KF  : publish\nuser.*
+
+KF --> NS  : consume
+KF --> DS  : consume
+KF --> ES  : consume\n(compteur)
+
+ES  --> DBE
+RS  --> DBR
+US  --> DBU
+NS  --> DBN
+DS  --> DBD
+CS  --> DBC
+
+GW .down.> OSH : déployé sur
+ES .down.> OSH
+RS .down.> OSH
+US .down.> OSH
+NS .down.> OSH
+DS .down.> OSH
+CS .down.> OSH
+
+note right of CS
+  <b>IA embarquée</b>
+  Random Forest
+  scikit-learn
+  Prédiction des coûts
+end note
+
+note bottom of KF
+  <b>Communication asynchrone</b>
+  topics : event.* | registration.* | user.*
+  Producteurs → Consommateurs
+end note
+
+@enduml

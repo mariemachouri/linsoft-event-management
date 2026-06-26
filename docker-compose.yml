@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  # MailHog — serveur SMTP local pour la démo (inbox web sur port 8025)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - eventmgmt-network
+
   # Keycloak for Authentication & Authorization
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
@@ -307,9 +317,13 @@ services:
       - QUARKUS_OIDC_TOKEN_ISSUER=http://localhost:8180/realms/event-mgmt
       - EMAIL_HOST=smtp.gmail.com
       - EMAIL_PORT=587
-      - EMAIL_USERNAME=achoury.mayem@gmail.com
-      - EMAIL_PASSWORD=aghgcmbgaypmholy
-      - EMAIL_FROM=achoury.mayem@gmail.com
+      - EMAIL_USERNAME=achourimariem4@gmail.com
+      - EMAIL_PASSWORD=qzuuzqutgjdotmge
+      - EMAIL_FROM=achourimariem4@gmail.com
+      - EMAIL_TLS=REQUIRED
+      - EMAIL_SSL=false
+      - EMAIL_AUTH=PLAIN LOGIN
+      - JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true
       # Africa's Talking SMS
       - AT_ENABLED=true
       - AT_SANDBOX=true

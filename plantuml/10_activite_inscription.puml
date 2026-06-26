@@ -1,0 +1,137 @@
+@startuml Activite_Inscription
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #1A1A1A
+  ArrowColor #28A745
+  ArrowFontColor #333333
+  DiamondBackgroundColor #FFF3CD
+  DiamondBorderColor #FFC107
+  DiamondFontColor #856404
+  StartColor #28A745
+  EndColor #C00000
+}
+skinparam partition {
+  BackgroundColor #EAF6EC
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #155724
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+}
+
+title <b><color:#28A745>Diagramme d'Activité – Processus d'Inscription à un Événement</color></b>
+
+|#EAF6EC|**Participant**|
+|#EEF4FB|**registrations-service**|
+|#FFE5CC|**notifications-service**|
+|#D9E2F3|**events-service**|
+
+|**Participant**|
+start
+:Se connecter via Keycloak ;
+:Consulter la liste des événements ;
+:Sélectionner un événement ;
+
+|**events-service**|
+:Vérifier statut de l'événement ;
+if (Événement publié ?) then (oui)
+  |**Participant**|
+  :Consulter les détails de l'événement ;
+  if (Souhaite s'inscrire ?) then (oui)
+    :Cliquer "S'inscrire" ;
+
+    |**registrations-service**|
+    :Vérifier si déjà inscrit ;
+    if (Déjà inscrit ?) then (oui)
+      |**Participant**|
+      :Afficher message :\n"Vous êtes déjà inscrit" ;
+      stop
+    else (non)
+      |**registrations-service**|
+      :Vérifier capacité disponible ;
+      if (Places disponibles ?) then (oui)
+        :Créer inscription\n{statut: CONFIRMEE} ;
+        :Incrémenter compteur participants ;
+        :Publier registration.confirmed ;
+
+        |**notifications-service**|
+        :Envoyer email de confirmation ;
+        :Programmer rappel J-7 ;
+        :Programmer rappel J-1 ;
+
+        |**Participant**|
+        :Recevoir confirmation par email ;
+        :Consulter ses inscriptions ;
+
+        fork
+          |**Participant**|
+          :Attendre l'événement ;
+          :Recevoir rappel J-7 ;
+          :Recevoir rappel J-1 ;
+          if (Se présente à l'événement ?) then (oui)
+            :Participer à l'événement ;
+            stop
+          else (annulation)
+            :Annuler son inscription ;
+            |**registrations-service**|
+            :Passer statut → ANNULEE ;
+            :Publier registration.cancelled ;
+            |**notifications-service**|
+            :Notifier l'organisateur ;
+            |**events-service**|
+            :Décrementer compteur participants ;
+            :Passer inscrit suivant de\nla liste d'attente → CONFIRME ;
+            stop
+          endif
+        end fork
+
+      else (complet)
+        :Créer inscription\n{statut: EN_ATTENTE, listeAttente: true} ;
+        note right
+          Position dans la file
+          d'attente calculée
+          automatiquement
+        end note
+        :Publier registration.waitlisted ;
+
+        |**notifications-service**|
+        :Envoyer email "Liste d'attente\navec position N" ;
+
+        |**Participant**|
+        :Recevoir notification liste d'attente ;
+        if (Reste en attente ?) then (oui)
+          :Attendre libération d'une place ;
+          |**registrations-service**|
+          :Place libérée → Promouvoir\nprochain en liste d'attente ;
+          :Passer statut → CONFIRMEE ;
+          |**notifications-service**|
+          :Notifier "Votre place est confirmée !" ;
+          |**Participant**|
+          :Recevoir confirmation de place ;
+          stop
+        else (non)
+          :Se retirer de la liste d'attente ;
+          stop
+        endif
+      endif
+    endif
+  else (non)
+    stop
+  endif
+else (non)
+  |**Participant**|
+  :Événement non disponible ;
+  stop
+endif
+
+@enduml

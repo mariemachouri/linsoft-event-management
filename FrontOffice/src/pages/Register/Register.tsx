@@ -92,11 +92,8 @@ export default function Register() {
       <div className="auth-panel auth-panel--brand">
         <div className="auth-brand">
           <div className="auth-brand__logo">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-              <rect width="48" height="48" rx="12" fill="#FF5276"/>
-              <path d="M14 34V14l10 10 10-10v20" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>Event Management</span>
+            <img src="/linsoft-white.webp" alt="LinSoft" style={{ height: '48px', width: 'auto', objectFit: 'contain', filter: 'brightness(1.1)' }} />
+            <span>Gestion d'événement</span>
           </div>
           <h2 className="auth-brand__tagline">
             Rejoignez la communauté événementielle LinSoft

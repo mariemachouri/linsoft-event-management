@@ -1,0 +1,120 @@
+@startuml Sequence_Charges
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam participant {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #155724
+  FontStyle bold
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #28A745
+  FontColor #28A745
+  FontStyle bold
+}
+skinparam sequence {
+  ArrowColor #28A745
+  ArrowFontColor #333333
+  ArrowFontSize 10
+  DividerBackgroundColor #EAF6EC
+  DividerBorderColor #28A745
+  GroupBackgroundColor #F0FFF0
+  GroupBorderColor #28A745
+  NoteBackgroundColor #FFF3CD
+  NoteBorderColor #FFC107
+  LifeLineBorderColor #28A745
+  LifeLineBackgroundColor #EAF6EC
+}
+
+title <b><color:#28A745>Diagramme de Séquence – Gestion des Charges & Calcul du Coût</color></b>
+
+actor          "Organisateur"            as ORG
+participant    "BackOffice\nAngular :4200" as BO   #C6EFCE
+participant    "API Gateway\n:8080"       as GW   #D9E2F3
+participant    "charges-service\n:8086"   as CS   #D4EDDA
+participant    "MongoDB\ncharges"         as DBC  #FFF3CD
+
+== Étape 1 : Créer des charges dans le catalogue ==
+
+ORG -> BO   : Ouvrir module "Catalogue des charges"
+BO  -> GW   : GET /charges
+GW  -> CS   : GET /charges
+CS  -> DBC  : find({})
+DBC --> CS  : Liste des charges existantes
+CS  --> GW  : 200 OK – [charges]
+GW  --> BO  : Liste des charges
+BO  --> ORG : Affichage du catalogue
+
+ORG -> BO   : Créer charge {libellé: "Projecteur", catégorie: EQUIPEMENT, prix: 150.0}
+BO  -> GW   : POST /charges {libellé, catégorie, prixUnitaire}
+GW  -> CS   : POST /charges
+CS  -> DBC  : insertOne(Charge)
+DBC --> CS  : Charge créée {id: "c001"}
+CS  --> GW  : 201 Created – {id: "c001"}
+GW  --> BO  : 201 Created
+BO  --> ORG : ✅ Charge "Projecteur" ajoutée
+
+ORG -> BO   : Créer charge {libellé: "Stylo", catégorie: LOGISTIQUE, prix: 1.5}
+BO  -> GW   : POST /charges {libellé, catégorie, prixUnitaire}
+GW  -> CS   : POST /charges
+CS  -> DBC  : insertOne(Charge)
+DBC --> CS  : Charge créée {id: "c002"}
+CS  --> GW  : 201 Created
+GW  --> BO  : 201 Created
+BO  --> ORG : ✅ Charge "Stylo" ajoutée
+
+== Étape 2 : Affecter des charges à un événement ==
+
+ORG -> BO   : Sélectionner événement {eventId: "ev001"}
+ORG -> BO   : Affecter Projecteur × 3 à cet événement
+BO  -> GW   : POST /charges/event {chargeId:"c001", eventId:"ev001", quantité:3}
+GW  -> CS   : POST /charges/event
+
+group Calcul du sous-total
+  CS  -> CS   : sousTotal = 150.0 × 3 = 450.0
+  CS  -> DBC  : insertOne(ChargeEvent{chargeId, eventId, quantité:3, sousTotal:450.0})
+  DBC --> CS  : ChargeEvent créé {id: "ce001"}
+end
+
+CS  --> GW  : 201 Created – {id:"ce001", sousTotal: 450.0}
+GW  --> BO  : 201 Created
+BO  --> ORG : ✅ Projecteur × 3 affecté – Sous-total: 450.0 TND
+
+ORG -> BO   : Affecter Stylo × 50 à cet événement
+BO  -> GW   : POST /charges/event {chargeId:"c002", eventId:"ev001", quantité:50}
+GW  -> CS   : POST /charges/event
+CS  -> CS   : sousTotal = 1.5 × 50 = 75.0
+CS  -> DBC  : insertOne(ChargeEvent{chargeId, eventId, quantité:50, sousTotal:75.0})
+DBC --> CS  : ChargeEvent créé {id: "ce002"}
+CS  --> GW  : 201 Created – {sousTotal: 75.0}
+GW  --> BO  : 201 Created
+BO  --> ORG : ✅ Stylo × 50 affecté – Sous-total: 75.0 TND
+
+== Étape 3 : Consulter le coût total de l'événement ==
+
+ORG -> BO   : Cliquer "Voir coût total de l'événement"
+BO  -> GW   : GET /charges/event/ev001/total
+GW  -> CS   : GET /charges/event/ev001/total
+
+CS  -> DBC  : find({eventId: "ev001"})
+DBC --> CS  : [ChargeEvent{sousTotal:450.0}, ChargeEvent{sousTotal:75.0}]
+
+CS  -> CS   : coûtTotal = 450.0 + 75.0 = <b>525.0 TND</b>
+
+CS  --> GW  : 200 OK – {eventId:"ev001", coûtTotal:525.0, charges:[...]}
+GW  --> BO  : 200 OK
+BO  --> ORG : 💰 Coût total des charges : **525.0 TND**
+
+note over ORG, DBC
+  L'organisateur peut maintenant :
+  - Comparer avec le budget estimé de l'événement
+  - Lancer une prédiction IA complémentaire
+  - Ajuster les quantités si nécessaire
+end note
+
+@enduml

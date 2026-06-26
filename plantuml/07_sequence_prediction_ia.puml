@@ -1,0 +1,111 @@
+@startuml Sequence_Prediction_IA
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam participant {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+  BorderThickness 2
+  FontColor #856404
+  FontStyle bold
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #FFC107
+  FontColor #856404
+  FontStyle bold
+}
+skinparam sequence {
+  ArrowColor #FFC107
+  ArrowFontColor #333333
+  ArrowFontSize 10
+  DividerBackgroundColor #FFFBF0
+  DividerBorderColor #FFC107
+  GroupBackgroundColor #FFFBF0
+  GroupBorderColor #FFC107
+  NoteBackgroundColor #D4EDDA
+  NoteBorderColor #28A745
+  LifeLineBorderColor #FFC107
+  LifeLineBackgroundColor #FFFBF0
+}
+
+title <b><color:#856404>Diagramme de Séquence – Prédiction des Coûts par IA</color></b>
+
+actor          "Organisateur"             as ORG
+participant    "BackOffice\nAngular :4200" as BO   #C6EFCE
+participant    "API Gateway\n:8080"        as GW   #D9E2F3
+participant    "charges-service\n:8086"    as CS   #D4EDDA
+participant    "Modèle Random Forest\n(scikit-learn)" as RF  #FFF3CD
+participant    "MongoDB\ncharges"          as DBC  #FFE5CC
+
+== Saisie des paramètres de l'événement ==
+
+ORG -> BO   : Accéder au module "Prédiction IA"
+BO  --> ORG : Formulaire de prédiction
+
+ORG -> BO   : Saisir paramètres :\n• type: CONFERENCE\n• nbParticipants: 150\n• durée: 8h\n• localisation: Tunis\n• catégories: [EQUIPEMENT, RESTAURATION]
+
+BO  -> GW   : POST /charges/predict\n{\n  typeEvenement: "CONFERENCE",\n  nbParticipants: 150,\n  dureeHeures: 8,\n  localisation: "Tunis",\n  categoriesCharges: ["EQUIPEMENT","RESTAURATION"]\n}
+
+GW  -> CS   : POST /charges/predict {paramètres}
+
+== Préparation des données (preprocessing) ==
+
+CS  -> CS   : Encoder typeEvenement → 2 (CONFERENCE)
+CS  -> CS   : Encoder localisation → 5 (Tunis)
+CS  -> CS   : Encoder catégories → [1, 0, 0, 1] (multi-hot)
+
+note right of CS
+  <b>Feature vector :</b>
+  [type=2, nbPart=150, durée=8,
+   loc=5, equip=1, logist=0,
+   service=0, restau=1]
+end note
+
+== Prédiction du modèle ==
+
+CS  -> RF   : predict(feature_vector)
+
+group Forêt aléatoire – 100 arbres de décision
+  RF -> RF  : Arbre 1 → 4200 TND
+  RF -> RF  : Arbre 2 → 4350 TND
+  RF -> RF  : ...
+  RF -> RF  : Arbre 100 → 4180 TND
+  RF -> RF  : Moyenne = 4250 TND
+  RF -> RF  : Std deviation = ±320 TND
+end
+
+RF  --> CS  : {coutEstime: 4250.0, niveauConfiance: 0.87}
+
+== Sauvegarde et réponse ==
+
+CS  -> DBC  : insertOne(CoutPrediction{\n  eventId, coutEstime:4250.0,\n  confiance:0.87, dateCalcul:now\n})
+DBC --> CS  : Prediction enregistrée
+
+CS  --> GW  : 200 OK\n{\n  coutEstime: 4250.0,\n  niveauConfiance: 87%,\n  intervalle: [3930, 4570]\n}
+GW  --> BO  : 200 OK {résultat prédiction}
+
+BO  --> ORG : 🤖 Coût estimé par IA : **4 250 TND**\nNiveau de confiance : 87%\nIntervalle : [3 930 – 4 570 TND]
+
+== Comparaison avec le coût calculé ==
+
+ORG -> BO   : Consulter coût calculé (charges affectées)
+BO  -> GW   : GET /charges/event/{id}/total
+GW  -> CS   : GET coût total
+CS  -> DBC  : Σ sousTotal des ChargeEvent
+DBC --> CS  : coûtTotal = 3 800 TND
+CS  --> GW  : 3 800 TND
+GW  --> BO  : 3 800 TND
+
+BO  --> ORG : 📊 Comparaison :\n• Coût calculé (charges affectées) : 3 800 TND\n• Coût estimé par IA : 4 250 TND\n• Écart : +450 TND (charges manquantes ?)
+
+note over ORG
+  L'organisateur décide :
+  - Ajouter des charges manquantes
+  - Ou valider le budget de 3 800 TND
+  - Et publier l'événement
+end note
+
+@enduml

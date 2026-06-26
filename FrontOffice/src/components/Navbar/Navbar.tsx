@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Calendar, ChevronDown, LogOut, Menu, User, X, Bell, LayoutGrid } from 'lucide-react';
+import { Calendar, ChevronDown, LogOut, Menu, User, X, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
@@ -49,11 +49,6 @@ export default function Navbar() {
   return (
     <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
-        {/* Landing page button */}
-        <Link to="/" className="navbar__landing-btn" title="Retour à l'accueil" onClick={() => setMenuOpen(false)}>
-          <LayoutGrid size={16} />
-        </Link>
-
         {/* Logo */}
         <Link to="/home" className="navbar__logo" onClick={() => setMenuOpen(false)}>
           <img src="/linsoft-white.webp" alt="LinSoft" className="navbar__logo-img" />

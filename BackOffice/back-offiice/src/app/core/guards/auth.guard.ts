@@ -21,11 +21,9 @@ export class AuthGuard extends KeycloakAuthGuard {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
-    // Rediriger vers Keycloak si non authentifié
+    // Non authentifié → renvoyer vers le login unifié du FrontOffice (pas de formulaire Keycloak)
     if (!this.authenticated) {
-      await this.keycloak.login({
-        redirectUri: window.location.origin + '/#' + state.url,
-      });
+      window.location.href = 'http://localhost:4300/login';
       return false;
     }
 

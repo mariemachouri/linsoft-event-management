@@ -20,6 +20,10 @@ public class Event extends PanacheMongoEntity {
     public String organizerId;
     public String imageUrl;
 
+    // Coordonnées géographiques du lieu
+    public Double locationLat;
+    public Double locationLng;
+
     // Événement en ligne (formation/workshop) + lien Google Meet privé (admin only)
     public Boolean isOnline = false;
     public String meetingLink;

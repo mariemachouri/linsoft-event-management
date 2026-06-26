@@ -26,6 +26,8 @@ export interface Event {
   imageUrl?: string;
   isOnline?: boolean;
   meetingLink?: string;
+  locationLat?: number;
+  locationLng?: number;
   chargeIds?: string[];
   chargePredictionId?: string;
   eventStatisticsId?: string;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService, Event } from '../../../core/services/event.service';
+import { MapLocation } from '../../../shared/components/map-picker/map-picker.component';
 
 @Component({
   selector: 'app-event-edit',
@@ -18,6 +19,8 @@ export class EventEditComponent implements OnInit {
   eventId: string = '';
   currentEvent: Event | null = null;
   imagePreview: string | null = null;
+  selectedLat: number | null = null;
+  selectedLng: number | null = null;
   
   // Options pour les catégories
   categories = [
@@ -87,6 +90,8 @@ export class EventEditComponent implements OnInit {
         const endDate = event.endDate ? this.formatDateForInput(event.endDate) : '';
         
         this.imagePreview = event.imageUrl || null;
+        this.selectedLat = event.locationLat ?? null;
+        this.selectedLng = event.locationLng ?? null;
         this.eventForm.patchValue({
           title: event.title || event.name,
           description: event.description || '',
@@ -188,7 +193,9 @@ export class EventEditComponent implements OnInit {
       status: this.f['status'].value,
       imageUrl: this.f['imageUrl'].value || undefined,
       isOnline: this.f['isOnline'].value || false,
-      meetingLink: this.f['isOnline'].value ? (this.f['meetingLink'].value || undefined) : undefined
+      meetingLink: this.f['isOnline'].value ? (this.f['meetingLink'].value || undefined) : undefined,
+      locationLat: this.selectedLat ?? undefined,
+      locationLng: this.selectedLng ?? undefined,
     };
 
     this.eventService.updateEvent(this.eventId, eventData).subscribe({
@@ -212,6 +219,12 @@ export class EventEditComponent implements OnInit {
         }
       }
     });
+  }
+
+  onLocationSelected(loc: MapLocation): void {
+    this.eventForm.patchValue({ location: loc.address });
+    this.selectedLat = loc.lat;
+    this.selectedLng = loc.lng;
   }
 
   cancel(): void {

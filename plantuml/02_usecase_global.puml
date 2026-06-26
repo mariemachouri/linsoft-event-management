@@ -1,0 +1,174 @@
+@startuml Usecase_Global
+!theme plain
+left to right direction
+
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+  FontSize 13
+}
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #4472C4
+  BorderThickness 1.5
+  FontColor #1A1A1A
+  FontSize 11
+}
+skinparam package {
+  BackgroundColor #F5F9FF
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+  FontSize 12
+}
+skinparam rectangle {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+  BorderThickness 1.5
+  FontColor #444444
+  FontStyle bold
+}
+skinparam arrow {
+  Color #0054A6
+  FontSize 10
+  FontColor #333333
+}
+
+title <b><color:#0054A6>Diagramme de Cas d'Utilisation\nPlateforme Gestion d'Evenements LinSoft</color></b>
+
+'======================================
+' ACTEURS
+'======================================
+actor "Participant"    as PART
+actor "Organisateur"   as ORG
+actor "Administrateur" as ADM
+
+'======================================
+' SYSTEME
+'======================================
+rectangle "Plateforme Gestion d'Evenements LinSoft" {
+
+  '--------------------------------------
+  ' 1. AUTHENTIFICATION
+  '--------------------------------------
+  package "Authentification" #E8F4FD {
+    usecase "S'authentifier (SSO Keycloak)" as UC_AUTH
+    usecase "Gerer son profil"              as UC_PROFIL
+  }
+
+  '--------------------------------------
+  ' 2. EVENEMENTS
+  '--------------------------------------
+  package "Gestion des Evenements" #D9E2F3 {
+    usecase "Consulter les evenements" as UC_LIST
+    usecase "Rechercher / Filtrer"     as UC_SEARCH
+    usecase "Creer un evenement"       as UC_CREATE
+    usecase "Modifier un evenement"    as UC_EDIT
+    usecase "Publier un evenement"     as UC_PUB
+    usecase "Annuler un evenement"     as UC_CANCEL
+  }
+
+  '--------------------------------------
+  ' 3. INSCRIPTIONS
+  '--------------------------------------
+  package "Gestion des Inscriptions" #D4EDDA {
+    usecase "S'inscrire a un evenement"  as UC_INSCRIRE
+    usecase "Annuler son inscription"    as UC_ANNULER
+    usecase "Consulter ses inscriptions" as UC_MYINS
+    usecase "Gerer liste d'attente"      as UC_ATTENTE
+  }
+
+  UC_INSCRIRE .right.> UC_ATTENTE : <<extend>>
+
+  '--------------------------------------
+  ' 4. NOTIFICATIONS
+  '--------------------------------------
+  package "Notifications" #FFE5CC {
+    usecase "Recevoir confirmation"    as UC_NC
+    usecase "Recevoir rappels J-7/J-1" as UC_NR
+    usecase "Recevoir annulation"      as UC_NA
+  }
+
+  UC_INSCRIRE ..> UC_NC : <<include>>
+  UC_CANCEL   ..> UC_NA : <<include>>
+
+  '--------------------------------------
+  ' 5. CHARGES
+  '--------------------------------------
+  package "Gestion des Charges" #FFF3CD {
+    usecase "Gerer catalogue charges"       as UC_CAT
+    usecase "Affecter charges a evenement"  as UC_AFF
+    usecase "Calculer cout total"           as UC_COUT
+    usecase "Predire cout par IA"           as UC_IA
+  }
+
+  UC_AFF  ..> UC_COUT : <<include>>
+  UC_COUT .right.> UC_IA : <<extend>>
+
+  '--------------------------------------
+  ' 6. TABLEAU DE BORD
+  '--------------------------------------
+  package "Tableau de Bord" #E2D9F3 {
+    usecase "Voir statistiques"     as UC_STATS
+    usecase "Voir taux remplissage" as UC_TAUX
+    usecase "Exporter rapport"      as UC_EXPORT
+  }
+
+  '--------------------------------------
+  ' 7. ADMINISTRATION
+  '--------------------------------------
+  package "Administration" #FDECEA {
+    usecase "Gerer utilisateurs"    as UC_USERS
+    usecase "Attribuer roles"       as UC_ROLES
+    usecase "Superviser plateforme" as UC_SUP
+  }
+}
+
+'======================================
+' CONNEXIONS PARTICIPANT
+'======================================
+PART --> UC_AUTH
+PART --> UC_LIST
+PART --> UC_SEARCH
+PART --> UC_INSCRIRE
+PART --> UC_ANNULER
+PART --> UC_MYINS
+PART --> UC_NC
+PART --> UC_NR
+PART --> UC_NA
+
+'======================================
+' CONNEXIONS ORGANISATEUR
+'======================================
+ORG --> UC_AUTH
+ORG --> UC_CREATE
+ORG --> UC_EDIT
+ORG --> UC_PUB
+ORG --> UC_CANCEL
+ORG --> UC_CAT
+ORG --> UC_AFF
+ORG --> UC_IA
+ORG --> UC_STATS
+ORG --> UC_TAUX
+ORG --> UC_EXPORT
+ORG --> UC_NA
+
+'======================================
+' CONNEXIONS ADMINISTRATEUR
+'======================================
+ADM --> UC_AUTH
+ADM --> UC_USERS
+ADM --> UC_ROLES
+ADM --> UC_SUP
+ADM --> UC_STATS
+ADM --> UC_EXPORT
+
+@enduml

@@ -1,0 +1,201 @@
+@startuml Diagramme_Composants
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam component {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #1A1A1A
+  FontStyle bold
+}
+skinparam interface {
+  BackgroundColor #4472C4
+  BorderColor #0054A6
+  FontColor #FFFFFF
+}
+skinparam package {
+  BackgroundColor #EEF4FB
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+}
+skinparam database {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+  BorderThickness 2
+  FontColor #856404
+}
+skinparam queue {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #155724
+}
+skinparam cloud {
+  BackgroundColor #E2D9F3
+  BorderColor #6F42C1
+  FontColor #432874
+}
+skinparam arrow {
+  Color #333333
+  FontSize 9
+}
+skinparam note {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+}
+
+title <b><color:#0054A6>Diagramme de Composants – Plateforme Gestion d'Événements</color></b>
+
+'=============================================================
+' COUCHE CLIENT
+'=============================================================
+package "**Couche Présentation**" #F0F7FF {
+  component "[FrontOffice]\nReact :4300\n\nPages publiques\nInscriptions\nConsultation" as FO #BDD7EE
+  component "[BackOffice]\nAngular :4200\n\nGestion événements\nGestion charges\nTableau de bord" as BO #C6EFCE
+
+  interface "REST/HTTPS" as I_FO
+  interface "REST/HTTPS" as I_BO
+  FO -down- I_FO
+  BO -down- I_BO
+}
+
+'=============================================================
+' SÉCURITÉ
+'=============================================================
+cloud "**Keycloak**\nOAuth2 / OIDC\nJWT Token\nRealm: linsoft-events" as KC
+
+FO ..> KC : authentification
+BO ..> KC : authentification
+
+'=============================================================
+' API GATEWAY
+'=============================================================
+package "**API Gateway :8080**" #E8F4FD {
+  component "[Gateway]\nRoutage REST\nLoad Balancing\nValidation JWT" as GW #4472C4
+
+  interface "REST /events"        as I_GW_EV
+  interface "REST /registrations" as I_GW_REG
+  interface "REST /users"         as I_GW_USR
+  interface "REST /charges"       as I_GW_CH
+  interface "REST /dashboard"     as I_GW_DS
+}
+
+I_FO --> GW
+I_BO --> GW
+KC ..> GW : vérification JWT
+
+GW -down- I_GW_EV
+GW -down- I_GW_REG
+GW -down- I_GW_USR
+GW -down- I_GW_CH
+GW -down- I_GW_DS
+
+'=============================================================
+' MICROSERVICES
+'=============================================================
+package "**Microservices Quarkus**" #F5F5F5 {
+
+  package "events-service :8081" #D9E2F3 {
+    component "[EventResource]\nREST Controller" as ES_R
+    component "[EventService]\nLogique métier" as ES_S
+    component "[EventRepository]\nPanache MongoDB" as ES_DB
+    component "[EventKafkaProducer]" as ES_KP
+    component "[EventKafkaConsumer]\n(compteur)" as ES_KC
+    database "MongoDB\nevents" as DBE
+    ES_R --> ES_S
+    ES_S --> ES_DB
+    ES_DB --> DBE
+    ES_S --> ES_KP
+    ES_KC --> ES_S
+  }
+
+  package "registrations-service :8082" #D4EDDA {
+    component "[RegistrationResource]" as RS_R
+    component "[RegistrationService]" as RS_S
+    component "[RegistrationRepository]" as RS_DB
+    component "[RegKafkaProducer]" as RS_KP
+    database "MongoDB\nregistrations" as DBR
+    RS_R --> RS_S
+    RS_S --> RS_DB
+    RS_DB --> DBR
+    RS_S --> RS_KP
+  }
+
+  package "users-service :8083" #BDD7EE {
+    component "[UserResource]" as US_R
+    component "[UserService]" as US_S
+    component "[UserRepository]" as US_DB
+    component "[UserKafkaProducer]" as US_KP
+    database "MongoDB\nusers" as DBU
+    US_R --> US_S
+    US_S --> US_DB
+    US_DB --> DBU
+    US_S --> US_KP
+  }
+
+  package "notifications-service :8084" #FFE5CC {
+    component "[NotificationConsumer]\nKafka Listener" as NS_KC
+    component "[NotificationService]\nEmail + SMS" as NS_S
+    component "[MailSender]\nSMTP" as NS_MAIL
+    component "[SmsSender]\nAPI SMS" as NS_SMS
+    database "MongoDB\nnotifications" as DBN
+    NS_KC --> NS_S
+    NS_S --> NS_MAIL
+    NS_S --> NS_SMS
+    NS_S --> DBN
+  }
+
+  package "dashboard-service :8085" #E2D9F3 {
+    component "[DashboardConsumer]\nKafka Listener" as DS_KC
+    component "[DashboardService]\nAgrégation stats" as DS_S
+    component "[DashboardResource]\nREST" as DS_R
+    database "MongoDB\ndashboard" as DBD
+    DS_KC --> DS_S
+    DS_S --> DBD
+    DS_R --> DS_S
+  }
+
+  package "charges-service :8086" #FFF3CD {
+    component "[ChargeResource]\nREST Controller" as CS_R
+    component "[ChargeService]\nGestion catalogue" as CS_S
+    component "[ChargeEventService]\nAffectation" as CS_ES
+    component "[PredictionService]\nIA Random Forest" as CS_IA
+    component "[RandomForestModel]\ncost_predictor.pkl" as CS_RF
+    database "MongoDB\ncharges" as DBC
+    CS_R --> CS_S
+    CS_R --> CS_ES
+    CS_R --> CS_IA
+    CS_S --> DBC
+    CS_ES --> DBC
+    CS_IA --> CS_RF
+  }
+}
+
+'=============================================================
+' KAFKA
+'=============================================================
+queue "**Apache Kafka**\nBroker :9092" as KF
+
+ES_KP --> KF  : event.*
+RS_KP --> KF  : registration.*
+US_KP --> KF  : user.*
+
+KF --> NS_KC  : event.* / registration.* / user.*
+KF --> DS_KC  : event.* / registration.*
+KF --> ES_KC  : registration.*
+
+'=============================================================
+' CONNEXIONS GATEWAY → SERVICES
+'=============================================================
+I_GW_EV  --> ES_R
+I_GW_REG --> RS_R
+I_GW_USR --> US_R
+I_GW_CH  --> CS_R
+I_GW_DS  --> DS_R
+
+@enduml

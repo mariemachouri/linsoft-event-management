@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RegistrationService, Registration } from '../../core/services/registration.service';
 import { EventService, Event } from '../../core/services/event.service';
 import { UserService, UserResponse } from '../../core/services/user.service';
+
+export interface EventGroup {
+  event: Event;
+  registrations: Registration[];
+  isFull: boolean;
+  collapsed: boolean;
+}
 
 @Component({
   selector: 'app-registrations-management',
@@ -20,28 +26,54 @@ export class RegistrationsManagementComponent implements OnInit {
   error: string | null = null;
   successMsg: string | null = null;
   searchQuery = '';
-  filterStatus = '';
 
-  get filteredRegistrations(): Registration[] {
+  get eventGroups(): EventGroup[] {
     const q = this.searchQuery.toLowerCase();
-    return this.registrations.filter(r => {
-      const eventName = this.getEventName(r.eventId).toLowerCase();
-      const participantName = this.getParticipantName(r.participantId).toLowerCase();
-      const matchSearch = !q ||
-        eventName.includes(q) ||
-        participantName.includes(q) ||
-        (r.id || '').toLowerCase().includes(q);
-      const matchStatus = !this.filterStatus || (r.status || '').toUpperCase() === this.filterStatus;
-      return matchSearch && matchStatus;
+    const grouped: Record<string, Registration[]> = {};
+
+    for (const reg of this.registrations) {
+      if (reg.status?.toUpperCase() === 'CANCELLED') continue;
+      const key = reg.eventId;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(reg);
+    }
+
+    const groups: EventGroup[] = [];
+    Object.keys(grouped).forEach(eventId => {
+      const regs = grouped[eventId];
+      const event = this.events.find(e => e.id === eventId);
+      if (!event) return;
+
+      const eventName = (event.name || event.title || '').toLowerCase();
+      const matchesSearch = !q || eventName.includes(q) ||
+        regs.some(r => this.getParticipantName(r).toLowerCase().includes(q) ||
+                       this.getParticipantEmail(r).toLowerCase().includes(q));
+      if (!matchesSearch) return;
+
+      const isFull = !!(event.maxParticipants && event.maxParticipants > 0 &&
+        (event.currentParticipants ?? 0) >= event.maxParticipants);
+
+      groups.push({ event, registrations: regs, isFull, collapsed: false });
     });
+
+    return groups.sort((a, b) =>
+      (a.event.name || a.event.title || '').localeCompare(b.event.name || b.event.title || '')
+    );
+  }
+
+  get totalParticipants(): number {
+    return this.registrations.filter(r => r.status?.toUpperCase() !== 'CANCELLED').length;
+  }
+
+  get fullEventsCount(): number {
+    return this.eventGroups.filter(g => g.isFull).length;
   }
 
   constructor(
     private registrationService: RegistrationService,
     private eventService: EventService,
-    private userService: UserService,
-    private router: Router
-  ) { }
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.loadAll();
@@ -68,31 +100,19 @@ export class RegistrationsManagementComponent implements OnInit {
     });
   }
 
-  createRegistration(): void {
-    this.router.navigate(['/registrations/create']);
+  toggleGroup(group: EventGroup): void {
+    group.collapsed = !group.collapsed;
   }
 
-  editRegistration(id: string): void {
-    this.router.navigate(['/registrations/edit', id]);
-  }
-
-  confirmRegistration(id: string): void {
-    this.registrationService.confirmRegistration(id).subscribe({
-      next: (updated) => {
-        const idx = this.registrations.findIndex(r => r.id === id);
-        if (idx !== -1) this.registrations[idx] = updated;
-        this.showSuccess('Inscription confirmée avec succès !');
-      },
-      error: () => { this.error = 'Erreur lors de la confirmation.'; }
-    });
-  }
-
-  cancelRegistration(id: string): void {
-    if (!confirm('Annuler cette inscription ?')) return;
+  cancelRegistration(id: string, group: EventGroup): void {
+    if (!confirm('Annuler l\'inscription de ce participant ?')) return;
     this.registrationService.cancelRegistration(id).subscribe({
-      next: (updated) => {
-        const idx = this.registrations.findIndex(r => r.id === id);
-        if (idx !== -1) this.registrations[idx] = updated;
+      next: () => {
+        this.registrations = this.registrations.filter(r => r.id !== id);
+        const event = group.event;
+        if (event.currentParticipants && event.currentParticipants > 0) {
+          event.currentParticipants--;
+        }
         this.showSuccess('Inscription annulée.');
       },
       error: () => { this.error = 'Erreur lors de l\'annulation.'; }
@@ -110,53 +130,33 @@ export class RegistrationsManagementComponent implements OnInit {
     });
   }
 
-  getEventName(eventId: string): string {
-    const event = this.events.find(e => e.id === eventId);
-    return event ? event.name : eventId || '—';
-  }
-
-  getParticipantName(participantId: string): string {
-    const user = this.users.find(u => u.id === participantId || u.keycloakId === participantId);
-    if (!user) return participantId || '—';
+  getParticipantName(reg: Registration): string {
+    if (reg.isGuest) {
+      const full = [reg.guestFirstName, reg.guestLastName].filter(Boolean).join(' ');
+      return full || 'Visiteur';
+    }
+    const user = this.users.find(u => u.id === reg.participantId || u.keycloakId === reg.participantId);
+    if (!user) return reg.participantId || '—';
     const full = [user.firstName, user.lastName].filter(Boolean).join(' ');
-    return full || user.username || user.email || participantId;
+    return full || user.username || user.email || reg.participantId;
   }
 
-  getParticipantEmail(participantId: string): string {
-    const user = this.users.find(u => u.id === participantId || u.keycloakId === participantId);
+  getParticipantEmail(reg: Registration): string {
+    if (reg.isGuest) return reg.guestEmail || '';
+    const user = this.users.find(u => u.id === reg.participantId || u.keycloakId === reg.participantId);
     return user?.email || '';
   }
 
+  getParticipantInitial(reg: Registration): string {
+    return this.getParticipantName(reg).charAt(0).toUpperCase() || '?';
+  }
+
   getRegistrationDate(reg: Registration): string {
-    return reg.registeredAt || reg.registrationDate || reg.createdAt || '';
+    return (reg as any).registeredAt || (reg as any).registrationDate || (reg as any).createdAt || '';
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status?.toUpperCase()) {
-      case 'PENDING':    return 'status-pending';
-      case 'CONFIRMED':  return 'status-confirmed';
-      case 'WAITLISTED': return 'status-waitlisted';
-      case 'CANCELLED':  return 'status-cancelled';
-      default:           return 'status-pending';
-    }
-  }
-
-  getStatusLabel(status: string): string {
-    switch (status?.toUpperCase()) {
-      case 'PENDING':    return 'En attente';
-      case 'CONFIRMED':  return 'Confirmé';
-      case 'WAITLISTED': return 'Liste d\'attente';
-      case 'CANCELLED':  return 'Annulé';
-      default:           return status || 'Inconnu';
-    }
-  }
-
-  canConfirm(status: string): boolean {
-    return status?.toUpperCase() === 'PENDING' || status?.toUpperCase() === 'WAITLISTED';
-  }
-
-  canCancel(status: string): boolean {
-    return status?.toUpperCase() !== 'CANCELLED';
+  getEventDisplayName(event: Event): string {
+    return event.name || event.title || '—';
   }
 
   private showSuccess(msg: string): void {
@@ -164,4 +164,3 @@ export class RegistrationsManagementComponent implements OnInit {
     setTimeout(() => { this.successMsg = null; }, 3000);
   }
 }
-

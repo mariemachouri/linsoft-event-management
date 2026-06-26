@@ -1,0 +1,225 @@
+@startuml Diagramme_Classes
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam class {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  HeaderBackgroundColor #0054A6
+  HeaderFontColor #FFFFFF
+  HeaderFontStyle bold
+  FontColor #1A1A1A
+  AttributeFontColor #333333
+  ArrowColor #0054A6
+}
+
+skinparam stereotypeCBackgroundColor #4472C4
+skinparam stereotypeABackgroundColor #70AD47
+skinparam stereotypeEBackgroundColor #FFC107
+
+title <b><color:#0054A6>Diagramme de Classes – Plateforme Gestion d'Événements</color></b>
+
+'==============================================================
+' ENTITÉ : USER
+'==============================================================
+class User <<Entity>> #BDD7EE {
+  - id : String
+  - nom : String
+  - prenom : String
+  - email : String
+  - motDePasse : String
+  - telephone : String
+  - role : RoleEnum
+  - dateCreation : LocalDateTime
+  - actif : Boolean
+  --
+  + authenticate() : Boolean
+  + updateProfile() : void
+  + changeRole(role: RoleEnum) : void
+}
+
+enum RoleEnum <<Enumeration>> #C6EFCE {
+  ADMIN
+  ORGANISATEUR
+  PARTICIPANT
+}
+
+'==============================================================
+' ENTITÉ : EVENT
+'==============================================================
+class Event <<Entity>> #D9E2F3 {
+  - id : String
+  - titre : String
+  - description : String
+  - dateDebut : LocalDateTime
+  - dateFin : LocalDateTime
+  - lieu : String
+  - capaciteMax : Integer
+  - nbInscrits : Integer
+  - budgetEstime : Double
+  - statut : StatutEvent
+  - organisateurId : String
+  - dateCreation : LocalDateTime
+  --
+  + publier() : void
+  + annuler() : void
+  + incrementerInscrits() : void
+  + isComplet() : Boolean
+}
+
+enum StatutEvent <<Enumeration>> #FFE5CC {
+  BROUILLON
+  PUBLIE
+  ANNULE
+  TERMINE
+}
+
+'==============================================================
+' ENTITÉ : REGISTRATION
+'==============================================================
+class Registration <<Entity>> #D4EDDA {
+  - id : String
+  - eventId : String
+  - participantId : String
+  - dateInscription : LocalDateTime
+  - statut : StatutInscription
+  - listeAttente : Boolean
+  - positionAttente : Integer
+  --
+  + confirmer() : void
+  + annuler() : void
+  + passerEnListeAttente() : void
+}
+
+enum StatutInscription <<Enumeration>> #FFF3CD {
+  EN_ATTENTE
+  CONFIRMEE
+  ANNULEE
+}
+
+'==============================================================
+' ENTITÉ : NOTIFICATION
+'==============================================================
+class Notification <<Entity>> #FFE5CC {
+  - id : String
+  - destinataireId : String
+  - eventId : String
+  - type : TypeNotification
+  - canal : CanalNotification
+  - contenu : String
+  - dateEnvoi : LocalDateTime
+  - statut : StatutNotification
+  --
+  + envoyer() : void
+  + marquerCommeEnvoyee() : void
+}
+
+enum TypeNotification <<Enumeration>> #FFFFFF {
+  CONFIRMATION_INSCRIPTION
+  RAPPEL_J7
+  RAPPEL_J1
+  ANNULATION
+  MODIFICATION
+}
+
+enum CanalNotification <<Enumeration>> #FFFFFF {
+  EMAIL
+  SMS
+}
+
+'==============================================================
+' ENTITÉ : CHARGE
+'==============================================================
+class Charge <<Entity>> #C6EFCE {
+  - id : String
+  - libelle : String
+  - description : String
+  - categorie : CategorieCharge
+  - prixUnitaire : Double
+  - dateCreation : LocalDateTime
+  --
+  + updatePrix(prix: Double) : void
+  + isAffecte() : Boolean
+}
+
+enum CategorieCharge <<Enumeration>> #E2D9F3 {
+  EQUIPEMENT
+  LOGISTIQUE
+  SERVICE
+  COMMUNICATION
+  RESTAURATION
+}
+
+'==============================================================
+' ENTITÉ : CHARGE_EVENT (Association)
+'==============================================================
+class ChargeEvent <<Entity>> #D4EDDA {
+  - id : String
+  - chargeId : String
+  - eventId : String
+  - quantite : Integer
+  - sousTotal : Double
+  --
+  + calculerSousTotal() : Double
+  + updateQuantite(q: Integer) : void
+}
+
+'==============================================================
+' ENTITÉ : PREDICTION
+'==============================================================
+class CoutPrediction <<ValueObject>> #FFF3CD {
+  - eventId : String
+  - typeEvenement : String
+  - nbParticipants : Integer
+  - dureeHeures : Double
+  - localisation : String
+  - categoriesCharges : List<String>
+  - coutEstime : Double
+  - niveauConfiance : Double
+  - dateCalcul : LocalDateTime
+  --
+  + predict() : Double
+  + getConfidence() : Double
+}
+
+'==============================================================
+' ENTITÉ : DASHBOARD STAT
+'==============================================================
+class DashboardStat <<Entity>> #E2D9F3 {
+  - id : String
+  - periode : String
+  - totalEvenements : Integer
+  - totalInscrits : Integer
+  - tauxRemplissage : Double
+  - nbAnnulations : Integer
+  - dateCalcul : LocalDateTime
+  --
+  + refresh() : void
+  + calculerTaux() : Double
+}
+
+'==============================================================
+' RELATIONS
+'==============================================================
+User "1" -- "0..*" Event         : organise >
+User "1" -- "0..*" Registration  : effectue >
+User "1" -- "0..*" Notification  : reçoit >
+
+Event "1" -- "0..*" Registration : concerne >
+Event "1" -- "0..*" ChargeEvent  : possède >
+Event "1" -- "0..1" CoutPrediction : estimé par >
+Event "1" -- "0..*" Notification : génère >
+
+Charge "1" -- "0..*" ChargeEvent : inclut >
+
+User      *-- RoleEnum
+Event     *-- StatutEvent
+Registration *-- StatutInscription
+Notification *-- TypeNotification
+Notification *-- CanalNotification
+Charge    *-- CategorieCharge
+
+@enduml

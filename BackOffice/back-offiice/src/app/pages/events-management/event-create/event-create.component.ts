@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EventService, Event } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { MapLocation } from '../../../shared/components/map-picker/map-picker.component';
 
 @Component({
   selector: 'app-event-create',
@@ -17,6 +18,8 @@ export class EventCreateComponent implements OnInit {
   success: string = '';
   organizerEmail: string = '';
   imagePreview: string | null = null;
+  selectedLat: number | null = null;
+  selectedLng: number | null = null;
   
   // Options pour les catégories
   categories = [
@@ -142,7 +145,9 @@ export class EventCreateComponent implements OnInit {
       organizerId: this.organizerEmail || 'achoury.mayem@gmail.com',
       imageUrl: this.f['imageUrl'].value || undefined,
       isOnline: this.f['isOnline'].value || false,
-      meetingLink: this.f['isOnline'].value ? (this.f['meetingLink'].value || undefined) : undefined
+      meetingLink: this.f['isOnline'].value ? (this.f['meetingLink'].value || undefined) : undefined,
+      locationLat: this.selectedLat ?? undefined,
+      locationLng: this.selectedLng ?? undefined,
     };
 
     this.eventService.createEvent(eventData).subscribe({
@@ -164,6 +169,12 @@ export class EventCreateComponent implements OnInit {
         }
       }
     });
+  }
+
+  onLocationSelected(loc: MapLocation): void {
+    this.eventForm.patchValue({ location: loc.address });
+    this.selectedLat = loc.lat;
+    this.selectedLng = loc.lng;
   }
 
   cancel(): void {

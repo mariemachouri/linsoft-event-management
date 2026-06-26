@@ -1,0 +1,105 @@
+@startuml UseCase_Charges
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+skinparam usecase {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  BorderThickness 1.5
+  FontColor #1A1A1A
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #0054A6
+  FontColor #0054A6
+  FontStyle bold
+}
+skinparam package {
+  BackgroundColor #EAF6EC
+  BorderColor #28A745
+  BorderThickness 2
+  FontColor #155724
+  FontStyle bold
+}
+
+title <b><color:#28A745>Diagramme de Cas d'Utilisation – Charges-Service</color></b>
+
+left to right direction
+
+actor "<b>Organisateur</b>"   as ORG  #LightGreen
+actor "<b>Administrateur</b>" as ADM  #FFD700
+actor "<b>Système IA</b>\n(Random Forest)" as IA  #E2D9F3
+
+rectangle "**charges-service :8086**" {
+
+  package "Gestion du Catalogue de Charges" #EAF6EC {
+    usecase "Créer une charge\n(libellé, catégorie,\nprix unitaire)" as UC1
+    usecase "Modifier une charge"     as UC2
+    usecase "Supprimer une charge"    as UC3
+    usecase "Consulter le catalogue"  as UC4
+    usecase "Filtrer par catégorie"   as UC5
+  }
+
+  package "Affectation à un Événement" #D9E2F3 {
+    usecase "Affecter une charge\n(charge + quantité)"    as UC6
+    usecase "Modifier une affectation\n(quantité)"        as UC7
+    usecase "Supprimer une affectation"                   as UC8
+    usecase "Consulter charges\nd'un événement"           as UC9
+    usecase "Calculer coût total\n(Σ prix × quantité)"    as UC10
+  }
+
+  package "Prédiction des Coûts par IA" #FFF3CD {
+    usecase "Saisir paramètres\nde l'événement"           as UC11
+    usecase "Lancer la prédiction\nRandom Forest"         as UC12
+    usecase "Consulter résultat\n(coût estimé + confiance)" as UC13
+    usecase "Comparer coût calculé\nvs coût prédit"       as UC14
+  }
+}
+
+' Organisateur
+ORG --> UC1
+ORG --> UC2
+ORG --> UC3
+ORG --> UC4
+ORG --> UC5
+ORG --> UC6
+ORG --> UC7
+ORG --> UC8
+ORG --> UC9
+ORG --> UC10
+ORG --> UC11
+ORG --> UC13
+ORG --> UC14
+
+' Administrateur
+ADM --> UC1
+ADM --> UC2
+ADM --> UC3
+ADM --> UC4
+
+' Système IA
+IA --> UC12
+
+' Relations
+UC5    ..> UC4  : <<extend>>
+UC6    ..> UC4  : <<include>>
+UC6    ..> UC10 : <<include>>
+UC10   ..> UC14 : <<extend>>
+UC11   ..> UC12 : <<include>>
+UC12   ..> UC13 : <<include>>
+
+note bottom of UC10
+  <b>coûtTotal</b> = Σ (prix_i × quantité_i)
+  Calculé en temps réel
+end note
+
+note bottom of UC12
+  <b>Modèle Random Forest</b>
+  Entraîné sur données historiques
+  Features : type, participants,
+  durée, localisation, catégories
+end note
+
+@enduml

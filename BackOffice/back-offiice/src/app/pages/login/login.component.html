@@ -1,65 +1,49 @@
 <div class="login-page">
 
-  <!-- Background particles -->
-  <div class="bg-particles">
-    <div class="particle" *ngFor="let i of [1,2,3,4,5]"></div>
-  </div>
+  <div class="login-card">
 
-  <div class="login-container">
+    <h2 class="card-title">Connexion</h2>
 
-    <!-- Branding -->
-    <div class="brand-header">
-      <div class="brand-logo">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="20" fill="url(#grad-login)"/>
-          <path d="M20 8 L28 14 L28 26 L20 32 L12 26 L12 14 Z" fill="white" opacity="0.9"/>
-          <path d="M20 13 L24 16 L24 24 L20 27 L16 24 L16 16 Z" fill="#e14eca"/>
-          <defs>
-            <linearGradient id="grad-login" x1="0" y1="0" x2="40" y2="40">
-              <stop offset="0%" stop-color="#e14eca"/>
-              <stop offset="100%" stop-color="#1d8cf8"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <h1 class="brand-title">Event Management</h1>
-      <p class="brand-subtitle">Plateforme de gestion d'événements</p>
+    <div class="field-group">
+      <input
+        type="email"
+        class="field-input"
+        placeholder="Entrez votre email"
+        [(ngModel)]="email"
+        [disabled]="isLoading"
+      />
     </div>
 
-    <!-- Login Card -->
-    <div class="login-card">
-
-      <h2 class="card-title">Connexion</h2>
-      <p class="card-subtitle">Accédez à votre espace de gestion</p>
-
-      <button class="signin-btn" (click)="login()" [disabled]="isLoading">
-        <span *ngIf="!isLoading">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="margin-right:8px;vertical-align:middle">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4.5l5.5 2.44V11c0 3.52-2.33 6.79-5.5 7.93C8.83 17.79 6.5 14.52 6.5 11V7.94L12 5.5z"/>
-          </svg>
-          Se connecter avec Keycloak
-        </span>
-        <span *ngIf="isLoading" style="display:flex;align-items:center;gap:8px;justify-content:center">
-          <span class="spinner"></span>
-          Redirection...
-        </span>
-      </button>
-
-      <div class="divider">
-        <span class="divider-line"></span>
-        <span class="divider-text">pas encore inscrit ?</span>
-        <span class="divider-line"></span>
-      </div>
-
-      <button class="register-btn" (click)="goToRegister()">
-        Créer un compte
-      </button>
-
+    <div class="field-group">
+      <input
+        type="password"
+        class="field-input"
+        placeholder="Entrez votre mot de passe"
+        [(ngModel)]="password"
+        [disabled]="isLoading"
+      />
     </div>
 
-    <p class="info-note">
-      Authentification sécurisée via Keycloak. Supporte Google, Microsoft, Facebook et plus.
+    <div class="form-options">
+      <label class="remember-me">
+        <input type="checkbox" [(ngModel)]="rememberMe" />
+        <span>Se souvenir de moi</span>
+      </label>
+      <a class="forgot-link" (click)="forgotPassword()">Mot de passe oublié ?</a>
+    </div>
+
+    <button class="login-btn" (click)="login()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Se connecter</span>
+      <span *ngIf="isLoading" class="spinner-wrap">
+        <span class="spinner"></span>
+      </span>
+    </button>
+
+    <p class="register-hint">
+      Pas encore de compte ?
+      <a class="register-link" (click)="goToRegister()">S'inscrire</a>
     </p>
 
   </div>
+
 </div>

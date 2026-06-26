@@ -1,0 +1,158 @@
+@startuml Deploiement_OpenShift
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam node {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #0054A6
+  FontStyle bold
+}
+skinparam component {
+  BackgroundColor #EEF4FB
+  BorderColor #4472C4
+  BorderThickness 1.5
+  FontColor #1A1A1A
+}
+skinparam database {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+  BorderThickness 2
+  FontColor #856404
+}
+skinparam cloud {
+  BackgroundColor #E2D9F3
+  BorderColor #6F42C1
+  FontColor #432874
+  FontStyle bold
+}
+skinparam artifact {
+  BackgroundColor #D4EDDA
+  BorderColor #28A745
+  FontColor #155724
+}
+skinparam arrow {
+  Color #0054A6
+  FontSize 10
+}
+
+title <b><color:#0054A6>Diagramme de Déploiement – OpenShift</color></b>
+
+'── CLIENT ───────────────────────────────────────────────────
+node "**Navigateur Web**\n(Client)" as CLIENT {
+  component "FrontOffice\nReact :4300" as FO #BDD7EE
+  component "BackOffice\nAngular :4200" as BO #C6EFCE
+}
+
+'── OPENSHIFT CLUSTER ────────────────────────────────────────
+cloud "**OpenShift Cluster**\nRed Hat Kubernetes" as OSH {
+
+  node "**Namespace: linsoft-events**" as NS {
+
+    '── INGRESS ─────────────────────────────────────────────
+    node "**Route / Ingress**\nHTTPS (TLS)" as ROUTE {
+      component "OpenShift Route\nlinsoft-events.apps.cluster" as RT
+    }
+
+    '── API GATEWAY POD ──────────────────────────────────────
+    node "**Pod: api-gateway**\n2 réplicas" as GW_NODE {
+      component "api-gateway\n:8080\nSpring Cloud Gateway" as GW #4472C4
+    }
+
+    '── MICROSERVICES PODS ───────────────────────────────────
+    node "**Pod: events-service**\n2 réplicas" as ES_NODE {
+      component "events-service\nQuarkus :8081" as ES #D9E2F3
+    }
+    node "**Pod: registrations-service**\n2 réplicas" as RS_NODE {
+      component "registrations-service\nQuarkus :8082" as RS #D9E2F3
+    }
+    node "**Pod: users-service**\n2 réplicas" as US_NODE {
+      component "users-service\nQuarkus :8083" as US #D9E2F3
+    }
+    node "**Pod: notifications-service**\n1 réplica" as NS_NODE {
+      component "notifications-service\nQuarkus :8084" as NOTIF #FFE5CC
+    }
+    node "**Pod: dashboard-service**\n2 réplicas" as DS_NODE {
+      component "dashboard-service\nQuarkus :8085" as DS #E2D9F3
+    }
+    node "**Pod: charges-service**\n2 réplicas" as CS_NODE {
+      component "charges-service\nQuarkus + Python IA :8086" as CS #D4EDDA
+    }
+
+    '── KEYCLOAK POD ─────────────────────────────────────────
+    node "**Pod: keycloak**\n1 réplica" as KC_NODE {
+      component "Keycloak :8443\nOAuth2 / OIDC" as KC #E2D9F3
+    }
+
+    '── KAFKA POD ────────────────────────────────────────────
+    node "**Pod: kafka + zookeeper**\n3 réplicas (Broker)" as KF_NODE {
+      component "Apache Kafka :9092" as KF #C6EFCE
+      component "Zookeeper :2181" as ZK #F0FFF0
+    }
+
+    '── MONGODB PODS ─────────────────────────────────────────
+    node "**StatefulSet: MongoDB**" as MONGO_NODE {
+      database "MongoDB\nevents" as DBE
+      database "MongoDB\nregistrations" as DBR
+      database "MongoDB\nusers" as DBU
+      database "MongoDB\nnotifications" as DBN
+      database "MongoDB\ndashboard" as DBD
+      database "MongoDB\ncharges" as DBC
+    }
+
+    '── CONFIGMAPS / SECRETS ─────────────────────────────────
+    artifact "ConfigMap\napplication.properties" as CM
+    artifact "Secret\ncredentials" as SEC
+  }
+}
+
+'── CONNEXIONS ───────────────────────────────────────────────
+CLIENT --> ROUTE     : HTTPS
+RT  --> GW           : HTTP interne
+GW  --> ES
+GW  --> RS
+GW  --> US
+GW  --> CS
+GW  --> DS
+
+ES  --> KF           : publish
+RS  --> KF           : publish
+US  --> KF           : publish
+KF  --> NOTIF        : consume
+KF  --> DS           : consume
+KF  --> ES           : consume
+
+ES  --> DBE
+RS  --> DBR
+US  --> DBU
+NOTIF --> DBN
+DS  --> DBD
+CS  --> DBC
+
+GW  --> KC           : valider JWT
+ES  ..> KC
+RS  ..> KC
+US  ..> KC
+CS  ..> KC
+
+CM  .> ES
+CM  .> RS
+CM  .> US
+SEC .> KC
+
+note bottom of MONGO_NODE
+  <b>Database-per-Service pattern</b>
+  Isolation totale des données
+  PersistentVolumeClaim par instance
+end note
+
+note right of CS_NODE
+  <b>IA embarquée</b>
+  Modèle Random Forest (.pkl)
+  chargé au démarrage du pod
+end note
+
+@enduml

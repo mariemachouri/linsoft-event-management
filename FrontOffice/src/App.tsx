@@ -1,11 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ToastContainer from './components/Toast/Toast';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import Landing from './pages/Landing/Landing';
 import Home from './pages/Home/Home';
 import Events from './pages/Events/Events';
 import EventDetail from './pages/EventDetail/EventDetail';
@@ -15,19 +14,21 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Profile/Profile';
 import NotFound from './pages/NotFound/NotFound';
 
-// Layout wrapper: show Navbar/Footer only on non-landing routes
+// Layout wrapper: masquer Navbar/Footer sur les pages d'authentification
 import { useLocation } from 'react-router-dom';
+
+const AUTH_ROUTES = ['/login', '/register'];
 
 function AppLayout() {
   const location = useLocation();
-  const isLanding = location.pathname === '/';
+  const isAuthPage = AUTH_ROUTES.includes(location.pathname);
 
   return (
     <>
-      {!isLanding && <Navbar />}
+      {!isAuthPage && <Navbar />}
       <Routes>
-        {/* Landing page — no navbar/footer */}
-        <Route path="/"           element={<Landing />} />
+        {/* La page d'accueil pointe directement vers le formulaire de connexion */}
+        <Route path="/"           element={<Navigate to="/login" replace />} />
 
         {/* FrontOffice routes */}
         <Route path="/home"       element={<Home />} />
@@ -53,7 +54,7 @@ function AppLayout() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isLanding && <Footer />}
+      {!isAuthPage && <Footer />}
       <ToastContainer />
     </>
   );

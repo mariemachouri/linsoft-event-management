@@ -13,6 +13,14 @@ export interface Registration {
   registeredAt?: string;
   createdAt?: string;
   updatedAt?: string;
+  isGuest?: boolean;
+  guestFirstName?: string;
+  guestLastName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  participantEmail?: string;
+  participantPhone?: string;
+  participantName?: string;
 }
 
 export interface Notification {

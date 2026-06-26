@@ -4,23 +4,23 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">
-            ✏️ Edit Registration
+            ✏️ Modifier l'inscription
             <span *ngIf="currentRegistration" class="badge badge-{{ getStatusColor(currentRegistration.status || 'PENDING') }} ml-2">
               {{ getStatusLabel(currentRegistration.status || 'PENDING') }}
             </span>
           </h3>
         </div>
         <div class="card-body">
-          
-          <!-- Loading -->
+
+          <!-- Chargement -->
           <div *ngIf="loadingRegistration" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
+              <span class="sr-only">Chargement...</span>
             </div>
-            <p class="mt-3 text-muted">Loading registration...</p>
+            <p class="mt-3 text-muted">Chargement de l'inscription...</p>
           </div>
 
-          <!-- Error/Success messages -->
+          <!-- Messages d'erreur/succès -->
           <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="tim-icons icon-alert-circle-exc"></i>
             {{ error }}
@@ -37,44 +37,44 @@
             </button>
           </div>
 
-          <!-- Form -->
+          <!-- Formulaire -->
           <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!loadingRegistration">
-            
-            <!-- Event (read-only) -->
+
+            <!-- Événement (lecture seule) -->
             <div class="form-group">
               <label for="eventId">
-                Event <span class="badge badge-info">Read-only</span>
+                Événement <span class="badge badge-info">Lecture seule</span>
               </label>
-              <input 
-                type="text" 
-                class="form-control" 
+              <input
+                type="text"
+                class="form-control"
                 id="eventId"
                 [value]="getEventDisplay(f['eventId'].value)"
                 disabled
               />
               <small class="form-text text-muted">
-                The event cannot be changed after creation
+                L'événement ne peut pas être modifié après la création
               </small>
             </div>
 
-            <!-- Participant (read-only) -->
+            <!-- Participant (lecture seule) -->
             <div class="form-group">
               <label for="participantId">
-                Participant <span class="badge badge-info">Read-only</span>
+                Participant <span class="badge badge-info">Lecture seule</span>
               </label>
-              <input 
-                type="text" 
-                class="form-control" 
+              <input
+                type="text"
+                class="form-control"
                 id="participantId"
                 [value]="getUserDisplay(f['participantId'].value)"
                 disabled
               />
               <small class="form-text text-muted">
-                The participant cannot be changed after creation
+                Le participant ne peut pas être modifié après la création
               </small>
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Actions rapides -->
             <div class="form-group" *ngIf="currentRegistration">
               <label>Actions rapides</label>
               <div class="d-flex gap-2" style="gap: 10px; display: flex; flex-wrap: wrap;">
@@ -98,13 +98,13 @@
               <small class="form-text text-muted">Ou choisissez manuellement un statut ci-dessous.</small>
             </div>
 
-            <!-- Status -->
+            <!-- Statut -->
             <div class="form-group">
               <label for="status">
-                Status <span class="text-danger">*</span>
+                Statut <span class="text-danger">*</span>
               </label>
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 id="status"
                 formControlName="status"
               >
@@ -118,56 +118,56 @@
               </small>
             </div>
 
-            <!-- Additional info -->
+            <!-- Informations complémentaires -->
             <div class="alert alert-info" *ngIf="currentRegistration">
-              <h5>📊 Information</h5>
+              <h5>📊 Informations</h5>
               <ul class="mb-0">
-                <li *ngIf="currentRegistration.id">ID: <code>{{ currentRegistration.id }}</code></li>
+                <li *ngIf="currentRegistration.id">ID : <code>{{ currentRegistration.id }}</code></li>
                 <li *ngIf="currentRegistration.registrationDate">
-                  Registration date: <strong>{{ currentRegistration.registrationDate | date:'dd/MM/yyyy HH:mm' }}</strong>
+                  Date d'inscription : <strong>{{ currentRegistration.registrationDate | date:'dd/MM/yyyy HH:mm' }}</strong>
                 </li>
                 <li *ngIf="currentRegistration.createdAt">
-                  Created at: <strong>{{ currentRegistration.createdAt | date:'dd/MM/yyyy HH:mm' }}</strong>
+                  Créé le : <strong>{{ currentRegistration.createdAt | date:'dd/MM/yyyy HH:mm' }}</strong>
                 </li>
                 <li *ngIf="currentRegistration.updatedAt">
-                  Updated at: <strong>{{ currentRegistration.updatedAt | date:'dd/MM/yyyy HH:mm' }}</strong>
+                  Mis à jour le : <strong>{{ currentRegistration.updatedAt | date:'dd/MM/yyyy HH:mm' }}</strong>
                 </li>
               </ul>
             </div>
 
-            <!-- Status workflow -->
+            <!-- Workflow des statuts -->
             <div class="alert alert-secondary">
-              <h5>🔄 Status Workflow</h5>
+              <h5>🔄 Workflow des statuts</h5>
               <div class="d-flex align-items-center justify-content-between">
-                <span class="badge badge-warning">Pending</span>
+                <span class="badge badge-warning">En attente</span>
                 <i class="tim-icons icon-minimal-right"></i>
-                <span class="badge badge-success">Confirmed</span>
-                <span class="mx-2">or</span>
-                <span class="badge badge-info">Waitlisted</span>
-                <span class="mx-2">or</span>
-                <span class="badge badge-danger">Cancelled</span>
+                <span class="badge badge-success">Confirmé</span>
+                <span class="mx-2">ou</span>
+                <span class="badge badge-info">Liste d'attente</span>
+                <span class="mx-2">ou</span>
+                <span class="badge badge-danger">Annulé</span>
               </div>
             </div>
 
-            <!-- Action buttons -->
+            <!-- Boutons d'action -->
             <div class="form-group mt-4">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 class="btn btn-primary btn-lg"
                 [disabled]="loading"
               >
                 <i class="tim-icons icon-check-2" *ngIf="!loading"></i>
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
-                {{ loading ? 'Saving...' : 'Save Changes' }}
+                {{ loading ? 'Enregistrement...' : 'Enregistrer les modifications' }}
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn btn-secondary btn-lg ml-2"
                 (click)="cancel()"
                 [disabled]="loading"
               >
                 <i class="tim-icons icon-simple-remove"></i>
-                Cancel
+                Annuler
               </button>
             </div>
 

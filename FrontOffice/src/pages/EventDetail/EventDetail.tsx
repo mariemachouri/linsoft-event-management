@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import GuestRegistrationModal from '../../components/GuestRegistrationModal/GuestRegistrationModal';
+import EventMap from '../../components/EventMap/EventMap';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { eventsService } from '../../services/events.service';
@@ -32,6 +33,7 @@ export default function EventDetail() {
   const [imgError, setImgError] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
   const [guestRegistered, setGuestRegistered] = useState(false);
+  const [guestRegId, setGuestRegId] = useState<string | null>(null);
 
   // Fetch event
   useEffect(() => {
@@ -43,8 +45,15 @@ export default function EventDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // guestRegistered est en state React uniquement (pas de localStorage)
-  // → se remet à zéro à chaque visite/rechargement de page
+  // Restaurer l'état d'inscription guest depuis localStorage au chargement
+  useEffect(() => {
+    if (!id) return;
+    const storedId = localStorage.getItem(`guest_reg_${id}`);
+    if (storedId) {
+      setGuestRegistered(true);
+      setGuestRegId(storedId);
+    }
+  }, [id]);
 
   // Check if user already registered
   useEffect(() => {
@@ -107,12 +116,14 @@ export default function EventDetail() {
       guestPhone: form.phone,
     });
     setGuestRegistered(true);
+    setGuestRegId(reg.id);
+    if (id && reg.id) localStorage.setItem(`guest_reg_${id}`, reg.id);
     // Optimistic update
     setEvent(prev => prev ? {
       ...prev,
       currentParticipants: (prev.currentParticipants ?? 0) + 1
     } : prev);
-    showToast('success', `Registration confirmed! Check ${form.email} for details.`);
+    showToast('success', `Inscription confirmée ! Un email a été envoyé à ${form.email}.`);
     setTimeout(() => {
       if (id) eventsService.getById(id).then(setEvent).catch(() => {});
     }, 2000);
@@ -131,6 +142,29 @@ export default function EventDetail() {
       } : prev);
       showToast('info', 'Inscription annulée.');
       // Re-fetch after short delay to get accurate server count
+      setTimeout(() => {
+        if (id) eventsService.getById(id).then(setEvent).catch(() => {});
+      }, 2000);
+    } catch {
+      showToast('error', 'Impossible d\'annuler l\'inscription.');
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handleCancelGuestRegistration = async () => {
+    if (!guestRegId) return;
+    setRegistering(true);
+    try {
+      await registrationsService.cancel(guestRegId);
+      setGuestRegistered(false);
+      setGuestRegId(null);
+      if (id) localStorage.removeItem(`guest_reg_${id}`);
+      setEvent(prev => prev ? {
+        ...prev,
+        currentParticipants: Math.max(0, (prev.currentParticipants ?? 1) - 1)
+      } : prev);
+      showToast('info', 'Votre inscription a été annulée.');
       setTimeout(() => {
         if (id) eventsService.getById(id).then(setEvent).catch(() => {});
       }, 2000);
@@ -174,7 +208,8 @@ export default function EventDetail() {
   const isPublished = event.status === 'PUBLISHED';
   const isRegistered = !!myRegistration;
 
-  const canRegister  = isPublished && !isFull && !isRegistered;
+  const isPast       = !!((endDate || startDate) && new Date(endDate || startDate) < new Date());
+  const canRegister  = isPublished && !isFull && !isRegistered && !isPast;
   const statusLabels: Record<string, string> = {
     PUBLISHED:  'Ouvert aux inscriptions',
     DRAFT:      'Bientôt disponible',
@@ -203,12 +238,14 @@ export default function EventDetail() {
           <Link to="/events" className="event-detail__back">
             <ArrowLeft size={16} /> Retour
           </Link>
-          <span
-            className="event-detail__status-badge"
-            style={{ '--status-color': statusColors[event.status ?? 'DRAFT'] } as React.CSSProperties}
-          >
-            {statusLabels[event.status ?? 'DRAFT']}
-          </span>
+          {!isPast && (
+            <span
+              className="event-detail__status-badge"
+              style={{ '--status-color': statusColors[event.status ?? 'DRAFT'] } as React.CSSProperties}
+            >
+              {statusLabels[event.status ?? 'DRAFT']}
+            </span>
+          )}
         </div>
       </div>
 
@@ -274,7 +311,7 @@ export default function EventDetail() {
           </div>
 
           {/* Capacity Bar */}
-          {event.maxParticipants && (
+          {event.maxParticipants && !isPast && (
             <div className="event-detail__capacity">
               <div className="event-detail__capacity-header">
                 <span>Capacity</span>
@@ -298,6 +335,26 @@ export default function EventDetail() {
               <p>{event.description}</p>
             </div>
           )}
+
+          {/* Carte du lieu */}
+          {event.locationLat != null && event.locationLng != null && (
+            <div className="event-detail__description">
+              <h2>
+                <MapPin size={18} style={{ verticalAlign: 'middle', marginRight: '0.4rem' }} />
+                Localisation
+              </h2>
+              {event.location && (
+                <p style={{ marginBottom: '0.75rem', color: '#4a5568', fontSize: '0.9rem' }}>
+                  📍 {event.location}
+                </p>
+              )}
+              <EventMap
+                lat={event.locationLat}
+                lng={event.locationLng}
+                label={event.location}
+              />
+            </div>
+          )}
         </div>
 
         {/* Sidebar / CTA */}
@@ -307,6 +364,10 @@ export default function EventDetail() {
             {(isRegistered || guestRegistered) ? (
               <div className="event-detail__registered-badge">
                 ✅ Vous êtes inscrit(e)
+              </div>
+            ) : isPast ? (
+              <div className="event-detail__full-badge event-detail__full-badge--past">
+                Événement terminé
               </div>
             ) : isFull ? (
               <div className="event-detail__full-badge">
@@ -324,16 +385,27 @@ export default function EventDetail() {
                 {registering ? <LoadingSpinner size="sm" /> : 'Annuler l\'inscription'}
               </button>
             ) : guestRegistered ? (
-              <div className="event-detail__registered-info">
-                Votre inscription est confirmée. Consultez votre e-mail pour les détails.
-              </div>
+              <>
+                <div className="event-detail__registered-info">
+                  ✅ Votre inscription est confirmée. Consultez votre e-mail pour les détails.
+                </div>
+                <button
+                  className="event-detail__cta event-detail__cta--cancel"
+                  onClick={handleCancelGuestRegistration}
+                  disabled={registering}
+                >
+                  {registering ? <LoadingSpinner size="sm" /> : 'Annuler mon inscription'}
+                </button>
+              </>
             ) : !auth.isAuthenticated ? (
               <button
                 className="event-detail__cta event-detail__cta--register"
                 onClick={() => setGuestModalOpen(true)}
-                disabled={!isPublished || isFull}
+                disabled={isPast || !isPublished || isFull}
               >
-                {!isPublished
+                {isPast
+                  ? 'Événement passé'
+                  : !isPublished
                   ? 'Inscriptions non ouvertes'
                   : isFull
                   ? 'Complet'
@@ -347,6 +419,8 @@ export default function EventDetail() {
               >
                 {registering
                   ? <LoadingSpinner size="sm" />
+                  : isPast
+                  ? 'Événement passé'
                   : !isPublished
                   ? 'Inscriptions non ouvertes'
                   : isFull
@@ -364,8 +438,8 @@ export default function EventDetail() {
             <div className="event-detail__quick-info">
               <div className="event-detail__qi-row">
                 <span>Statut</span>
-                <span style={{ color: statusColors[event.status ?? 'DRAFT'], fontWeight: 600 }}>
-                  {statusLabels[event.status ?? 'DRAFT']}
+                <span style={{ color: isPast ? '#94a3b8' : statusColors[event.status ?? 'DRAFT'], fontWeight: 600 }}>
+                  {isPast ? 'Événement passé' : statusLabels[event.status ?? 'DRAFT']}
                 </span>
               </div>
               {event.category && (

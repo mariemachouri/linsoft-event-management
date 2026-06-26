@@ -6,6 +6,21 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import './Auth.css';
 
+// URL du BackOffice (Angular) — l'équipe LinSoft (admin / organisateur) y est redirigée
+const BACKOFFICE_URL = 'http://localhost:4200';
+// Rôles donnant accès au BackOffice (doit rester aligné avec AuthGuard du BackOffice)
+const ADMIN_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer'];
+
+// Décoder les rôles realm depuis le JWT Keycloak
+function getRolesFromToken(token: string): string[] {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.realm_access?.roles ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,6 +45,24 @@ export default function Login() {
     setLoading(true);
     try {
       await login({ username: form.username.trim(), password: form.password });
+
+      // Redirection selon le rôle
+      const token = localStorage.getItem('access_token') ?? '';
+      const refreshToken = localStorage.getItem('refresh_token') ?? '';
+      const roles = getRolesFromToken(token);
+      const isTeamMember = roles.some((r) => ADMIN_ROLES.includes(r));
+
+      if (isTeamMember) {
+        // Admin / organisateur → BackOffice, avec passage des tokens (pas de form Keycloak)
+        showToast('success', 'Connexion réussie ! Redirection vers le BackOffice...');
+        const target =
+          `${BACKOFFICE_URL}/?access_token=${encodeURIComponent(token)}` +
+          `&refresh_token=${encodeURIComponent(refreshToken)}`;
+        window.location.href = target;
+        return;
+      }
+
+      // Participant → FrontOffice
       showToast('success', 'Connexion réussie !');
       navigate(from, { replace: true });
     } catch {
@@ -45,11 +78,8 @@ export default function Login() {
       <div className="auth-panel auth-panel--brand">
         <div className="auth-brand">
           <div className="auth-brand__logo">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-              <rect width="48" height="48" rx="12" fill="#FF5276"/>
-              <path d="M14 34V14l10 10 10-10v20" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>Event Management</span>
+            <img src="/linsoft-white.webp" alt="LinSoft" style={{ height: '48px', width: 'auto', objectFit: 'contain', filter: 'brightness(1.1)' }} />
+            <span>Gestion d'événement</span>
           </div>
           <h2 className="auth-brand__tagline">
             La plateforme événementielle professionnelle de LinSoft

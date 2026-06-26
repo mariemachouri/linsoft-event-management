@@ -1,0 +1,133 @@
+@startuml Sequence_Inscription
+!theme plain
+skinparam backgroundColor #F8F9FA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam sequenceMessageAlign center
+
+skinparam participant {
+  BackgroundColor #D9E2F3
+  BorderColor #0054A6
+  BorderThickness 2
+  FontColor #1A1A1A
+  FontStyle bold
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #0054A6
+  FontColor #0054A6
+  FontStyle bold
+}
+skinparam sequence {
+  ArrowColor #0054A6
+  ArrowFontColor #333333
+  ArrowFontSize 11
+  LifeLineBorderColor #4472C4
+  LifeLineBackgroundColor #EEF4FB
+  BoxBorderColor #0054A6
+  BoxBackgroundColor #F0F7FF
+  BoxFontColor #0054A6
+  BoxFontStyle bold
+  DividerBackgroundColor #D9E2F3
+  DividerBorderColor #0054A6
+  GroupBorderColor #0054A6
+  GroupBackgroundColor #EEF4FB
+  GroupHeaderFontColor #FFFFFF
+  GroupBodyBackgroundColor #F5F9FF
+}
+skinparam note {
+  BackgroundColor #FFF3CD
+  BorderColor #FFC107
+  FontSize 11
+}
+
+title <b><color:#0054A6>Diagramme de Sequence – Inscription a un Evenement</color></b>
+
+'══════════════════════════════════════════
+' PARTICIPANTS (reduits : 6 colonnes max)
+'══════════════════════════════════════════
+actor        "Participant"          as P  #BDD7EE
+participant  "FrontOffice\n:4300"  as FO #D9E2F3
+participant  "API Gateway\n:8080"  as GW #4472C4
+participant  "registrations\n:8082" as RS #D4EDDA
+participant  "events\n:8081"       as ES #D9E2F3
+participant  "Kafka + Services"    as KF #C6EFCE
+
+'══════════════════════════════════════════
+' 1. AUTHENTIFICATION
+'══════════════════════════════════════════
+== Authentification ==
+
+P  -> FO : Se connecter
+FO -> GW : POST /auth (login)
+GW -> GW : Valider via Keycloak\n(OAuth2 / JWT)
+GW --> FO : JWT Token
+FO --> P  : Acces autorise
+
+'══════════════════════════════════════════
+' 2. CONSULTATION EVENEMENT
+'══════════════════════════════════════════
+== Consultation ==
+
+P  -> FO : Selectionner un evenement
+FO -> GW : GET /events/{id}
+GW -> ES : GET /events/{id}
+ES --> GW : Details evenement\n(titre, date, places)
+GW --> FO : 200 OK
+FO --> P  : Affichage evenement
+
+'══════════════════════════════════════════
+' 3. INSCRIPTION
+'══════════════════════════════════════════
+== Inscription ==
+
+P  -> FO : Cliquer "S'inscrire"
+FO -> GW : POST /registrations\n{eventId, participantId}
+GW -> RS : POST /registrations
+
+RS -> ES : GET /events/{id}/capacity
+ES --> RS : capacite={max, inscrits}
+
+alt Places disponibles
+    RS -> RS : Creer inscription\n{statut: CONFIRMEE}
+    RS --> GW : 201 Created
+    GW --> FO : 201 Created
+    FO --> P  : "Inscription confirmee !"
+
+    RS -> KF : publish(registration.confirmed)
+
+    note over KF
+      <b>Traitement asynchrone</b>
+      notifications-service → Email + SMS confirmation
+      dashboard-service → mise a jour statistiques
+      events-service → incrementer nbInscrits
+    end note
+
+else Evenement complet
+    RS -> RS : Creer inscription\n{statut: EN_ATTENTE}
+    RS --> GW : 201 Created (liste attente)
+    GW --> FO : 201 Created
+    FO --> P  : "Liste d'attente – position N"
+
+    RS -> KF : publish(registration.waitlisted)
+
+    note over KF
+      notifications-service → Email\n"Vous etes en liste d'attente (position N)"
+    end note
+end
+
+'══════════════════════════════════════════
+' 4. RAPPELS AUTOMATIQUES
+'══════════════════════════════════════════
+== Rappels automatiques (J-7 et J-1) ==
+
+note over KF
+  Un scheduler interne declenche
+  automatiquement les rappels :
+  <b>J-7</b> et <b>J-1</b> avant l'evenement
+end note
+
+KF --> P : Email Rappel J-7
+KF --> P : Email Rappel J-1
+
+@enduml

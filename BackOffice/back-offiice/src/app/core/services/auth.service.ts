@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile } from 'keycloak-js';
 
 export interface UserInfo {
   id?: string;
@@ -31,23 +30,23 @@ export class AuthService {
   }
 
   private async loadUserProfile(): Promise<void> {
-    if (this.keycloakService.isLoggedIn()) {
-      try {
-        const profile: KeycloakProfile = await this.keycloakService.loadUserProfile();
-        const roles = this.keycloakService.getUserRoles();
-        const userInfo: UserInfo = {
-          id: profile.id,
-          username: profile.username,
-          email: profile.email,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          roles
-        };
-        this.currentUserSubject.next(userInfo);
-      } catch (e) {
-        console.error('Failed to load Keycloak user profile', e);
-      }
+    const kc = this.keycloakService.getKeycloakInstance();
+    if (!kc?.authenticated) {
+      return;
     }
+    // Lire les infos directement depuis les claims du JWT (token injecté par le FrontOffice).
+    // Plus fiable que l'endpoint /account avec un token émis pour le client users-service.
+    const claims: any = kc.tokenParsed ?? {};
+    const roles = this.keycloakService.getUserRoles(true);
+    const userInfo: UserInfo = {
+      id: claims.sub,
+      username: claims.preferred_username,
+      email: claims.email,
+      firstName: claims.given_name,
+      lastName: claims.family_name,
+      roles
+    };
+    this.currentUserSubject.next(userInfo);
   }
 
   isAuthenticated(): boolean {
@@ -90,12 +89,17 @@ export class AuthService {
   }
 
   logout(): void {
-    // Bypass keycloak-angular to avoid id_token_hint which causes Keycloak to reject the redirect
-    const logoutUrl =
-      `http://localhost:8180/realms/event-mgmt/protocol/openid-connect/logout` +
-      `?client_id=backoffice-client` +
-      `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4200/')}`;
-    window.location.href = logoutUrl;
+    // Login unifié : pas de session SSO Keycloak côté BackOffice (tokens injectés).
+    // On nettoie le token local puis on renvoie vers le login du FrontOffice.
+    localStorage.removeItem('bo_access_token');
+    localStorage.removeItem('bo_refresh_token');
+    const kc = this.keycloakService.getKeycloakInstance();
+    if (kc) {
+      kc.token = undefined;
+      kc.refreshToken = undefined;
+      kc.authenticated = false;
+    }
+    window.location.href = 'http://localhost:4300/login';
   }
 }
 

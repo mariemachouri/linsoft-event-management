@@ -1,0 +1,49 @@
+<div class="map-picker-wrapper">
+  <!-- Barre de recherche -->
+  <div class="map-search-bar">
+    <div class="map-search-input-group">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Rechercher un lieu... (ex: Esprit, Tunis)"
+        [(ngModel)]="searchQuery"
+        (keydown)="onSearchKeydown($event)"
+      />
+      <button
+        type="button"
+        class="btn btn-primary btn-search"
+        (click)="search()"
+        [disabled]="searching"
+      >
+        <i class="tim-icons" [class.icon-zoom-split]="!searching"></i>
+        <span *ngIf="searching" class="spinner-border spinner-border-sm"></span>
+        {{ searching ? '' : 'Rechercher' }}
+      </button>
+    </div>
+
+    <!-- Résultats de recherche -->
+    <ul class="search-results-list" *ngIf="searchResults.length > 0">
+      <li
+        *ngFor="let r of searchResults"
+        class="search-result-item"
+        (click)="selectResult(r)"
+      >
+        <i class="tim-icons icon-pin-3 result-icon"></i>
+        <span>{{ r.display_name }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Carte Leaflet -->
+  <div #mapContainer class="map-container"></div>
+
+  <!-- Lieu sélectionné -->
+  <div class="selected-location" *ngIf="selectedAddress">
+    <i class="tim-icons icon-pin-3"></i>
+    <span>{{ selectedAddress }}</span>
+  </div>
+
+  <p class="map-hint">
+    💡 Recherchez un lieu ou cliquez directement sur la carte pour le sélectionner.
+  </p>
+</div>

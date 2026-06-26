@@ -23,8 +23,8 @@ import java.util.Locale;
 public class ReminderService {
     private static final Logger LOG = Logger.getLogger(ReminderService.class);
 
-    /** Paliers de rappel en jours avant l'événement. */
-    private static final int[] THRESHOLDS = {10, 5, 3, 2, 1, 0};
+    /** Paliers de rappel en jours avant l'événement (J-7 et J-1). */
+    private static final int[] THRESHOLDS = {7, 1};
 
     private static final ZoneId ZONE = ZoneId.of("Europe/Paris");
     private static final DateTimeFormatter FR_DATE = DateTimeFormatter
