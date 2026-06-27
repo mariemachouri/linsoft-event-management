@@ -32,3 +32,6 @@ Thumbs.db
 # Credentials
 .env
 *.env
+
+# Claude Code (worktrees & artefacts internes — ne pas suivre)
+.claude/
