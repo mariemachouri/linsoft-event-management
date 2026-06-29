@@ -5,7 +5,8 @@
 FROM docker.io/library/node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+# --legacy-peer-deps : évite les conflits de dépendances de pairs (ERESOLVE)
+RUN npm install --legacy-peer-deps
 COPY . .
 # Vite lit .env.production (VITE_BACKOFFICE_URL) pendant ce build
 RUN npm run build
