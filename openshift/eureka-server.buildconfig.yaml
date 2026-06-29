@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────
+# Build d'eureka-server sur le cluster (Option A — BuildConfig)
+#  - ImageStream : l'emplacement de l'image construite dans le registre interne
+#  - BuildConfig : la recette (stratégie Docker, à partir du Dockerfile du service)
+# Le contexte de build est envoyé depuis le PC via :  oc start-build ... --from-dir=.
+# ─────────────────────────────────────────────────────────────
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: eureka-server
+  labels:
+    app: eureka-server
+    part-of: event-management
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: eureka-server
+  labels:
+    app: eureka-server
+    part-of: event-management
+spec:
+  # Source = Git : le cluster clone lui-même le repo public (robuste, pas d'upload depuis le PC)
+  source:
+    type: Git
+    git:
+      uri: https://github.com/mariemachouri/linsoft-event-management.git
+      ref: appmod/java-upgrade-20260211172141
+  # Stratégie Docker : on réutilise le Dockerfile multi-étapes du service.
+  # dockerfilePath est relatif à la racine du contexte (la racine du repo).
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: services/eureka-server/Dockerfile
+  # L'image produite est poussée dans l'ImageStream ci-dessus, tag "latest"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: eureka-server:latest
+  # Ressources du POD de build (compte dans le quota le temps du build, puis libéré).
+  # Le projet impose des limites → on les déclare explicitement.
+  resources:
+    requests:
+      cpu: "200m"
+      memory: 768Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  # Garde un historique de builds raisonnable
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3

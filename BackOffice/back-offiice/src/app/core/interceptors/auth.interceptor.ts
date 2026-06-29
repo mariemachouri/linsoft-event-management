@@ -114,7 +114,7 @@ export class AuthInterceptor implements HttpInterceptor {
       this.cachedToken = null;
       localStorage.removeItem('bo_access_token');
       localStorage.removeItem('bo_refresh_token');
-      window.location.href = 'http://localhost:4300/login';
+      window.location.href = `${environment.frontOfficeUrl}/login`;
     }
     return throwError(() => error);
   }

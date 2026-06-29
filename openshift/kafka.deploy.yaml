@@ -1,0 +1,117 @@
+# ─────────────────────────────────────────────────────────────
+# Kafka en mode KRaft (sans Zookeeper) — image Bitnami (non-root, OpenShift-friendly)
+# Le Service s'appelle "kafka" et écoute sur 29092 → identique au docker-compose
+# (les services utilisent KAFKA_BOOTSTRAP_SERVERS=kafka:29092, inchangé)
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-data
+  labels:
+    app: kafka
+    part-of: event-management
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+    part-of: event-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          # Bitnami a déplacé ses anciens tags vers "bitnamilegacy" (toujours non-root/OpenShift-friendly)
+          image: docker.io/bitnamilegacy/kafka:4.0.0-debian-12-r10
+          env:
+            # --- Mode KRaft : un seul nœud, à la fois "controller" et "broker" ---
+            - name: KAFKA_CFG_NODE_ID
+              value: "0"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: controller,broker
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: 0@localhost:9093
+            # Écoute : 29092 pour les clients, 9093 pour le contrôleur interne
+            - name: KAFKA_CFG_LISTENERS
+              value: PLAINTEXT://:29092,CONTROLLER://:9093
+            # Adresse annoncée aux clients = nom du Service "kafka"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka:29092
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: CONTROLLER
+            - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+              value: PLAINTEXT
+            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+            # Borne la mémoire JVM (évite l'OOM)
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx512m -Xms512m"
+          ports:
+            - containerPort: 29092
+            - containerPort: 9093
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 512Mi
+            limits:
+              cpu: "400m"
+              memory: 1Gi
+          startupProbe:
+            tcpSocket:
+              port: 29092
+            failureThreshold: 40
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 29092
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: 29092
+            initialDelaySeconds: 60
+            periodSeconds: 15
+      volumes:
+        - name: kafka-data
+          persistentVolumeClaim:
+            claimName: kafka-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+    part-of: event-management
+spec:
+  selector:
+    app: kafka
+  ports:
+    - name: kafka
+      port: 29092
+      targetPort: 29092

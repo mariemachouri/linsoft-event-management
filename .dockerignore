@@ -33,3 +33,23 @@ BackOffice/back-offiice/dist/
 # Docker / compose meta
 docker-compose*.yml
 **/*.md
+
+# Documents, rapports & artefacts LaTeX (inutiles au build)
+*.pdf
+*.docx
+*.tex
+*.aux
+*.toc
+*.lof
+*.lot
+*.out
+*.html
+*.puml
+*.mermaid
+figures/
+plantuml/
+captures/
+ia-studies/
+keycloak-theme/
+hs_err_pid*.log
+replay_pid*.log

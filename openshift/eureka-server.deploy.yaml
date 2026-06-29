@@ -1,0 +1,90 @@
+# ─────────────────────────────────────────────────────────────
+# Déploiement d'eureka-server
+#  - Deployment : fait tourner le conteneur (à partir de l'image construite)
+#  - Service    : adresse réseau interne stable (port 8761)
+#  - Route      : URL publique (dashboard Eureka) accessible via le VPN
+# Ressources déclarées explicitement (le projet impose un quota).
+# ─────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-server
+  labels:
+    app: eureka-server
+    part-of: event-management
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # supprime l'ancien pod avant d'en créer un nouveau (évite le blocage quota)
+  selector:
+    matchLabels:
+      app: eureka-server
+  template:
+    metadata:
+      labels:
+        app: eureka-server
+    spec:
+      containers:
+        - name: eureka-server
+          # Image construite par le BuildConfig, dans le registre interne du cluster
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/eureka-server:latest
+          ports:
+            - containerPort: 8761
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 384Mi
+            limits:
+              cpu: "250m"
+              memory: 768Mi
+          # Laisse jusqu'à ~6 min pour un démarrage lent (CPU bridé) sans être tué
+          startupProbe:
+            tcpSocket:
+              port: 8761
+            failureThreshold: 40
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 90
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-server
+  labels:
+    app: eureka-server
+    part-of: event-management
+spec:
+  selector:
+    app: eureka-server
+  ports:
+    - name: http
+      port: 8761
+      targetPort: 8761
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: eureka-server
+  labels:
+    app: eureka-server
+    part-of: event-management
+spec:
+  to:
+    kind: Service
+    name: eureka-server
+  port:
+    targetPort: 8761
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

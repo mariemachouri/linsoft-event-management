@@ -6,6 +6,7 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from "../../core/services/auth.service";
 import { AvatarService } from "../../core/services/avatar.service";
 import { Subscription } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Component({
   selector: "app-navbar",
@@ -179,7 +180,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   openKeycloak(): void {
-    window.open('http://localhost:8180/admin/master/console/#/event-mgmt', '_blank');
+    window.open(`${environment.keycloak.url}/admin/master/console/#/event-mgmt`, '_blank');
   }
 
   isAdmin(): boolean {

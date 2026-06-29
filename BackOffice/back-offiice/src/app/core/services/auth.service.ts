@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
+import { environment } from '../../../environments/environment';
 
 export interface UserInfo {
   id?: string;
@@ -99,7 +100,7 @@ export class AuthService {
       kc.refreshToken = undefined;
       kc.authenticated = false;
     }
-    window.location.href = 'http://localhost:4300/login';
+    window.location.href = `${environment.frontOfficeUrl}/login`;
   }
 }
 

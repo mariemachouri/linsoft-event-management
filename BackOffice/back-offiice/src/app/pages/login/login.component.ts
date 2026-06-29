@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -27,11 +28,11 @@ export class LoginComponent implements OnInit {
 
     // Login unifié : le BackOffice n'affiche plus de formulaire propre.
     // Tout accès non authentifié est renvoyé vers le login du FrontOffice.
-    window.location.href = 'http://localhost:4300/login';
+    window.location.href = `${environment.frontOfficeUrl}/login`;
   }
 
   login(): void {
-    window.location.href = 'http://localhost:4300/login';
+    window.location.href = `${environment.frontOfficeUrl}/login`;
   }
 
   forgotPassword(): void {

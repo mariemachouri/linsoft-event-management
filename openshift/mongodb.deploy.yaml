@@ -1,0 +1,95 @@
+# ─────────────────────────────────────────────────────────────
+# MongoDB sur OpenShift (restricted SCC, non-root)
+#  - PVC        : stockage persistant pour /data/db
+#  - Deployment : image officielle mongo:7.0, UID assigné par OpenShift
+#  - Service    : nom "mongodb" → résout comme dans docker-compose (mongodb:27017)
+# Identifiants identiques au docker-compose : admin / admin123
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data
+  labels:
+    app: mongodb
+    part-of: event-management
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+    part-of: event-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  strategy:
+    type: Recreate          # une seule instance attachée au volume à la fois
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      # Pas de runAsUser fixe : OpenShift assigne un UID non-root.
+      # fsGroup omis volontairement → injecté automatiquement (volume accessible en écriture).
+      containers:
+        - name: mongodb
+          # Nom pleinement qualifié : évite la redirection vers le registre interne JFrog
+          image: docker.io/library/mongo:7.0
+          # --auth : active l'authentification | --bind_ip_all : écoute pour les autres pods
+          # --wiredTigerCacheSizeGB : borne la mémoire du moteur (évite l'OOM)
+          args: ["--auth", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: admin
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: admin123
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 384Mi
+            limits:
+              cpu: "300m"
+              memory: 1Gi
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 40
+            periodSeconds: 15
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+    part-of: event-management
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017

@@ -1,26 +1,29 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080',  // Gateway — routes all /api/* calls correctly
+  // Vide → les appels deviennent relatifs (/api/...) et nginx les proxifie vers la gateway
+  apiUrl: '',
+  // URL publique du FrontOffice (Route OpenShift) — login unifié / redirections
+  frontOfficeUrl: 'https://frontoffice-intern-machoury.apps.hlab.linsoft.local',
   tokenKey: 'access_token',
   refreshTokenKey: 'refresh_token',
 
-  // Microservices URLs - via Gateway (port 8080)
+  // Microservices via la gateway (chemins relatifs proxifiés par nginx)
   services: {
-    users: 'http://localhost:8080/api/users',
-    events: 'http://localhost:8080/api/events',
-    registrations: 'http://localhost:8080/api/registrations',
-    notifications: 'http://localhost:8080/api/notifications',
-    dashboard: 'http://localhost:8080/api/dashboard',
-    charges: 'http://localhost:8080/api/charges'
+    users: '/api/users',
+    events: '/api/events',
+    registrations: '/api/registrations',
+    notifications: '/api/notifications',
+    dashboard: '/api/dashboard',
+    charges: '/api/charges'
   },
-  
-  // Keycloak Configuration
+
+  // Keycloak (Route OpenShift)
   keycloak: {
-    url: 'http://localhost:8180',
+    url: 'https://keycloak-intern-machoury.apps.hlab.linsoft.local',
     realm: 'event-mgmt',
     clientId: 'backoffice-client'
   },
-  
+
   // Firebase Configuration
   firebase: {
     apiKey: "AIzaSyCUfGMXmBKZn67N9QWhJmXX-w01rXtrtSU",

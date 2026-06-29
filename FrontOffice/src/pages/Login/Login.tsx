@@ -6,8 +6,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import './Auth.css';
 
-// URL du BackOffice (Angular) — l'équipe LinSoft (admin / organisateur) y est redirigée
-const BACKOFFICE_URL = 'http://localhost:4200';
+// URL du BackOffice (Angular) — l'équipe LinSoft (admin / organisateur) y est redirigée.
+// Surchargée au build par VITE_BACKOFFICE_URL (ex. Route OpenShift) ; fallback local.
+const BACKOFFICE_URL =
+  (import.meta.env as Record<string, string | undefined>).VITE_BACKOFFICE_URL || 'http://localhost:4200';
 // Rôles donnant accès au BackOffice (doit rester aligné avec AuthGuard du BackOffice)
 const ADMIN_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer'];
 

@@ -1,0 +1,60 @@
+# Déploiement de users-service (port 8083, interne)
+# Variables identiques au docker-compose, SAUF l'issuer OIDC qui passe en INTERNE
+# (http://keycloak:8080/... au lieu de localhost:8180) — cf. décision "issuer interne".
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-service
+  labels: { app: users-service, part-of: event-management }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: users-service }
+  template:
+    metadata:
+      labels: { app: users-service }
+    spec:
+      containers:
+        - name: users-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/users-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: QUARKUS_MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/?authSource=admin" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: KEYCLOAK_URL, value: "http://keycloak:8080/realms/event-mgmt" }
+            - { name: KEYCLOAK_ADMIN_URL, value: "http://keycloak:8080" }
+            - { name: KEYCLOAK_ADMIN_USERNAME, value: "admin" }
+            - { name: KEYCLOAK_ADMIN_PASSWORD, value: "admin" }
+            - { name: KEYCLOAK_REALM, value: "event-mgmt" }
+            - { name: KEYCLOAK_CLIENT_SECRET, value: "users-service-secret" }
+            - { name: QUARKUS_OIDC_AUTH_SERVER_URL, value: "http://keycloak:8080/realms/event-mgmt" }
+            # Issuer interne (cohérent avec l'URL utilisée pour obtenir les tokens)
+            - { name: QUARKUS_OIDC_TOKEN_ISSUER, value: "http://keycloak:8080/realms/event-mgmt" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "300m", memory: 600Mi }
+          startupProbe:
+            tcpSocket: { port: 8083 }
+            failureThreshold: 40
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket: { port: 8083 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 18
+          livenessProbe:
+            tcpSocket: { port: 8083 }
+            initialDelaySeconds: 90
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  labels: { app: users-service, part-of: event-management }
+spec:
+  selector: { app: users-service }
+  ports:
+    - { name: http, port: 8083, targetPort: 8083 }

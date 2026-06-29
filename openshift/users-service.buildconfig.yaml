@@ -1,0 +1,29 @@
+# Build de users-service — même recette Git que les autres
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: users-service
+  labels: { app: users-service, part-of: event-management }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: users-service
+  labels: { app: users-service, part-of: event-management }
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/mariemachouri/linsoft-event-management.git
+      ref: appmod/java-upgrade-20260211172141
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: services/users-service/Dockerfile
+  output:
+    to: { kind: ImageStreamTag, name: users-service:latest }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2

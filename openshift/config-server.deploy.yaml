@@ -1,0 +1,72 @@
+# Déploiement de config-server (service interne, port 8888 — pas de Route publique)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+    part-of: event-management
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      containers:
+        - name: config-server
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/config-server:latest
+          ports:
+            - containerPort: 8888
+          env:
+            # Force le backend "natif" (config embarquée classpath:/config)
+            - name: SPRING_PROFILES_ACTIVE
+              value: native
+            # Eureka désactivé sur OpenShift (découverte assurée par le DNS Kubernetes)
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 384Mi
+            limits:
+              cpu: "250m"
+              memory: 768Mi
+          startupProbe:
+            tcpSocket:
+              port: 8888
+            failureThreshold: 40
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8888
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8888
+            initialDelaySeconds: 100
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+    part-of: event-management
+spec:
+  selector:
+    app: config-server
+  ports:
+    - name: http
+      port: 8888
+      targetPort: 8888

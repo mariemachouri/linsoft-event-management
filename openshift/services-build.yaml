@@ -1,0 +1,136 @@
+# ─────────────────────────────────────────────────────────────
+# Build des 6 services restants (events, registrations, notifications,
+# dashboard, charges, gateway) — source Git, stratégie Docker.
+# Un ImageStream + un BuildConfig par service.
+# ─────────────────────────────────────────────────────────────
+# ===== events-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: events-service, labels: { app: events-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: events-service, labels: { app: events-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/events-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "events-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+# ===== registrations-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: registrations-service, labels: { app: registrations-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: registrations-service, labels: { app: registrations-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/registrations-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "registrations-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+# ===== notifications-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: notifications-service, labels: { app: notifications-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: notifications-service, labels: { app: notifications-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/notifications-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "notifications-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+# ===== dashboard-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: dashboard-service, labels: { app: dashboard-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: dashboard-service, labels: { app: dashboard-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/dashboard-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "dashboard-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+# ===== charges-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: charges-service, labels: { app: charges-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: charges-service, labels: { app: charges-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/charges-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "charges-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+# ===== gateway-service =====
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: gateway-service, labels: { app: gateway-service, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: gateway-service, labels: { app: gateway-service, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: services/gateway-service/Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "gateway-service:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 768Mi }
+    limits: { cpu: "1", memory: 2Gi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2

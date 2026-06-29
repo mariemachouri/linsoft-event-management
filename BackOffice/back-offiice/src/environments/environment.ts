@@ -6,6 +6,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',  // Gateway — routes all /api/* calls correctly
+  frontOfficeUrl: 'http://localhost:4300',  // FrontOffice local (login unifié / redirections)
   tokenKey: 'access_token',
   refreshTokenKey: 'refresh_token',
 

@@ -1,0 +1,91 @@
+# ─────────────────────────────────────────────────────────────
+# PostgreSQL pour Keycloak — image OpenShift native (non-root, arbitrary UID)
+# Service "keycloak-db:5432" → identique au docker-compose (KC_DB_URL)
+# Identifiants : keycloak / keycloak / base "keycloak"
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-db-data
+  labels:
+    app: keycloak-db
+    part-of: event-management
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-db
+  labels:
+    app: keycloak-db
+    part-of: event-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: keycloak-db
+    spec:
+      containers:
+        - name: postgresql
+          # Image PostgreSQL fournie par le cluster (registre interne, namespace openshift)
+          image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:15-el8
+          env:
+            - name: POSTGRESQL_USER
+              value: keycloak
+            - name: POSTGRESQL_PASSWORD
+              value: keycloak
+            - name: POSTGRESQL_DATABASE
+              value: keycloak
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: keycloak-db-data
+              mountPath: /var/lib/pgsql/data
+          resources:
+            requests:
+              cpu: "50m"
+              memory: 256Mi
+            limits:
+              cpu: "250m"
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command: ["/usr/libexec/check-container"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 40
+            periodSeconds: 15
+      volumes:
+        - name: keycloak-db-data
+          persistentVolumeClaim:
+            claimName: keycloak-db-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db
+  labels:
+    app: keycloak-db
+    part-of: event-management
+spec:
+  selector:
+    app: keycloak-db
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432

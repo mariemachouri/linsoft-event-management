@@ -1,0 +1,231 @@
+# ─────────────────────────────────────────────────────────────
+# Déploiement des 6 services restants.
+# - URLs internes (mongodb, kafka, keycloak, eureka-server) identiques au docker-compose
+# - OIDC issuer interne (keycloak:8080) pour dashboard & notifications
+# - gateway : routes lb:// déjà dans son application.yml → juste l'URL Eureka + Route publique
+# - CPU bas + startupProbe (tient dans le quota, survit au démarrage bridé)
+# ─────────────────────────────────────────────────────────────
+# ===== events-service (8081) =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: events-service, labels: { app: events-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: events-service } }
+  template:
+    metadata: { labels: { app: events-service } }
+    spec:
+      containers:
+        - name: events-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/events-service:latest
+          ports: [{ containerPort: 8081 }]
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/events_db?authSource=admin" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "200m", memory: 512Mi }
+          startupProbe: { tcpSocket: { port: 8081 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8081 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8081 }, initialDelaySeconds: 60, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: events-service, labels: { app: events-service, part-of: event-management } }
+spec:
+  selector: { app: events-service }
+  ports: [{ name: http, port: 8081, targetPort: 8081 }]
+---
+# ===== registrations-service (8082) =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: registrations-service, labels: { app: registrations-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: registrations-service } }
+  template:
+    metadata: { labels: { app: registrations-service } }
+    spec:
+      containers:
+        - name: registrations-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/registrations-service:latest
+          ports: [{ containerPort: 8082 }]
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/registrations_db?authSource=admin" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "200m", memory: 512Mi }
+          startupProbe: { tcpSocket: { port: 8082 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8082 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8082 }, initialDelaySeconds: 60, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: registrations-service, labels: { app: registrations-service, part-of: event-management } }
+spec:
+  selector: { app: registrations-service }
+  ports: [{ name: http, port: 8082, targetPort: 8082 }]
+---
+# ===== charges-service (8086) =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: charges-service, labels: { app: charges-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: charges-service } }
+  template:
+    metadata: { labels: { app: charges-service } }
+    spec:
+      containers:
+        - name: charges-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/charges-service:latest
+          ports: [{ containerPort: 8086 }]
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/charges_db?authSource=admin" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "200m", memory: 512Mi }
+          startupProbe: { tcpSocket: { port: 8086 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8086 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8086 }, initialDelaySeconds: 60, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: charges-service, labels: { app: charges-service, part-of: event-management } }
+spec:
+  selector: { app: charges-service }
+  ports: [{ name: http, port: 8086, targetPort: 8086 }]
+---
+# ===== dashboard-service (8085) — OIDC activé =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: dashboard-service, labels: { app: dashboard-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: dashboard-service } }
+  template:
+    metadata: { labels: { app: dashboard-service } }
+    spec:
+      containers:
+        - name: dashboard-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/dashboard-service:latest
+          ports: [{ containerPort: 8085 }]
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/dashboard_db?authSource=admin" }
+            - { name: KEYCLOAK_URL, value: "http://keycloak:8080/realms/event-mgmt" }
+            - { name: QUARKUS_OIDC_TOKEN_ISSUER, value: "http://keycloak:8080/realms/event-mgmt" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "200m", memory: 512Mi }
+          startupProbe: { tcpSocket: { port: 8085 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8085 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8085 }, initialDelaySeconds: 60, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: dashboard-service, labels: { app: dashboard-service, part-of: event-management } }
+spec:
+  selector: { app: dashboard-service }
+  ports: [{ name: http, port: 8085, targetPort: 8085 }]
+---
+# ===== notifications-service (8084) — OIDC + email/SMS =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: notifications-service, labels: { app: notifications-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: notifications-service } }
+  template:
+    metadata: { labels: { app: notifications-service } }
+    spec:
+      containers:
+        - name: notifications-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/notifications-service:latest
+          ports: [{ containerPort: 8084 }]
+          env:
+            - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
+            - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/notifications_db?authSource=admin" }
+            - { name: KEYCLOAK_URL, value: "http://keycloak:8080/realms/event-mgmt" }
+            - { name: QUARKUS_OIDC_TOKEN_ISSUER, value: "http://keycloak:8080/realms/event-mgmt" }
+            # Push Firebase désactivé (pas de fichier de credentials sur le cluster)
+            - { name: FIREBASE_ENABLED, value: "false" }
+            # Email (SMTP Gmail)
+            - { name: EMAIL_HOST, value: "smtp.gmail.com" }
+            - { name: EMAIL_PORT, value: "587" }
+            - { name: EMAIL_USERNAME, value: "achourimariem4@gmail.com" }
+            - { name: EMAIL_PASSWORD, value: "qzuuzqutgjdotmge" }
+            - { name: EMAIL_FROM, value: "achourimariem4@gmail.com" }
+            - { name: EMAIL_TLS, value: "REQUIRED" }
+            - { name: EMAIL_SSL, value: "false" }
+            - { name: EMAIL_AUTH, value: "PLAIN LOGIN" }
+            - { name: JAVA_TOOL_OPTIONS, value: "-Djava.net.preferIPv4Stack=true" }
+            # SMS Africa's Talking (sandbox)
+            - { name: AT_ENABLED, value: "true" }
+            - { name: AT_SANDBOX, value: "true" }
+            - { name: AT_USERNAME, value: "sandbox" }
+            - { name: AT_API_KEY, value: "atsk_c28b5f1ff537e80ad0bf12394d8ad3f8fcff4ed80b43f1995b1b4e5492247a8e549b4fd9" }
+          resources:
+            requests: { cpu: "50m", memory: 256Mi }
+            limits: { cpu: "250m", memory: 512Mi }
+          startupProbe: { tcpSocket: { port: 8084 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8084 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8084 }, initialDelaySeconds: 60, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: notifications-service, labels: { app: notifications-service, part-of: event-management } }
+spec:
+  selector: { app: notifications-service }
+  ports: [{ name: http, port: 8084, targetPort: 8084 }]
+---
+# ===== gateway-service (8080) — point d'entrée public =====
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: gateway-service, labels: { app: gateway-service, part-of: event-management } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: gateway-service } }
+  template:
+    metadata: { labels: { app: gateway-service } }
+    spec:
+      containers:
+        - name: gateway-service
+          image: image-registry.openshift-image-registry.svc:5000/intern-machoury/gateway-service:latest
+          ports: [{ containerPort: 8080 }]
+          env:
+            # Eureka désactivé : découverte par le DNS Kubernetes
+            - { name: EUREKA_CLIENT_ENABLED, value: "false" }
+            - { name: SPRING_CONFIG_IMPORT, value: "optional:configserver:http://config-server:8888" }
+            # Sur OpenShift : routage par DNS Kubernetes (URLs directes) au lieu de lb:// (Eureka).
+            # Remplace les routes de l'application.yml et désactive le discovery locator.
+            - name: SPRING_APPLICATION_JSON
+              value: '{"spring":{"cloud":{"gateway":{"discovery":{"locator":{"enabled":false}},"routes":[{"id":"auth-service","uri":"http://users-service:8083","predicates":["Path=/api/auth/**"]},{"id":"events-service","uri":"http://events-service:8081","predicates":["Path=/api/events/**"]},{"id":"registrations-service","uri":"http://registrations-service:8082","predicates":["Path=/api/registrations/**"]},{"id":"users-service","uri":"http://users-service:8083","predicates":["Path=/api/users/**"]},{"id":"notifications-service","uri":"http://notifications-service:8084","predicates":["Path=/api/notifications/**"]},{"id":"dashboard-service","uri":"http://dashboard-service:8085","predicates":["Path=/api/dashboard/**"]},{"id":"charges-service","uri":"http://charges-service:8086","predicates":["Path=/api/charges/**"]},{"id":"charge-predictions-service","uri":"http://charges-service:8086","predicates":["Path=/api/charge-predictions/**"]},{"id":"charge-catalog-service","uri":"http://charges-service:8086","predicates":["Path=/api/charge-catalog/**"]}]}}}}'
+          resources:
+            requests: { cpu: "100m", memory: 300Mi }
+            limits: { cpu: "350m", memory: 600Mi }
+          startupProbe: { tcpSocket: { port: 8080 }, failureThreshold: 40, periodSeconds: 10 }
+          readinessProbe: { tcpSocket: { port: 8080 }, initialDelaySeconds: 15, periodSeconds: 10 }
+          livenessProbe: { tcpSocket: { port: 8080 }, initialDelaySeconds: 90, periodSeconds: 15 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: gateway-service, labels: { app: gateway-service, part-of: event-management } }
+spec:
+  selector: { app: gateway-service }
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata: { name: gateway-service, labels: { app: gateway-service, part-of: event-management } }
+spec:
+  to: { kind: Service, name: gateway-service }
+  port: { targetPort: 8080 }
+  tls: { termination: edge, insecureEdgeTerminationPolicy: Redirect }

@@ -1,0 +1,39 @@
+# Build de config-server (Spring Cloud Config) — même recette qu'eureka
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+    part-of: event-management
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+    part-of: event-management
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/mariemachouri/linsoft-event-management.git
+      ref: appmod/java-upgrade-20260211172141
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: services/config-server/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: config-server:latest
+  resources:
+    requests:
+      cpu: "200m"
+      memory: 768Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
+import { environment } from '../../../environments/environment';
 
 // Roles autorisés à accéder au BackOffice
 const ALLOWED_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer'];
@@ -23,7 +24,7 @@ export class AuthGuard extends KeycloakAuthGuard {
   ): Promise<boolean> {
     // Non authentifié → renvoyer vers le login unifié du FrontOffice (pas de formulaire Keycloak)
     if (!this.authenticated) {
-      window.location.href = 'http://localhost:4300/login';
+      window.location.href = `${environment.frontOfficeUrl}/login`;
       return false;
     }
 
@@ -33,7 +34,7 @@ export class AuthGuard extends KeycloakAuthGuard {
 
     if (!hasAccess) {
       // Participant ou user sans rôle BackOffice → renvoyer vers le FrontOffice
-      window.location.href = 'http://localhost:4300/home';
+      window.location.href = `${environment.frontOfficeUrl}/home`;
       return false;
     }
 

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-unauthorized',
@@ -10,9 +11,8 @@ export class UnauthorizedComponent {
   constructor(private keycloakService: KeycloakService) { }
 
   logout(): void {
-    window.location.href =
-      `http://localhost:8180/realms/event-mgmt/protocol/openid-connect/logout` +
-      `?client_id=backoffice-client` +
-      `&post_logout_redirect_uri=${encodeURIComponent('http://localhost:4300/')}`;
+    // Login unifié : nettoyage local puis retour vers le FrontOffice
+    localStorage.removeItem('bo_refresh_token');
+    window.location.href = `${environment.frontOfficeUrl}/login`;
   }
 }
