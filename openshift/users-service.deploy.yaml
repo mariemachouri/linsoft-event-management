@@ -32,6 +32,8 @@ spec:
             - { name: QUARKUS_OIDC_AUTH_SERVER_URL, value: "http://keycloak:8080/realms/event-mgmt" }
             # Issuer interne (cohérent avec l'URL utilisée pour obtenir les tokens)
             - { name: QUARKUS_OIDC_TOKEN_ISSUER, value: "http://keycloak:8080/realms/event-mgmt" }
+            # CORS : autoriser toutes les origines (les frontends passent par les Routes OpenShift)
+            - { name: QUARKUS_HTTP_CORS_ORIGINS, value: "/.*/" }
           resources:
             requests: { cpu: "50m", memory: 256Mi }
             limits: { cpu: "300m", memory: 600Mi }

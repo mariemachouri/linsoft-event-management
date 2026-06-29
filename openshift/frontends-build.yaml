@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────────────────────
+# Build des images frontends (FrontOffice + BackOffice) sur le cluster.
+# contextDir = le sous-dossier du frontend (le Dockerfile y attend son propre package.json)
+# Mémoire de build élevée (build Node/Angular gourmand).
+# ─────────────────────────────────────────────────────────────
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: frontoffice, labels: { app: frontoffice, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: frontoffice, labels: { app: frontoffice, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+    contextDir: FrontOffice
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "frontoffice:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 1Gi }
+    limits: { cpu: "1", memory: 2500Mi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata: { name: backoffice, labels: { app: backoffice, part-of: event-management } }
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata: { name: backoffice, labels: { app: backoffice, part-of: event-management } }
+spec:
+  source:
+    type: Git
+    git: { uri: "https://github.com/mariemachouri/linsoft-event-management.git", ref: appmod/java-upgrade-20260211172141 }
+    contextDir: BackOffice/back-offiice
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: Dockerfile }
+  output: { to: { kind: ImageStreamTag, name: "backoffice:latest" } }
+  resources:
+    requests: { cpu: "200m", memory: 1Gi }
+    limits: { cpu: "1", memory: 2500Mi }
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2
