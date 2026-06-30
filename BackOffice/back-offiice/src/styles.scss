@@ -685,3 +685,29 @@ body.sidebar-mini .navbar-wrapper {
   .card { margin-bottom: 16px; }
   .table { font-size: 12px; td, th { padding: 10px; } }
 }
+
+/* ===== Sidebar réduite via le bouton toggle (body.sidebar-mini) ===== */
+.sidebar, .main-panel { transition: width 0.3s ease, transform 0.3s ease; }
+
+@media (min-width: 991px) {
+  body.sidebar-mini .sidebar { width: 80px !important; overflow: hidden; }
+  body.sidebar-mini .main-panel { width: calc(100% - 80px) !important; }
+
+  /* Masquer les libellés, garder les icônes centrées */
+  body.sidebar-mini .sidebar .nav li > a p,
+  body.sidebar-mini .sidebar .logo,
+  body.sidebar-mini .sidebar .linsoft-logo-normal { display: none !important; }
+
+  body.sidebar-mini .sidebar .nav li > a {
+    justify-content: center;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center;
+  }
+  body.sidebar-mini .sidebar .nav li > a i { margin: 0 !important; }
+
+  /* Bouton de déconnexion : icône seule en mode réduit */
+  body.sidebar-mini .sidebar .logout-wrapper { padding: 12px 8px; }
+  body.sidebar-mini .sidebar .btn-logout { font-size: 0 !important; padding: 12px 0; gap: 0; }
+  body.sidebar-mini .sidebar .btn-logout i { font-size: 18px !important; }
+}
