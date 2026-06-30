@@ -7,6 +7,7 @@ import { Component, OnInit } from "@angular/core";
 })
 export class AdminLayoutComponent implements OnInit {
   public sidebarColor: string = "red";
+  public isLightMode: boolean = true;   // le wrapper démarre en mode clair (white-content)
 
   constructor() {}
   changeSidebarColor(color){
@@ -24,10 +25,11 @@ export class AdminLayoutComponent implements OnInit {
   }
   changeDashboardColor(color){
     var body = document.getElementsByTagName('body')[0];
-    if (body && color === 'white-content') {
-        body.classList.add(color);
-    }
-    else if(body.classList.contains('white-content')) {
+    if (color === 'white-content') {
+      this.isLightMode = true;
+      body.classList.add('white-content');
+    } else {
+      this.isLightMode = false;
       body.classList.remove('white-content');
     }
   }

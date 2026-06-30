@@ -87,10 +87,10 @@ export default function Login() {
             La plateforme événementielle professionnelle de LinSoft
           </h2>
           <ul className="auth-brand__features">
-            <li>✅ Accédez à 50+ événements professionnels</li>
-            <li>✅ Inscrivez-vous en un clic</li>
-            <li>✅ Gérez vos inscriptions</li>
-            <li>✅ Notifications en temps réel</li>
+            <li>Accédez à 50+ événements professionnels</li>
+            <li>Inscrivez-vous en un clic</li>
+            <li>Gérez vos inscriptions</li>
+            <li>Notifications en temps réel</li>
           </ul>
         </div>
       </div>
@@ -99,6 +99,7 @@ export default function Login() {
       <div className="auth-panel auth-panel--form">
         <div className="auth-form-container">
           <div className="auth-form-header">
+            <img src="/logo-linsoft.png" alt="LinSoft" className="auth-form-logo" />
             <h1 className="auth-form-title">Connexion</h1>
             <p className="auth-form-subtitle">
               Pas encore de compte ?{' '}

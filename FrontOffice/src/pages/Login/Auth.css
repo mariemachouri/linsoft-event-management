@@ -77,9 +77,48 @@
 }
 
 .auth-brand__features li {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
+  position: relative;
+  padding-left: 1.6rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.82);
   font-weight: 500;
+  letter-spacing: 0.2px;
+  opacity: 0;
+  animation: authFadeUp 0.6s ease forwards;
+}
+/* Accent stylé (puce dégradée) à la place des coches */
+.auth-brand__features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF5276, #cc1f24);
+  box-shadow: 0 0 10px rgba(255, 82, 118, 0.6);
+}
+.auth-brand__features li:nth-child(1) { animation-delay: 0.25s; }
+.auth-brand__features li:nth-child(2) { animation-delay: 0.40s; }
+.auth-brand__features li:nth-child(3) { animation-delay: 0.55s; }
+.auth-brand__features li:nth-child(4) { animation-delay: 0.70s; }
+
+/* Animations d'entrée du panneau gauche */
+.auth-brand__logo { opacity: 0; animation: authFadeUp 0.6s ease 0.05s forwards; }
+.auth-brand__tagline { opacity: 0; animation: authFadeUp 0.6s ease 0.15s forwards; }
+
+@keyframes authFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo LinSoft sur le panneau de connexion (droite) */
+.auth-form-logo {
+  display: block;
+  height: 46px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 auto 1rem;
 }
 
 /* â”€â”€ Form Panel â”€â”€ */

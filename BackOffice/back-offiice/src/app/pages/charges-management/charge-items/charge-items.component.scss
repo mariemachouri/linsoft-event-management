@@ -20,3 +20,49 @@ table thead th {
     color: #fff !important;
   }
 }
+
+// Texte des cellules en blanc (description, qté, prix unitaire…)
+table tbody td {
+  color: rgba(255, 255, 255, 0.92) !important;
+  vertical-align: middle;
+}
+table tbody td strong { color: #fff !important; }
+table tbody td small  { color: rgba(255, 255, 255, 0.6) !important; }
+
+// Boutons d'action — style pro (tons doux, icônes colorées, carré arrondi)
+.table td .btn {
+  width: 34px !important;
+  height: 34px;
+  padding: 0 !important;
+  margin: 0 3px;
+  border-radius: 9px !important;
+  border: 1px solid transparent !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-image: none !important;
+  box-shadow: none !important;
+  transition: all 0.18s ease;
+  i { font-size: 0.95rem; }
+  &:hover { transform: translateY(-2px); }
+}
+.table td .btn-info {
+  background: rgba(59, 130, 246, 0.16) !important;
+  border-color: rgba(59, 130, 246, 0.40) !important;
+  color: #93c5fd !important;
+}
+.table td .btn-success {
+  background: rgba(34, 197, 94, 0.16) !important;
+  border-color: rgba(34, 197, 94, 0.40) !important;
+  color: #86efac !important;
+}
+.table td .btn-warning {
+  background: rgba(245, 158, 11, 0.16) !important;
+  border-color: rgba(245, 158, 11, 0.40) !important;
+  color: #fcd34d !important;
+}
+.table td .btn-danger {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: rgba(239, 68, 68, 0.40) !important;
+  color: #fca5a5 !important;
+}
