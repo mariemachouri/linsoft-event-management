@@ -5,7 +5,6 @@
 #
 # Suivre les logs :
 #   tkn pipelinerun logs -f -n intern-machoury --last
-# ou dans la console OpenShift : Pipelines → frontend-pipeline → PipelineRuns
 # ─────────────────────────────────────────────────────────────────────
 apiVersion: tekton.dev/v1
 kind: PipelineRun
@@ -18,7 +17,26 @@ metadata:
 spec:
   pipelineRef:
     name: frontend-pipeline
-  serviceAccountName: pipeline-sa
+  taskRunTemplate:
+    serviceAccountName: pipeline-sa
+    podTemplate:
+      initContainers:
+        - name: prepare
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+        - name: place-scripts
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
   timeouts:
     pipeline: 45m
     task: 25m

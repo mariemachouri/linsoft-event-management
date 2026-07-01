@@ -34,7 +34,50 @@ subjects:
     name: pipeline-sa
     namespace: intern-machoury
 ---
-# ── 3. PIPELINE : Frontends (FrontOffice + BackOffice) ────────────────
+# ── 3. Task : openshift-client ────────────────────────────────────────
+#  Remplace le ClusterTask openshift-client (supprimé dans Tekton v1)
+#  Utilise l'image CLI officielle OpenShift qui contient la commande oc
+# ─────────────────────────────────────────────────────────────────────
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: openshift-client
+  namespace: intern-machoury
+  labels:
+    app.kubernetes.io/part-of: event-management-pipeline
+spec:
+  params:
+    - name: SCRIPT
+      type: string
+      description: "Script oc à exécuter"
+      default: "oc help"
+    - name: VERSION
+      type: string
+      description: "Version de oc (ignoré, image fixe)"
+      default: "latest"
+  stepTemplate:
+    computeResources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+  steps:
+    - name: oc
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      command: ["/bin/bash", "-c"]
+      args:
+        - $(params.SCRIPT)
+      computeResources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+---
+# ── 4. PIPELINE : Frontends (FrontOffice + BackOffice) ────────────────
 #
 #  Graphe d'exécution :
 #
@@ -42,8 +85,6 @@ subjects:
 #                               ├──► deploy-frontends
 #   build-backoffice  ──────────┘
 #
-# Les deux builds démarrent en parallèle, puis le déploiement
-# se fait une fois les deux terminés.
 # ─────────────────────────────────────────────────────────────────────
 apiVersion: tekton.dev/v1
 kind: Pipeline
@@ -55,19 +96,17 @@ metadata:
     pipeline: frontend
 spec:
   description: "Build et déploiement des frontends FrontOffice et BackOffice"
-
   params:
     - name: GIT_REVISION
       type: string
       default: "appmod/java-upgrade-20260211172141"
       description: "Branche ou commit Git à construire"
-
   tasks:
     # ── Étape 1a : Build FrontOffice ──
     - name: build-frontoffice
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       params:
         - name: SCRIPT
           value: |
@@ -79,7 +118,7 @@ spec:
     - name: build-backoffice
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       params:
         - name: SCRIPT
           value: |
@@ -91,7 +130,7 @@ spec:
     - name: deploy-frontends
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       runAfter:
         - build-frontoffice
         - build-backoffice
@@ -105,14 +144,12 @@ spec:
             echo "--- Attente BackOffice ---"
             oc rollout status deployment/backoffice -n intern-machoury --timeout=5m
             echo "=== Frontends déployés avec succès ==="
-            echo ""
             echo "FrontOffice : https://frontoffice-intern-machoury.apps.hlab.linsoft.local"
             echo "BackOffice  : https://backoffice-intern-machoury.apps.hlab.linsoft.local"
-
 ---
-# ── 4. PIPELINE : Services Backend ────────────────────────────────────
+# ── 5. PIPELINE : Services Backend ────────────────────────────────────
 #
-#  Graphe d'exécution (séquentiel pour respecter les quotas CPU) :
+#  Graphe d'exécution (séquentiel — respecte le quota CPU 4 vCPU) :
 #
 #   build-events-service ──► build-registrations-service ──► deploy-services
 #
@@ -127,19 +164,17 @@ metadata:
     pipeline: backend
 spec:
   description: "Build et déploiement des microservices backend"
-
   params:
     - name: SERVICES
       type: string
       default: "events-service registrations-service"
-      description: "Liste des services à rebuilder (séparés par espace)"
-
+      description: "Services à rebuilder"
   tasks:
     # ── Étape 1 : Build events-service ──
     - name: build-events-service
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       params:
         - name: SCRIPT
           value: |
@@ -151,7 +186,7 @@ spec:
     - name: build-registrations-service
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       runAfter:
         - build-events-service
       params:
@@ -165,7 +200,7 @@ spec:
     - name: deploy-services
       taskRef:
         name: openshift-client
-        kind: ClusterTask
+        kind: Task
       runAfter:
         - build-registrations-service
       params:
@@ -178,17 +213,9 @@ spec:
             echo "--- Attente registrations-service ---"
             oc rollout status deployment/registrations-service -n intern-machoury --timeout=8m
             echo "=== Services backend déployés avec succès ==="
-
 ---
-# ── 5. TRIGGERS : Webhook automatique ─────────────────────────────────
-#
-#  TriggerBinding  : extrait les paramètres du payload GitHub/GitLab
-#  TriggerTemplate : crée un PipelineRun à partir des paramètres
-#  EventListener   : écoute les webhooks entrants
-#  Route           : expose l'EventListener en HTTPS
-# ─────────────────────────────────────────────────────────────────────
-
-# TriggerBinding — extrait la branche du payload webhook
+# ── 6. TRIGGERS : Webhook automatique ────────────────────────────────
+# TriggerBinding — extrait la branche du payload GitHub/GitLab
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
@@ -197,11 +224,11 @@ metadata:
 spec:
   params:
     - name: git-revision
-      value: $(body.ref)          # ex: refs/heads/appmod/java-upgrade-20260211172141
+      value: $(body.ref)
     - name: git-repo-url
       value: $(body.repository.clone_url)
 ---
-# TriggerTemplate Frontends — crée un PipelineRun frontend
+# TriggerTemplate Frontends
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
@@ -225,14 +252,15 @@ spec:
       spec:
         pipelineRef:
           name: frontend-pipeline
-        serviceAccountName: pipeline-sa
+        taskRunTemplate:
+          serviceAccountName: pipeline-sa
         timeouts:
           pipeline: 45m
         params:
           - name: GIT_REVISION
             value: $(tt.params.git-revision)
 ---
-# TriggerTemplate Services — crée un PipelineRun backend
+# TriggerTemplate Backend
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
@@ -254,7 +282,8 @@ spec:
       spec:
         pipelineRef:
           name: backend-pipeline
-        serviceAccountName: pipeline-sa
+        taskRunTemplate:
+          serviceAccountName: pipeline-sa
         timeouts:
           pipeline: 60m
         params:
@@ -272,14 +301,12 @@ metadata:
 spec:
   serviceAccountName: pipeline-sa
   triggers:
-    # Trigger frontend sur push vers la branche principale
     - name: frontend-push-trigger
       interceptors:
         - ref:
             name: cel
           params:
             - name: filter
-              # Déclenche uniquement sur la branche appmod/java-upgrade-20260211172141
               value: >
                 body.ref == "refs/heads/appmod/java-upgrade-20260211172141" &&
                 (body.commits.exists(c, c.modified.exists(f, f.startsWith("FrontOffice/") || f.startsWith("BackOffice/")))
@@ -288,8 +315,6 @@ spec:
         - ref: git-push-binding
       template:
         ref: frontend-trigger-template
-
-    # Trigger backend sur push vers la branche principale
     - name: backend-push-trigger
       interceptors:
         - ref:
@@ -304,7 +329,7 @@ spec:
       template:
         ref: backend-trigger-template
 ---
-# Route — expose l'EventListener pour recevoir les webhooks
+# Route — expose l'EventListener en HTTPS pour les webhooks
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:

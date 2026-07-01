@@ -2,10 +2,6 @@
 #
 # Déclencher avec :
 #   oc create -f openshift/tekton-pipelinerun-services.yaml -n intern-machoury
-#
-# Suivre les logs :
-#   tkn pipelinerun logs -f -n intern-machoury --last
-# ou dans la console OpenShift : Pipelines → backend-pipeline → PipelineRuns
 # ─────────────────────────────────────────────────────────────────────
 apiVersion: tekton.dev/v1
 kind: PipelineRun
@@ -18,7 +14,26 @@ metadata:
 spec:
   pipelineRef:
     name: backend-pipeline
-  serviceAccountName: pipeline-sa
+  taskRunTemplate:
+    serviceAccountName: pipeline-sa
+    podTemplate:
+      initContainers:
+        - name: prepare
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+        - name: place-scripts
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
   timeouts:
     pipeline: 75m
     task: 30m
