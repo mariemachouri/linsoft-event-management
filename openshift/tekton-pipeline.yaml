@@ -1,0 +1,325 @@
+# =====================================================================
+#  Tekton Pipelines — Event Management Platform
+#  Namespace : intern-machoury
+#
+#  Appliquer :
+#    oc apply -f openshift/tekton-pipeline.yaml -n intern-machoury
+#
+#  Lancer manuellement :
+#    oc create -f openshift/tekton-pipelinerun-frontends.yaml -n intern-machoury
+#    oc create -f openshift/tekton-pipelinerun-services.yaml  -n intern-machoury
+# =====================================================================
+
+# ── 1. ServiceAccount ─────────────────────────────────────────────────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pipeline-sa
+  namespace: intern-machoury
+  labels:
+    app.kubernetes.io/part-of: event-management-pipeline
+---
+# ── 2. RoleBinding — droits edit (start-build + rollout restart) ──────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pipeline-sa-edit
+  namespace: intern-machoury
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: ServiceAccount
+    name: pipeline-sa
+    namespace: intern-machoury
+---
+# ── 3. PIPELINE : Frontends (FrontOffice + BackOffice) ────────────────
+#
+#  Graphe d'exécution :
+#
+#   build-frontoffice ──────────┐
+#                               ├──► deploy-frontends
+#   build-backoffice  ──────────┘
+#
+# Les deux builds démarrent en parallèle, puis le déploiement
+# se fait une fois les deux terminés.
+# ─────────────────────────────────────────────────────────────────────
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: frontend-pipeline
+  namespace: intern-machoury
+  labels:
+    app: event-management
+    pipeline: frontend
+spec:
+  description: "Build et déploiement des frontends FrontOffice et BackOffice"
+
+  params:
+    - name: GIT_REVISION
+      type: string
+      default: "appmod/java-upgrade-20260211172141"
+      description: "Branche ou commit Git à construire"
+
+  tasks:
+    # ── Étape 1a : Build FrontOffice ──
+    - name: build-frontoffice
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Build FrontOffice ==="
+            oc start-build frontoffice -n intern-machoury --follow --wait
+            echo "=== FrontOffice : build terminé ==="
+
+    # ── Étape 1b : Build BackOffice (en parallèle avec FrontOffice) ──
+    - name: build-backoffice
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Build BackOffice ==="
+            oc start-build backoffice -n intern-machoury --follow --wait
+            echo "=== BackOffice : build terminé ==="
+
+    # ── Étape 2 : Déploiement (après les 2 builds) ──
+    - name: deploy-frontends
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        - build-frontoffice
+        - build-backoffice
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Redémarrage des déploiements ==="
+            oc rollout restart deployment/frontoffice deployment/backoffice -n intern-machoury
+            echo "--- Attente FrontOffice ---"
+            oc rollout status deployment/frontoffice -n intern-machoury --timeout=5m
+            echo "--- Attente BackOffice ---"
+            oc rollout status deployment/backoffice -n intern-machoury --timeout=5m
+            echo "=== Frontends déployés avec succès ==="
+            echo ""
+            echo "FrontOffice : https://frontoffice-intern-machoury.apps.hlab.linsoft.local"
+            echo "BackOffice  : https://backoffice-intern-machoury.apps.hlab.linsoft.local"
+
+---
+# ── 4. PIPELINE : Services Backend ────────────────────────────────────
+#
+#  Graphe d'exécution (séquentiel pour respecter les quotas CPU) :
+#
+#   build-events-service ──► build-registrations-service ──► deploy-services
+#
+# ─────────────────────────────────────────────────────────────────────
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: backend-pipeline
+  namespace: intern-machoury
+  labels:
+    app: event-management
+    pipeline: backend
+spec:
+  description: "Build et déploiement des microservices backend"
+
+  params:
+    - name: SERVICES
+      type: string
+      default: "events-service registrations-service"
+      description: "Liste des services à rebuilder (séparés par espace)"
+
+  tasks:
+    # ── Étape 1 : Build events-service ──
+    - name: build-events-service
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Build events-service ==="
+            oc start-build events-service -n intern-machoury --follow --wait
+            echo "=== events-service : build terminé ==="
+
+    # ── Étape 2 : Build registrations-service ──
+    - name: build-registrations-service
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        - build-events-service
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Build registrations-service ==="
+            oc start-build registrations-service -n intern-machoury --follow --wait
+            echo "=== registrations-service : build terminé ==="
+
+    # ── Étape 3 : Déploiement ──
+    - name: deploy-services
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        - build-registrations-service
+      params:
+        - name: SCRIPT
+          value: |
+            echo "=== Redémarrage des services ==="
+            oc rollout restart deployment/events-service deployment/registrations-service -n intern-machoury
+            echo "--- Attente events-service ---"
+            oc rollout status deployment/events-service -n intern-machoury --timeout=8m
+            echo "--- Attente registrations-service ---"
+            oc rollout status deployment/registrations-service -n intern-machoury --timeout=8m
+            echo "=== Services backend déployés avec succès ==="
+
+---
+# ── 5. TRIGGERS : Webhook automatique ─────────────────────────────────
+#
+#  TriggerBinding  : extrait les paramètres du payload GitHub/GitLab
+#  TriggerTemplate : crée un PipelineRun à partir des paramètres
+#  EventListener   : écoute les webhooks entrants
+#  Route           : expose l'EventListener en HTTPS
+# ─────────────────────────────────────────────────────────────────────
+
+# TriggerBinding — extrait la branche du payload webhook
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: git-push-binding
+  namespace: intern-machoury
+spec:
+  params:
+    - name: git-revision
+      value: $(body.ref)          # ex: refs/heads/appmod/java-upgrade-20260211172141
+    - name: git-repo-url
+      value: $(body.repository.clone_url)
+---
+# TriggerTemplate Frontends — crée un PipelineRun frontend
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: frontend-trigger-template
+  namespace: intern-machoury
+spec:
+  params:
+    - name: git-revision
+      default: "appmod/java-upgrade-20260211172141"
+    - name: git-repo-url
+      default: ""
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: frontend-pipeline-run-
+        namespace: intern-machoury
+        labels:
+          app: event-management
+          triggered-by: webhook
+      spec:
+        pipelineRef:
+          name: frontend-pipeline
+        serviceAccountName: pipeline-sa
+        timeouts:
+          pipeline: 45m
+        params:
+          - name: GIT_REVISION
+            value: $(tt.params.git-revision)
+---
+# TriggerTemplate Services — crée un PipelineRun backend
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: backend-trigger-template
+  namespace: intern-machoury
+spec:
+  params:
+    - name: git-revision
+      default: "appmod/java-upgrade-20260211172141"
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: backend-pipeline-run-
+        namespace: intern-machoury
+        labels:
+          app: event-management
+          triggered-by: webhook
+      spec:
+        pipelineRef:
+          name: backend-pipeline
+        serviceAccountName: pipeline-sa
+        timeouts:
+          pipeline: 60m
+        params:
+          - name: SERVICES
+            value: "events-service registrations-service"
+---
+# EventListener — reçoit les webhooks et déclenche le bon pipeline
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: event-management-listener
+  namespace: intern-machoury
+  labels:
+    app: event-management
+spec:
+  serviceAccountName: pipeline-sa
+  triggers:
+    # Trigger frontend sur push vers la branche principale
+    - name: frontend-push-trigger
+      interceptors:
+        - ref:
+            name: cel
+          params:
+            - name: filter
+              # Déclenche uniquement sur la branche appmod/java-upgrade-20260211172141
+              value: >
+                body.ref == "refs/heads/appmod/java-upgrade-20260211172141" &&
+                (body.commits.exists(c, c.modified.exists(f, f.startsWith("FrontOffice/") || f.startsWith("BackOffice/")))
+                 || body.commits.exists(c, c.added.exists(f, f.startsWith("FrontOffice/") || f.startsWith("BackOffice/"))))
+      bindings:
+        - ref: git-push-binding
+      template:
+        ref: frontend-trigger-template
+
+    # Trigger backend sur push vers la branche principale
+    - name: backend-push-trigger
+      interceptors:
+        - ref:
+            name: cel
+          params:
+            - name: filter
+              value: >
+                body.ref == "refs/heads/appmod/java-upgrade-20260211172141" &&
+                body.commits.exists(c, c.modified.exists(f, f.startsWith("services/")))
+      bindings:
+        - ref: git-push-binding
+      template:
+        ref: backend-trigger-template
+---
+# Route — expose l'EventListener pour recevoir les webhooks
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: event-management-webhook
+  namespace: intern-machoury
+  labels:
+    app: event-management
+  annotations:
+    haproxy.router.openshift.io/timeout: 60s
+spec:
+  to:
+    kind: Service
+    name: el-event-management-listener
+  port:
+    targetPort: http-listener
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,27 @@
+# PipelineRun manuel — Frontends (FrontOffice + BackOffice)
+#
+# Déclencher avec :
+#   oc create -f openshift/tekton-pipelinerun-frontends.yaml -n intern-machoury
+#
+# Suivre les logs :
+#   tkn pipelinerun logs -f -n intern-machoury --last
+# ou dans la console OpenShift : Pipelines → frontend-pipeline → PipelineRuns
+# ─────────────────────────────────────────────────────────────────────
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: frontend-pipeline-run-
+  namespace: intern-machoury
+  labels:
+    app: event-management
+    triggered-by: manual
+spec:
+  pipelineRef:
+    name: frontend-pipeline
+  serviceAccountName: pipeline-sa
+  timeouts:
+    pipeline: 45m
+    task: 25m
+  params:
+    - name: GIT_REVISION
+      value: "appmod/java-upgrade-20260211172141"
