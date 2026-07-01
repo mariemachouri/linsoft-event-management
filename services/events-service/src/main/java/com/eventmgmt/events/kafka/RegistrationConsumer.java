@@ -24,13 +24,10 @@ public class RegistrationConsumer {
             LOG.warn("Received null or incomplete registration-created message, skipping");
             return;
         }
-        LOG.infof("Received registration-created for eventId=%s, registrationId=%s",
-                message.getEventId(), message.getRegistrationId());
-        try {
-            eventService.incrementParticipants(message.getEventId());
-        } catch (Exception e) {
-            LOG.errorf(e, "Failed to increment participants for eventId=%s", message.getEventId());
-        }
+        // Participant count is updated synchronously via REST by registrations-service.
+        // Kafka message received for observability only.
+        LOG.infof("registration-created received for eventId=%s (count already updated via REST)",
+                message.getEventId());
     }
 
     @Incoming("registration-cancelled-in")
@@ -39,12 +36,8 @@ public class RegistrationConsumer {
             LOG.warn("Received null or incomplete registration-cancelled message, skipping");
             return;
         }
-        LOG.infof("Received registration-cancelled for eventId=%s, registrationId=%s",
-                message.getEventId(), message.getRegistrationId());
-        try {
-            eventService.decrementParticipants(message.getEventId());
-        } catch (Exception e) {
-            LOG.errorf(e, "Failed to decrement participants for eventId=%s", message.getEventId());
-        }
+        // Participant count is decremented synchronously via REST by registrations-service.
+        LOG.infof("registration-cancelled received for eventId=%s (count already updated via REST)",
+                message.getEventId());
     }
 }

@@ -7,7 +7,7 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 public class Registration extends PanacheMongoEntity {
     public String eventId;
     public String participantId;
-    public String status = "PENDING";  // Changé de RegistrationStatus à String
+    public String status = "CONFIRMED";  // Auto-confirmé (workflow d'acceptation supprimé)
     public String registeredAt;
 
     // Guest registration fields (filled when isGuest = true)
@@ -25,7 +25,7 @@ public class Registration extends PanacheMongoEntity {
     // Helper method pour valider/normaliser le statut
     public void setStatus(String status) {
         if (status == null || status.isEmpty()) {
-            this.status = "PENDING";
+            this.status = "CONFIRMED";
         } else {
             // Normaliser en majuscules
             this.status = status.toUpperCase();
@@ -34,6 +34,6 @@ public class Registration extends PanacheMongoEntity {
     
     // Getter pour compatibilité
     public String getStatus() {
-        return this.status != null ? this.status.toUpperCase() : "PENDING";
+        return this.status != null ? this.status.toUpperCase() : "CONFIRMED";
     }
 }

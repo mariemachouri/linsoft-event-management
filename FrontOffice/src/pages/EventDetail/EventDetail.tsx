@@ -92,10 +92,10 @@ export default function EventDetail() {
         currentParticipants: (prev.currentParticipants ?? 0) + 1
       } : prev);
       showToast('success', 'Inscription réussie ! Consultez votre tableau de bord.');
-      // Re-fetch after short delay to get accurate server count
+      // Re-fetch after delay to confirm server count
       setTimeout(() => {
         if (id) eventsService.getById(id).then(setEvent).catch(() => {});
-      }, 2000);
+      }, 4000);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'An error occurred during registration.';
       showToast('error', msg);
@@ -141,10 +141,10 @@ export default function EventDetail() {
         currentParticipants: Math.max(0, (prev.currentParticipants ?? 1) - 1)
       } : prev);
       showToast('info', 'Inscription annulée.');
-      // Re-fetch after short delay to get accurate server count
+      // Re-fetch after delay to confirm server count
       setTimeout(() => {
         if (id) eventsService.getById(id).then(setEvent).catch(() => {});
-      }, 2000);
+      }, 4000);
     } catch {
       showToast('error', 'Impossible d\'annuler l\'inscription.');
     } finally {
@@ -314,7 +314,7 @@ export default function EventDetail() {
           {event.maxParticipants && !isPast && (
             <div className="event-detail__capacity">
               <div className="event-detail__capacity-header">
-                <span>Capacity</span>
+                <span>Capacité</span>
                 <span className={isFull ? 'capacity-full' : ''}>
                   {isFull ? 'Complet' : `${remaining} place${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''}`}
                 </span>

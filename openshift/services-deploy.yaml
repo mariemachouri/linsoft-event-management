@@ -55,6 +55,7 @@ spec:
             - { name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE, value: "http://eureka-server:8761/eureka/" }
             - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka:29092" }
             - { name: MONGODB_CONNECTION_STRING, value: "mongodb://admin:admin123@mongodb:27017/registrations_db?authSource=admin" }
+            - { name: EVENTS_SERVICE_URL, value: "http://events-service:8081" }
           resources:
             requests: { cpu: "50m", memory: 256Mi }
             limits: { cpu: "200m", memory: 512Mi }

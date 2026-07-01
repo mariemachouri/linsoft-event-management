@@ -69,4 +69,26 @@ public class EventResource {
     public Event addChargeToEvent(@PathParam("id") String eventId, @PathParam("chargeId") String chargeId) {
         return service.addCharge(eventId, chargeId);
     }
+
+    @POST
+    @Path("{id}/participants/increment")
+    public Response incrementParticipants(@PathParam("id") String id) {
+        try {
+            service.incrementParticipants(id);
+            return Response.noContent().build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @POST
+    @Path("{id}/participants/decrement")
+    public Response decrementParticipants(@PathParam("id") String id) {
+        try {
+            service.decrementParticipants(id);
+            return Response.noContent().build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 }

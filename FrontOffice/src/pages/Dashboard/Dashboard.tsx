@@ -114,7 +114,7 @@ export default function Dashboard() {
         <div className="dashboard-hero__inner">
           <div className="dashboard-hero__left">
             <h1 className="dashboard-hero__title">
-              Bonjour, {auth.user?.firstName ?? auth.user?.username ?? 'participant'} 👋
+              Bonjour, {auth.user?.firstName ?? auth.user?.username ?? 'participant'}
             </h1>
           </div>
           <div className="dashboard-hero__actions">
