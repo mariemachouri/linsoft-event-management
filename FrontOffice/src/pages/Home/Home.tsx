@@ -12,6 +12,9 @@ import {
   Users,
   Zap,
   ChevronDown,
+  ShieldCheck,
+  Lightbulb,
+  BadgeCheck,
 } from 'lucide-react';
 import EventCard from '../../components/EventCard/EventCard';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
@@ -24,6 +27,38 @@ const STATS = [
   { icon: Users,    value: '5K+',  label: 'Participants' },
   { icon: MapPin,   value: '10+',  label: 'Villes' },
   { icon: Star,     value: '4.9',  label: 'Note moyenne' },
+];
+
+const PARTNERS = [
+  { name: 'Red Hat',     logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Red_Hat_logo.svg' },
+  { name: 'IBM',         logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg' },
+  { name: 'GitLab',      logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/GitLab_logo.svg' },
+  { name: 'AWS',         logo: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg' },
+  { name: 'Veeam',       logo: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Veeam_logo.svg' },
+  { name: 'Trend Micro', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Trend_Micro_logo.svg' },
+  { name: 'Microsoft',   logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
+  { name: 'Cisco',       logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Cisco_logo_blue_2016.svg' },
+];
+
+const VALUES = [
+  {
+    icon: ShieldCheck,
+    title: 'Confiance',
+    desc: 'La confiance est le socle de chaque relation et de chaque partenariat que nous construisons avec nos clients et partenaires.',
+    color: '#e31e24',
+  },
+  {
+    icon: Lightbulb,
+    title: 'Expertise',
+    desc: "Notre expertise nous permet d'accompagner efficacement nos clients face aux défis technologiques et organisationnels.",
+    color: '#3a7bd5',
+  },
+  {
+    icon: BadgeCheck,
+    title: 'Responsabilité',
+    desc: 'Nous agissons avec engagement, rigueur et fiabilité dans chacune de nos missions pour garantir des résultats durables.',
+    color: '#27ae60',
+  },
 ];
 
 const CATEGORIES = [
@@ -285,31 +320,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Featured Events ── */}
-      <section id="featured" className="section section--alt">
-        <div className="section__inner">
-          <div className="section__header">
-            <div>
-              <p className="section__eyebrow"><Zap size={13} /> À la une</p>
-              <h2 className="section__title">Événements à la une</h2>
-            </div>
-            <Link to="/events" className="section__link">Voir tout <ArrowRight size={15} /></Link>
+      {/* ── Alliances Stratégiques ── */}
+      <section className="partners-section" id="featured">
+        <div className="partners-section__header">
+          <p className="partners-section__eyebrow">Ils nous font confiance</p>
+          <h2 className="partners-section__title">Alliances Stratégiques</h2>
+          <div className="partners-section__line" />
+        </div>
+        <div className="partners-track-wrap">
+          <div className="partners-track">
+            {[...PARTNERS, ...PARTNERS].map((p, i) => (
+              <div key={i} className="partner-logo">
+                <img src={p.logo} alt={p.name} />
+              </div>
+            ))}
           </div>
-          {loading ? (
-            <div className="section__loading"><LoadingSpinner size="md" text="Chargement…" /></div>
-          ) : upcoming.length === 0 ? (
-            <div className="section__empty">
-              <Calendar size={40} strokeWidth={1.5} />
-              <p>Aucun événement à venir pour l'instant.</p>
-              <Link to="/events" className="btn-primary-sm">Parcourir quand même</Link>
-            </div>
-          ) : (
-            <div className="events-grid events-grid--featured">
-              {upcoming.slice(0, 3).map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
-          )}
+        </div>
+      </section>
+
+      {/* ── Nos Valeurs ── */}
+      <section className="values-section">
+        <div className="values-section__inner">
+          <div className="values-section__header">
+            <h2 className="values-section__title">Nos Valeurs</h2>
+            <div className="values-section__line" />
+          </div>
+          <div className="values-grid">
+            {VALUES.map(({ icon: Icon, title, desc, color }) => (
+              <div key={title} className="value-card" style={{ '--val-color': color } as React.CSSProperties}>
+                <div className="value-card__icon-wrap">
+                  <Icon size={28} strokeWidth={1.8} />
+                </div>
+                <h3 className="value-card__title">{title}</h3>
+                <p className="value-card__desc">{desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -506,6 +506,170 @@
 .cta-banner__btn--outline { background: transparent; color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.25); }
 .cta-banner__btn--outline:hover { border-color: rgba(255,255,255,0.6); color: #fff; }
 
+/* ── Alliances Stratégiques ── */
+.partners-section {
+  background: #0a0a0a;
+  padding: 5rem 0 4rem;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.partners-section__header {
+  text-align: center;
+  padding: 0 1.5rem 2.5rem;
+}
+.partners-section__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #e31e24;
+  margin-bottom: 0.5rem;
+}
+.partners-section__title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+.partners-section__line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #e31e24, transparent);
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+.partners-track-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+.partners-track {
+  display: flex;
+  gap: 3.5rem;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+.partners-track:hover { animation-play-state: paused; }
+
+.partner-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1rem 2rem;
+  min-width: 160px;
+  height: 80px;
+  flex-shrink: 0;
+  transition: background 0.25s, border-color 0.25s, transform 0.25s;
+}
+.partner-logo:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(227,30,36,0.35);
+  transform: translateY(-3px);
+}
+.partner-logo img {
+  max-width: 120px;
+  max-height: 44px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.65;
+  transition: opacity 0.25s;
+}
+.partner-logo:hover img { opacity: 1; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Nos Valeurs ── */
+.values-section {
+  background: #0d0d0d;
+  padding: 5rem 1.5rem;
+}
+.values-section__inner { max-width: 1100px; margin: 0 auto; }
+.values-section__header { text-align: center; margin-bottom: 3.5rem; }
+.values-section__title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+.values-section__line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #e31e24, transparent);
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.value-card {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  overflow: hidden;
+}
+.value-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--val-color, #e31e24) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s;
+  border-radius: inherit;
+}
+.value-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.4); }
+.value-card:hover::before { opacity: 0.08; }
+.value-card:hover { border-color: var(--val-color, #e31e24); }
+
+.value-card__icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--val-color, #e31e24) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: var(--val-color, #e31e24);
+  transition: background 0.3s, transform 0.3s;
+}
+.value-card:hover .value-card__icon-wrap {
+  background: color-mix(in srgb, var(--val-color, #e31e24) 25%, transparent);
+  transform: scale(1.1);
+}
+
+.value-card__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.3px;
+}
+.value-card__desc {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+}
+
 /* ── Animations ── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -526,6 +690,7 @@
   .hero__mini-stats { justify-content: center; }
   .categories-grid { grid-template-columns: repeat(3,1fr); }
   .events-grid { grid-template-columns: repeat(3,1fr); }
+  .values-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
   .stats__inner { grid-template-columns: repeat(2,1fr); }
@@ -543,4 +708,6 @@
   .hero__actions { flex-direction: column; width: 100%; }
   .hero__btn { justify-content: center; }
   .hero-event-card__img { width: 56px; height: 56px; }
+  .values-grid { grid-template-columns: 1fr; }
+  .partner-logo { min-width: 120px; padding: 0.75rem 1.25rem; }
 }
