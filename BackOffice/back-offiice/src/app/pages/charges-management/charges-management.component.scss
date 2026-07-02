@@ -1,4 +1,15 @@
 // Styles spécifiques au composant de gestion des charges
+
+.export-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 6px; border: 1px solid transparent;
+  font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  &--csv { background: rgba(39,174,96,0.12); border-color: rgba(39,174,96,0.4); color: #27ae60;
+    &:hover { background: #27ae60; color: #fff; border-color: #27ae60; } }
+  &--pdf { background: rgba(227,6,19,0.1); border-color: rgba(227,6,19,0.35); color: #E30613;
+    &:hover { background: #E30613; color: #fff; border-color: #E30613; } }
+}
+
 .badge {
   padding: 0.4em 0.6em;
   font-size: 0.85em;

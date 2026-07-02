@@ -159,6 +159,94 @@ export class RegistrationsManagementComponent implements OnInit {
     return event.name || event.title || '—';
   }
 
+  exportToCSV(group: EventGroup): void {
+    const eventName = this.getEventDisplayName(group.event);
+    const headers = ['Nom', 'Type', 'Email', 'Téléphone', 'Date d\'inscription', 'Statut'];
+    const rows = group.registrations.map(reg => [
+      this.getParticipantName(reg),
+      reg.isGuest ? 'Visiteur' : 'Participant',
+      this.getParticipantEmail(reg) || '',
+      (reg as any).participantPhone || (reg as any).guestPhone || '',
+      this.getRegistrationDate(reg)
+        ? new Date(this.getRegistrationDate(reg)).toLocaleDateString('fr-FR') : '',
+      reg.status || 'CONFIRMED'
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+      .join('\r\n');
+
+    const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `participants_${eventName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportToPDF(group: EventGroup): void {
+    const eventName = this.getEventDisplayName(group.event);
+    const date = new Date().toLocaleDateString('fr-FR');
+    const rows = group.registrations.map(reg => `
+      <tr>
+        <td>${this.getParticipantName(reg)}</td>
+        <td><span class="badge ${reg.isGuest ? 'badge-guest' : 'badge-member'}">${reg.isGuest ? 'Visiteur' : 'Participant'}</span></td>
+        <td>${this.getParticipantEmail(reg) || '—'}</td>
+        <td>${this.getRegistrationDate(reg) ? new Date(this.getRegistrationDate(reg)).toLocaleDateString('fr-FR') : '—'}</td>
+        <td><span class="status-confirmed">Confirmé</span></td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Participants — ${eventName}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 30px; color: #222; font-size: 12px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; border-bottom: 3px solid #E30613; padding-bottom: 14px; }
+    .logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+    .logo span { color: #E30613; }
+    .meta { text-align: right; color: #666; font-size: 11px; line-height: 1.6; }
+    h1 { font-size: 15px; margin-bottom: 4px; color: #111; }
+    .subtitle { color: #555; font-size: 11px; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #E30613; color: white; }
+    th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+    tr:nth-child(even) td { background: #fafafa; }
+    .badge { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .badge-guest { background: #fff3e0; color: #e65100; }
+    .badge-member { background: #e8f5e9; color: #2e7d32; }
+    .status-confirmed { color: #27ae60; font-weight: 600; }
+    .footer { margin-top: 24px; color: #aaa; font-size: 10px; text-align: center; }
+    @media print { body { padding: 15px; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">LN<span>SOFT</span></div>
+    <div class="meta">Gestion d'événements<br>Généré le ${date}</div>
+  </div>
+  <h1>Liste des participants — ${eventName}</h1>
+  <p class="subtitle">${group.registrations.length} participant(s) · ${group.event.maxParticipants ? group.event.maxParticipants + ' places max' : 'places illimitées'}</p>
+  <table>
+    <thead>
+      <tr><th>Nom</th><th>Type</th><th>Email</th><th>Date d'inscription</th><th>Statut</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">LinSoft — Plateforme de gestion d'événements · ${date}</div>
+  <script>window.onload = () => { window.print(); }</script>
+</body>
+</html>`;
+
+    const printWindow = window.open('', '_blank');
+    printWindow?.document.write(html);
+    printWindow?.document.close();
+  }
+
   private showSuccess(msg: string): void {
     this.successMsg = msg;
     setTimeout(() => { this.successMsg = null; }, 3000);

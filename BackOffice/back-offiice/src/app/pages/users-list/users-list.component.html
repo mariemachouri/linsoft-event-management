@@ -10,10 +10,18 @@
         <h1 class="hero-title">Gestion des Utilisateurs</h1>
       </div>
     </div>
-    <button class="btn-linsoft" routerLink="/users/create">
-      <i class="tim-icons icon-add"></i>
-      <span>Nouvel Utilisateur</span>
-    </button>
+    <div class="header-actions">
+      <button class="export-btn export-btn--csv" (click)="exportToCSV()" title="Exporter en CSV">
+        <i class="tim-icons icon-cloud-download-93"></i> CSV
+      </button>
+      <button class="export-btn export-btn--pdf" (click)="exportToPDF()" title="Exporter en PDF">
+        <i class="tim-icons icon-paper"></i> PDF
+      </button>
+      <button class="btn-linsoft" routerLink="/users/create">
+        <i class="tim-icons icon-add"></i>
+        <span>Nouvel Utilisateur</span>
+      </button>
+    </div>
   </div>
 
   <!-- ── Erreur ───────────────────────────────────────────── -->

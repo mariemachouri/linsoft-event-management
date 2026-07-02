@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Users,
   Zap,
+  ChevronDown,
 } from 'lucide-react';
 import EventCard from '../../components/EventCard/EventCard';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
@@ -34,11 +35,60 @@ const CATEGORIES = [
   { key: 'SEMINAR',    label: 'Séminaires',   emoji: '📊', color: '#FF5276' },
 ];
 
+const CAT_COLORS: Record<string, string> = {
+  CONFERENCE: '#e31e24', WORKSHOP: '#3a7bd5', MEETUP: '#27ae60',
+  SEMINAR: '#8e44ad', WEBINAR: '#e67e22', TRAINING: '#f39c12',
+};
+
+function HeroEventCard({ event, index }: { event: Event; index: number }) {
+  const title    = eventsService.getEventTitle(event);
+  const dateStr  = eventsService.formatDate(eventsService.getEventStartDate(event));
+  const imgUrl   = eventsService.getImageUrl(event);
+  const cat      = event.category || 'EVENT';
+  const color    = CAT_COLORS[cat] ?? '#e31e24';
+  const pct      = event.maxParticipants
+    ? Math.round(((event.currentParticipants ?? 0) / event.maxParticipants) * 100)
+    : 0;
+
+  return (
+    <Link
+      to={`/events/${event.id}`}
+      className="hero-event-card"
+      style={{ '--card-delay': `${0.4 + index * 0.15}s`, '--card-accent': color } as React.CSSProperties}
+    >
+      {imgUrl ? (
+        <img src={imgUrl} alt={title} className="hero-event-card__img" />
+      ) : (
+        <div className="hero-event-card__img hero-event-card__img--placeholder"
+          style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }} />
+      )}
+      <div className="hero-event-card__body">
+        <span className="hero-event-card__cat" style={{ background: `${color}22`, color }}>
+          {cat}
+        </span>
+        <h3 className="hero-event-card__title">{title}</h3>
+        <div className="hero-event-card__meta">
+          <span><Calendar size={11} /> {dateStr}</span>
+          {event.location && <span><MapPin size={11} /> {event.location.split(',')[0]}</span>}
+        </div>
+        {event.maxParticipants && (
+          <div className="hero-event-card__bar">
+            <div className="hero-event-card__bar-track">
+              <div className="hero-event-card__bar-fill" style={{ width: `${pct}%`, background: color }} />
+            </div>
+            <span>{event.maxParticipants - (event.currentParticipants ?? 0)} places restantes</span>
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  const [events, setEvents]     = useState<Event[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState('');
+  const [events, setEvents]   = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch]   = useState('');
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,13 +99,11 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Parallax scroll
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
     const onScroll = () => {
-      const y = window.scrollY;
-      el.style.backgroundPositionY = `${y * 0.4}px`;
+      el.style.backgroundPositionY = `${window.scrollY * 0.3}px`;
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -67,8 +115,8 @@ export default function Home() {
     const start = e.startDate || e.startAt;
     return start ? new Date(start) > now : true;
   });
-  const featured  = upcoming.slice(0, 3);
-  const trending  = upcoming
+  const heroEvents = upcoming.slice(0, 3);
+  const trending   = [...upcoming]
     .sort((a, b) => (b.currentParticipants ?? 0) - (a.currentParticipants ?? 0))
     .slice(0, 4);
 
@@ -79,62 +127,125 @@ export default function Home() {
     }
   };
 
+  const scrollToEvents = () => {
+    document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <main className="home">
-      {/* ── Hero ── */}
+
+      {/* ── Hero Split ── */}
       <section className="hero" ref={heroRef}>
-        {/* Animated blobs */}
+        {/* Background blobs */}
         <div className="hero__blob hero__blob--1" />
         <div className="hero__blob hero__blob--2" />
         <div className="hero__blob hero__blob--3" />
 
-        <div className="hero__content">
-          <div className="hero__badge">
-            <Sparkles size={13} strokeWidth={2.5} />
-            <span>La plateforme événementielle professionnelle de LinSoft</span>
-          </div>
-          <h1 className="hero__title">
-            Découvrez
-            <br />
-            <span className="hero__title-accent">des expériences exceptionnelles</span>
-          </h1>
-          <p className="hero__subtitle">
-            Rejoignez des milliers de professionnels lors des ateliers, conférences, webinaires et événements de networking de LinSoft.
-          </p>
+        {/* Grid lines decoration */}
+        <div className="hero__grid" />
 
-          {/* Barre de recherche */}
-          <form className="hero__search" onSubmit={handleSearchSubmit}>
-            <div className="hero__search-inner">
-              <Search size={18} className="hero__search-icon" />
-              <input
-                type="text"
-                placeholder="Rechercher un événement, un thème..."
-                className="hero__search-input"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoComplete="off"
-              />
-              <button type="submit" className="hero__search-btn">
-                Rechercher
-              </button>
+        <div className="hero__split">
+
+          {/* LEFT — Text */}
+          <div className="hero__left">
+            <div className="hero__badge">
+              <Sparkles size={13} strokeWidth={2.5} />
+              <span>Plateforme événementielle LinSoft</span>
             </div>
-          </form>
 
-          <div className="hero__actions">
-            <Link to="/events" className="hero__btn hero__btn--primary">
-              Explorer les événements
-              <ArrowRight size={16} />
-            </Link>
-            <Link to="/register" className="hero__btn hero__btn--ghost">
-              Créer un compte gratuit
-            </Link>
+            <h1 className="hero__title">
+              Vivez des
+              <br />
+              <span className="hero__title-accent">expériences</span>
+              <br />
+              <span className="hero__title-accent">inoubliables</span>
+            </h1>
+
+            <p className="hero__subtitle">
+              Conférences, ateliers, séminaires — découvrez et rejoignez les événements professionnels LinSoft.
+            </p>
+
+            <form className="hero__search" onSubmit={handleSearchSubmit}>
+              <div className="hero__search-inner">
+                <Search size={17} className="hero__search-icon" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un événement..."
+                  className="hero__search-input"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  autoComplete="off"
+                />
+                <button type="submit" className="hero__search-btn">
+                  Rechercher
+                </button>
+              </div>
+            </form>
+
+            <div className="hero__actions">
+              <Link to="/events" className="hero__btn hero__btn--primary">
+                Explorer les événements
+                <ArrowRight size={16} />
+              </Link>
+              {!isAuthenticated && (
+                <Link to="/register" className="hero__btn hero__btn--ghost">
+                  Créer un compte
+                </Link>
+              )}
+            </div>
+
+            {/* Mini stats */}
+            <div className="hero__mini-stats">
+              <div className="hero__mini-stat">
+                <span className="hero__mini-stat-val">100+</span>
+                <span className="hero__mini-stat-lbl">Événements</span>
+              </div>
+              <div className="hero__mini-stat-divider" />
+              <div className="hero__mini-stat">
+                <span className="hero__mini-stat-val">5K+</span>
+                <span className="hero__mini-stat-lbl">Participants</span>
+              </div>
+              <div className="hero__mini-stat-divider" />
+              <div className="hero__mini-stat">
+                <span className="hero__mini-stat-val">4.9★</span>
+                <span className="hero__mini-stat-lbl">Note moyenne</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT — Event cards preview */}
+          <div className="hero__right">
+            <div className="hero__cards-label">
+              <Zap size={13} />
+              Événements à la une
+            </div>
+
+            {loading ? (
+              <div className="hero__cards-loading">
+                <LoadingSpinner size="sm" text="" />
+              </div>
+            ) : heroEvents.length === 0 ? (
+              <div className="hero__cards-empty">
+                <Calendar size={32} strokeWidth={1.5} />
+                <p>Aucun événement disponible</p>
+              </div>
+            ) : (
+              <div className="hero__cards">
+                {heroEvents.map((event, i) => (
+                  <HeroEventCard key={event.id} event={event} index={i} />
+                ))}
+                <Link to="/events" className="hero__cards-more">
+                  Voir tous les événements <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="hero__scroll-indicator">
-          <div className="hero__scroll-dot" />
-        </div>
+        {/* Scroll hint */}
+        <button className="hero__scroll-hint" onClick={scrollToEvents} aria-label="Voir plus">
+          <ChevronDown size={20} />
+        </button>
       </section>
 
       {/* ── Stats ── */}
@@ -142,9 +253,7 @@ export default function Home() {
         <div className="stats__inner">
           {STATS.map(({ icon: Icon, value, label }) => (
             <div key={label} className="stats__item">
-              <div className="stats__icon">
-                <Icon size={20} strokeWidth={2} />
-              </div>
+              <div className="stats__icon"><Icon size={20} strokeWidth={2} /></div>
               <div>
                 <div className="stats__value">{value}</div>
                 <div className="stats__label">{label}</div>
@@ -162,18 +271,12 @@ export default function Home() {
               <p className="section__eyebrow">Parcourir par thème</p>
               <h2 className="section__title">Toutes les catégories</h2>
             </div>
-            <Link to="/events" className="section__link">
-              Voir tout <ArrowRight size={15} />
-            </Link>
+            <Link to="/events" className="section__link">Voir tout <ArrowRight size={15} /></Link>
           </div>
           <div className="categories-grid">
             {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.key}
-                to={`/events?category=${cat.key}`}
-                className="category-card"
-                style={{ '--cat-color': cat.color } as React.CSSProperties}
-              >
+              <Link key={cat.key} to={`/events?category=${cat.key}`} className="category-card"
+                style={{ '--cat-color': cat.color } as React.CSSProperties}>
                 <span className="category-card__emoji">{cat.emoji}</span>
                 <span className="category-card__label">{cat.label}</span>
               </Link>
@@ -183,24 +286,18 @@ export default function Home() {
       </section>
 
       {/* ── Featured Events ── */}
-      <section className="section section--alt">
+      <section id="featured" className="section section--alt">
         <div className="section__inner">
           <div className="section__header">
             <div>
-              <p className="section__eyebrow">
-                <Zap size={13} /> À la une
-              </p>
+              <p className="section__eyebrow"><Zap size={13} /> À la une</p>
               <h2 className="section__title">Événements à la une</h2>
             </div>
-            <Link to="/events" className="section__link">
-              Voir tout <ArrowRight size={15} />
-            </Link>
+            <Link to="/events" className="section__link">Voir tout <ArrowRight size={15} /></Link>
           </div>
           {loading ? (
-            <div className="section__loading">
-              <LoadingSpinner size="md" text="Chargement des événements…" />
-            </div>
-          ) : featured.length === 0 ? (
+            <div className="section__loading"><LoadingSpinner size="md" text="Chargement…" /></div>
+          ) : upcoming.length === 0 ? (
             <div className="section__empty">
               <Calendar size={40} strokeWidth={1.5} />
               <p>Aucun événement à venir pour l'instant.</p>
@@ -208,7 +305,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="events-grid events-grid--featured">
-              {featured.map((event) => (
+              {upcoming.slice(0, 3).map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </div>
@@ -222,14 +319,10 @@ export default function Home() {
           <div className="section__inner">
             <div className="section__header">
               <div>
-                <p className="section__eyebrow">
-                  <TrendingUp size={13} /> Tendance
-                </p>
+                <p className="section__eyebrow"><TrendingUp size={13} /> Tendance</p>
                 <h2 className="section__title">Les plus populaires</h2>
               </div>
-              <Link to="/events" className="section__link">
-                Voir tout <ArrowRight size={15} />
-              </Link>
+              <Link to="/events" className="section__link">Voir tout <ArrowRight size={15} /></Link>
             </div>
             <div className="events-grid">
               {trending.map((event) => (
@@ -253,17 +346,11 @@ export default function Home() {
           </div>
           <div className="cta-banner__actions">
             {isAuthenticated ? (
-              <Link to="/dashboard" className="cta-banner__btn cta-banner__btn--white">
-                Mon tableau de bord
-              </Link>
+              <Link to="/dashboard" className="cta-banner__btn cta-banner__btn--white">Mon tableau de bord</Link>
             ) : (
-              <Link to="/register" className="cta-banner__btn cta-banner__btn--white">
-                S'inscrire gratuitement
-              </Link>
+              <Link to="/register" className="cta-banner__btn cta-banner__btn--white">S'inscrire gratuitement</Link>
             )}
-            <Link to="/events" className="cta-banner__btn cta-banner__btn--outline">
-              Parcourir les événements
-            </Link>
+            <Link to="/events" className="cta-banner__btn cta-banner__btn--outline">Parcourir les événements</Link>
           </div>
         </div>
       </section>

@@ -174,6 +174,29 @@ $bg-card: rgba(255,255,255,0.05);
 // ── Capacity bar ──────────────────────────────────────────
 .group-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
+// ── Export buttons ────────────────────────────────────────
+.export-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 6px; border: 1px solid transparent;
+  font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; line-height: 1.4;
+  i { font-size: 0.7rem; }
+
+  &--csv {
+    background: rgba(39, 174, 96, 0.12);
+    border-color: rgba(39, 174, 96, 0.4);
+    color: #27ae60;
+    &:hover { background: #27ae60; color: #fff; border-color: #27ae60; }
+  }
+
+  &--pdf {
+    background: rgba(227, 6, 19, 0.1);
+    border-color: rgba(227, 6, 19, 0.35);
+    color: #E30613;
+    &:hover { background: #E30613; color: #fff; border-color: #E30613; }
+  }
+}
+
 .capacity-bar-wrap {
   display: flex; align-items: center; gap: 8px;
   .capacity-text { font-size: 0.78rem; color: $muted; white-space: nowrap; }

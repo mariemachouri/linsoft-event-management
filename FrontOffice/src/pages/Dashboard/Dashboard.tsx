@@ -4,6 +4,7 @@ import {
   Calendar,
   CheckCircle,
   Clock,
+  Download,
   ExternalLink,
   Layout,
   RefreshCw,
@@ -82,6 +83,84 @@ export default function Dashboard() {
     } finally {
       setCancelling(null);
     }
+  };
+
+  const downloadConfirmationPDF = (reg: RegistrationWithEvent) => {
+    const title    = reg.event ? eventsService.getEventTitle(reg.event) : `Événement #${reg.eventId}`;
+    const dateEvt  = reg.event ? eventsService.formatDate(eventsService.getEventStartDate(reg.event)) : '—';
+    const location = reg.event?.location ?? '—';
+    const name     = auth.user
+      ? [auth.user.firstName, auth.user.lastName].filter(Boolean).join(' ') || auth.user.username
+      : 'Participant';
+    const inscritLe = reg.createdAt ? new Date(reg.createdAt).toLocaleDateString('fr-FR') : '—';
+    const today     = new Date().toLocaleDateString('fr-FR');
+
+    const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmation d'inscription — ${title}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 40px; color: #222; font-size: 13px; background: #fff; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #E30613; padding-bottom: 16px; margin-bottom: 28px; }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+    .logo span { color: #E30613; }
+    .meta { text-align: right; color: #888; font-size: 11px; line-height: 1.8; }
+    .badge-confirmed { display: inline-block; background: #e8f5e9; color: #27ae60; border: 1px solid #27ae60; border-radius: 20px; padding: 4px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 20px; }
+    h1 { font-size: 17px; color: #111; margin-bottom: 6px; }
+    .subtitle { color: #666; font-size: 12px; margin-bottom: 28px; }
+    .card { border: 1px solid #eee; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+    .card-title { background: #E30613; color: #fff; padding: 10px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-body { padding: 16px; }
+    .row { display: flex; margin-bottom: 10px; }
+    .row:last-child { margin-bottom: 0; }
+    .label { width: 160px; color: #888; font-size: 11px; flex-shrink: 0; padding-top: 1px; }
+    .value { font-weight: 600; color: #222; }
+    .footer { margin-top: 32px; border-top: 1px solid #eee; padding-top: 14px; color: #aaa; font-size: 10px; text-align: center; line-height: 1.8; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">LN<span>SOFT</span></div>
+    <div class="meta">Plateforme de gestion d'événements<br>Document généré le ${today}</div>
+  </div>
+
+  <div class="badge-confirmed">✓ INSCRIPTION CONFIRMÉE</div>
+  <h1>Confirmation d'inscription</h1>
+  <p class="subtitle">Veuillez conserver ce document comme preuve de votre inscription.</p>
+
+  <div class="card">
+    <div class="card-title">Informations sur l'événement</div>
+    <div class="card-body">
+      <div class="row"><span class="label">Événement</span><span class="value">${title}</span></div>
+      <div class="row"><span class="label">Date</span><span class="value">${dateEvt}</span></div>
+      <div class="row"><span class="label">Lieu</span><span class="value">${location}</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Informations du participant</div>
+    <div class="card-body">
+      <div class="row"><span class="label">Nom complet</span><span class="value">${name}</span></div>
+      <div class="row"><span class="label">Référence inscription</span><span class="value">#${reg.id ?? '—'}</span></div>
+      <div class="row"><span class="label">Date d'inscription</span><span class="value">${inscritLe}</span></div>
+      <div class="row"><span class="label">Statut</span><span class="value" style="color:#27ae60">Confirmée</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    LinSoft · Plateforme de gestion d'événements<br>
+    Ce document a été généré automatiquement le ${today}.
+  </div>
+  <script>window.onload = () => { window.print(); }</script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    win?.document.write(html);
+    win?.document.close();
   };
 
   const displayed =
@@ -198,6 +277,16 @@ export default function Dashboard() {
                         <ExternalLink size={14} />
                         Voir
                       </Link>
+                    )}
+                    {reg.status === 'CONFIRMED' && (
+                      <button
+                        className="dashboard-item__pdf"
+                        onClick={() => downloadConfirmationPDF(reg)}
+                        title="Télécharger la confirmation PDF"
+                      >
+                        <Download size={13} />
+                        Confirmation
+                      </button>
                     )}
                     {canCancel && (
                       <button

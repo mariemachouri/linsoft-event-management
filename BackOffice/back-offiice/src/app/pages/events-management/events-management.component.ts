@@ -135,16 +135,85 @@ export class EventsManagementComponent implements OnInit {
 
   getCategoryLabel(category: string): string {
     switch (category) {
-      case 'CONFERENCE':
-        return 'Conference';
-      case 'WORKSHOP':
-        return 'Workshop';
-      case 'MEETUP':
-        return 'Meetup';
-      case 'SEMINAR':
-        return 'Seminar';
-      default:
-        return category;
+      case 'CONFERENCE': return 'Conférence';
+      case 'WORKSHOP':   return 'Atelier';
+      case 'MEETUP':     return 'Rencontre';
+      case 'SEMINAR':    return 'Séminaire';
+      default:           return category;
     }
+  }
+
+  exportToCSV(): void {
+    const headers = ['Titre', 'Catégorie', 'Statut', 'Date début', 'Lieu', 'Participants', 'Capacité max'];
+    const rows = this.upcomingEvents.map(e => [
+      e.name || e.title || '',
+      this.getCategoryLabel(e.category || ''),
+      this.getStatusLabel(e.status || ''),
+      e.startDate || e.startAt || '',
+      e.location || '',
+      String(e.currentParticipants ?? 0),
+      String(e.maxParticipants ?? '∞')
+    ]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';'))
+      .join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `evenements_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportToPDF(): void {
+    const today = new Date().toLocaleDateString('fr-FR');
+    const rows = this.upcomingEvents.map(e => `
+      <tr>
+        <td>${e.name || e.title || '—'}</td>
+        <td>${this.getCategoryLabel(e.category || '')}</td>
+        <td><span class="badge badge-${e.status?.toLowerCase()}">${this.getStatusLabel(e.status || '')}</span></td>
+        <td>${e.startDate || e.startAt ? new Date(e.startDate || e.startAt || '').toLocaleDateString('fr-FR') : '—'}</td>
+        <td>${e.location || '—'}</td>
+        <td>${e.currentParticipants ?? 0} / ${e.maxParticipants ?? '∞'}</td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<title>Événements</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Arial,sans-serif;padding:30px;font-size:12px;color:#222}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #E30613;padding-bottom:14px;margin-bottom:24px}
+  .logo{font-size:20px;font-weight:900}.logo span{color:#E30613}
+  .meta{text-align:right;color:#888;font-size:11px;line-height:1.8}
+  h1{font-size:15px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse}
+  thead tr{background:#E30613;color:#fff}
+  th{padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase}
+  td{padding:8px 12px;border-bottom:1px solid #eee}
+  tr:nth-child(even) td{background:#fafafa}
+  .badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+  .badge-published{background:#e8f5e9;color:#27ae60}
+  .badge-draft{background:#fff3e0;color:#e67e22}
+  .badge-cancelled{background:#fdecea;color:#e74c3c}
+  .badge-completed{background:#e3f2fd;color:#1565c0}
+  .footer{margin-top:20px;color:#aaa;font-size:10px;text-align:center}
+  @media print{body{padding:15px}}
+</style></head><body>
+  <div class="header">
+    <div class="logo">LN<span>SOFT</span></div>
+    <div class="meta">Gestion d'événements<br>Généré le ${today}</div>
+  </div>
+  <h1>Liste des événements (${this.upcomingEvents.length})</h1>
+  <table>
+    <thead><tr><th>Titre</th><th>Catégorie</th><th>Statut</th><th>Date début</th><th>Lieu</th><th>Participants</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">LinSoft · ${today}</div>
+  <script>window.onload=()=>window.print()</script>
+</body></html>`;
+    const w = window.open('', '_blank');
+    w?.document.write(html);
+    w?.document.close();
   }
 }

@@ -7,7 +7,13 @@
             <div class="col-8">
               <h4 class="card-title">Gestion des charges (Prédictions IA)</h4>
             </div>
-            <div class="col-4 text-right">
+            <div class="col-4 text-right" style="display:flex;gap:8px;justify-content:flex-end;align-items:center">
+              <button class="export-btn export-btn--csv" (click)="exportToCSV()" title="Exporter en CSV">
+                <i class="tim-icons icon-cloud-download-93"></i> CSV
+              </button>
+              <button class="export-btn export-btn--pdf" (click)="exportToPDF()" title="Exporter en PDF">
+                <i class="tim-icons icon-paper"></i> PDF
+              </button>
               <button class="btn btn-primary btn-sm" (click)="createPrediction()">
                 <i class="tim-icons icon-simple-add"></i>
                 Nouvelle prédiction

@@ -91,6 +91,18 @@ $shadow-btn:   0 4px 14px rgba(204, 31, 36, 0.32);
   }
 }
 
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.export-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 14px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  &--csv { background: rgba(39,174,96,0.12); border-color: rgba(39,174,96,0.4); color: #27ae60;
+    &:hover { background: #27ae60; color: #fff; border-color: #27ae60; } }
+  &--pdf { background: rgba(227,6,19,0.1); border-color: rgba(227,6,19,0.35); color: #E30613;
+    &:hover { background: #E30613; color: #fff; border-color: #E30613; } }
+}
+
 // ── Bouton principal LinSoft ──────────────────────────────────
 .btn-linsoft {
   display: inline-flex;

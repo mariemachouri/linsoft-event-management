@@ -95,6 +95,15 @@
               {{ group.registrations.length }}/{{ group.event.maxParticipants }}
             </span>
           </span>
+          <!-- Boutons export — stoppe la propagation du clic pour ne pas replier le groupe -->
+          <button class="export-btn export-btn--csv" title="Exporter en CSV"
+            (click)="exportToCSV(group); $event.stopPropagation()">
+            <i class="tim-icons icon-cloud-download-93"></i> CSV
+          </button>
+          <button class="export-btn export-btn--pdf" title="Exporter en PDF"
+            (click)="exportToPDF(group); $event.stopPropagation()">
+            <i class="tim-icons icon-paper"></i> PDF
+          </button>
         </div>
       </div>
 

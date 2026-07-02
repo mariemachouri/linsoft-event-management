@@ -349,6 +349,29 @@
 
 .dashboard-item__cancel:disabled { opacity: 0.6; cursor: not-allowed; }
 
+.dashboard-item__pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.4rem 0.875rem;
+  background: transparent;
+  border: 1px solid rgba(227, 6, 19, 0.35);
+  border-radius: 8px;
+  color: #E30613;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.dashboard-item__pdf:hover {
+  background: #E30613;
+  border-color: #E30613;
+  color: #fff;
+}
+
 /* spin util */
 .spin { animation: spinAnim 0.8s linear infinite; }
 
