@@ -27,6 +27,8 @@ export class RegistrationsManagementComponent implements OnInit {
   successMsg: string | null = null;
   searchQuery = '';
 
+  collapsedState: Record<string, boolean> = {};
+
   get eventGroups(): EventGroup[] {
     const q = this.searchQuery.toLowerCase();
     const grouped: Record<string, Registration[]> = {};
@@ -53,7 +55,7 @@ export class RegistrationsManagementComponent implements OnInit {
       const isFull = !!(event.maxParticipants && event.maxParticipants > 0 &&
         (event.currentParticipants ?? 0) >= event.maxParticipants);
 
-      groups.push({ event, registrations: regs, isFull, collapsed: false });
+      groups.push({ event, registrations: regs, isFull, collapsed: !!this.collapsedState[eventId] });
     });
 
     return groups.sort((a, b) =>
@@ -101,7 +103,7 @@ export class RegistrationsManagementComponent implements OnInit {
   }
 
   toggleGroup(group: EventGroup): void {
-    group.collapsed = !group.collapsed;
+    this.collapsedState[group.event.id!] = !this.collapsedState[group.event.id!];
   }
 
   cancelRegistration(id: string, group: EventGroup): void {

@@ -47,3 +47,45 @@ select.form-control option:checked {
     color: #fff !important;
   }
 }
+
+/* Boutons d'action bien visibles */
+.btn-primary {
+  background: #e31e24 !important;
+  border-color: #e31e24 !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  &:hover { background: #c0151a !important; border-color: #c0151a !important; }
+}
+
+.btn-secondary {
+  background: transparent !important;
+  border: 2px solid rgba(255,255,255,0.4) !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  &:hover { border-color: #fff !important; background: rgba(255,255,255,0.1) !important; }
+}
+
+.btn-success {
+  background: #27ae60 !important;
+  border-color: #27ae60 !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  &:hover { background: #1e8449 !important; }
+}
+
+.btn-info {
+  background: #3a7bd5 !important;
+  border-color: #3a7bd5 !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  &:hover { background: #2d60a8 !important; }
+}
+
+/* Labels du formulaire en blanc */
+label { color: #fff !important; font-weight: 500; }
+.form-control { color: #fff !important; background: rgba(255,255,255,0.07) !important; border-color: rgba(255,255,255,0.2) !important; }
+.form-check-label { color: rgba(255,255,255,0.85) !important; }
