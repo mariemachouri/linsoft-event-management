@@ -214,8 +214,9 @@ $radius-sm:  8px;
   font-weight: 700 !important;
 }
 
-// ── Boutons actions ───────────────────────────────────────────
-.btn-sm {
+// ── Boutons actions (icône carrée pour info/danger uniquement) ─
+.btn-info.btn-sm,
+.btn-danger.btn-sm {
   width: 34px !important;
   height: 34px !important;
   padding: 0 !important;
@@ -227,6 +228,21 @@ $radius-sm:  8px;
   transition: all 0.18s ease !important;
 
   i { font-size: 14px !important; margin: 0 !important; }
+}
+
+// Boutons formulaire (Ajouter / Annuler) — taille normale lisible
+.btn-success.btn-sm,
+.btn-secondary.btn-sm {
+  width: auto !important;
+  height: auto !important;
+  padding: 7px 18px !important;
+  border-radius: $radius-sm !important;
+  font-size: 0.83rem !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.18s ease !important;
 }
 
 .btn-info {
