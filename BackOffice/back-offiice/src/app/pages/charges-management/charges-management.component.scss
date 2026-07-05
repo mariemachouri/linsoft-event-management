@@ -56,3 +56,25 @@
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
 }
+
+// Bouton "Nouvelle prédiction" — rouge LinSoft bien visible
+.btn-primary {
+  background: #cc1f24 !important;
+  border-color: #cc1f24 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  padding: 8px 18px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(204,31,36,0.40) !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  &:hover {
+    background: #a81820 !important;
+    box-shadow: 0 6px 20px rgba(204,31,36,0.55) !important;
+    transform: translateY(-1px) !important;
+  }
+}

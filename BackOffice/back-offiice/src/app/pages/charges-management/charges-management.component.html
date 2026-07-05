@@ -170,21 +170,6 @@
             </table>
           </div>
 
-          <!-- Légende -->
-          <div class="row mt-3" *ngIf="!loading && predictions.length > 0">
-            <div class="col-md-12">
-              <div class="alert alert-secondary">
-                <small>
-                  <strong>Légende des statuts :</strong><br>
-                  <span class="badge badge-warning">En attente</span> Prédiction créée, en attente de décision/approbation<br>
-                  <span class="badge badge-success">Approuvé</span> Prédiction approuvée par un administrateur<br>
-                  <span class="badge badge-info">Payé</span> Paiement effectué<br>
-                  <span class="badge badge-danger">Rejeté</span> Prédiction rejetée par un administrateur
-                </small>
-              </div>
-            </div>
-          </div>
-
           <!-- Note pour les admins -->
           <div class="row mt-2" *ngIf="isAdmin && !loading && predictions.length > 0">
             <div class="col-md-12">
