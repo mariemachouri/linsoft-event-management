@@ -15,17 +15,23 @@ const BACKOFFICE_URL =
 // Rôles donnant accès au BackOffice (doit rester aligné avec AuthGuard du BackOffice)
 const ADMIN_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer', 'ADMIN', 'ORGANIZER'];
 
-// Décoder le username depuis le JWT Keycloak
-function getUsernameFromToken(token: string): string {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.preferred_username || payload.sub || '';
-  } catch {
-    return '';
-  }
+// Décoder le payload JWT Keycloak
+function decodeToken(token: string): Record<string, unknown> {
+  try { return JSON.parse(atob(token.split('.')[1])); } catch { return {}; }
 }
 
-// Récupérer les rôles DB via users-service (plus fiable que realm_access JWT)
+function getUsernameFromToken(token: string): string {
+  const p = decodeToken(token);
+  return (p.preferred_username as string) || (p.sub as string) || '';
+}
+
+// Rôles realm_access depuis le JWT (fallback si l'utilisateur n'est pas dans la DB)
+function getRolesFromToken(token: string): string[] {
+  const p = decodeToken(token);
+  return (p.realm_access as { roles?: string[] })?.roles ?? [];
+}
+
+// Récupérer les rôles DB via users-service
 async function getRolesFromDB(username: string): Promise<string[]> {
   try {
     const res = await api.get<UserProfile>(`/users/username/${username}`);
@@ -60,12 +66,15 @@ export default function Login() {
     try {
       await login({ username: form.username.trim(), password: form.password });
 
-      // Redirection selon le rôle — on vérifie d'abord la DB users-service
+      // Redirection selon le rôle — DB users-service en priorité, JWT en fallback
       const token = localStorage.getItem('access_token') ?? '';
       const refreshToken = localStorage.getItem('refresh_token') ?? '';
       const username = getUsernameFromToken(token);
       const dbRoles = await getRolesFromDB(username);
-      const isTeamMember = dbRoles.some((r) => ADMIN_ROLES.includes(r));
+      const jwtRoles = getRolesFromToken(token);
+      // Union DB + JWT : couvre les admins Keycloak sans entrée en DB
+      const allRoles = [...new Set([...dbRoles, ...jwtRoles])];
+      const isTeamMember = allRoles.some((r) => ADMIN_ROLES.includes(r));
 
       if (isTeamMember) {
         // Admin / organisateur → BackOffice, avec passage des tokens (pas de form Keycloak)
