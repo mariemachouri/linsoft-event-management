@@ -1,445 +1,329 @@
-// ── LinSoft Brand ─────────────────────────────────────────────
-$red:      #cc1f24;
-$red-dark: #a81820;
-$red-glow: rgba(204, 31, 36, 0.13);
-$navy:     #2A3652;
-$navy-dk:  #1e2d45;
-$navy-mid: #3d4f73;
-$navy-lt:  rgba(42, 54, 82, 0.08);
-$white:    #ffffff;
-$bg:       #f0f3f8;
-$text:     #2c3e50;
-$muted:    #8492a6;
-$border:   #e2e8f0;
-$green:    #00c86a;
+// ── Settings Page — LinSoft Dark Theme (BackOffice) ──────────
 
-$radius:    14px;
-$radius-sm: 8px;
-$shadow:    0 2px 16px rgba(42, 54, 82, 0.09);
-$shadow-h:  0 6px 28px rgba(42, 54, 82, 0.15);
-
-// ── Wrapper ───────────────────────────────────────────────────
-.user-wrapper {
+.settings-page {
   padding: 20px 0 40px;
   min-height: 100vh;
+  background: transparent;
 }
 
-// ── Hero Header ───────────────────────────────────────────────
-.hero-header {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(120deg, $navy-dk 0%, $navy-mid 100%);
-  border-radius: $radius;
-  padding: 22px 28px;
-  margin-bottom: 24px;
-  animation: fadeSlideDown 0.5s ease-out;
+// ── Search Bar ───────────────────────────────────────────────
+.settings-search-bar {
   position: relative;
-  overflow: hidden;
+  max-width: 720px;
+  margin: 0 auto 2rem;
+  padding: 0;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 110px; height: 110px;
-    background: rgba(204, 31, 36, 0.18);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -20px; left: 42%;
-    width: 75px; height: 75px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    pointer-events: none;
-  }
+.settings-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.35);
+  pointer-events: none;
+  font-size: 14px;
+}
 
-  .hero-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    z-index: 1;
-  }
+.settings-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
 
-  .hero-icon-wrap {
-    width: 52px; height: 52px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: $radius-sm;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-
-    i { font-size: 22px; color: $white; }
-  }
-
-  .hero-title {
-    color: $white;
-    font-size: 1.35rem;
-    font-weight: 700;
-    margin: 0 0 4px;
-    letter-spacing: -0.01em;
-  }
-  .hero-sub {
-    color: rgba(255, 255, 255, 0.62);
-    font-size: 0.82rem;
-    margin: 0;
+  &::placeholder { color: rgba(255,255,255,0.35); }
+  &:focus {
+    border-color: rgba(204,31,36,0.5);
+    background: rgba(255,255,255,0.09);
   }
 }
 
-// ── Profile Row ───────────────────────────────────────────────
-.profile-row {
-  animation: fadeSlideUp 0.5s ease-out 0.12s both;
-}
-
-// ── Identity Card ─────────────────────────────────────────────
-.identity-card {
-  background: $white;
-  border-radius: $radius;
-  overflow: hidden;
-  box-shadow: $shadow;
-  border: 1px solid $border;
-  margin-bottom: 24px;
-  transition: box-shadow 0.25s ease;
-
-  &:hover { box-shadow: $shadow-h; }
-}
-
-// Banner
-.identity-banner {
-  background: linear-gradient(135deg, $navy-dk 0%, $navy 100%);
-  padding: 36px 24px 52px;
-  text-align: center;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -18px; right: -18px;
-    width: 80px; height: 80px;
-    background: rgba(204, 31, 36, 0.2);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -14px; left: 20%;
-    width: 50px; height: 50px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-}
-
-.avatar-wrap {
-  width: 90px; height: 90px;
+// ── Body ─────────────────────────────────────────────────────
+.settings-body {
+  max-width: 720px;
   margin: 0 auto;
-  position: relative;
-  cursor: pointer;
-
-  &:hover .avatar-overlay { opacity: 1; }
-  &:hover .avatar-photo,
-  &:hover .avatar-initials { transform: scale(1.04); }
-
-  .avatar-photo {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid $white;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
-    transition: transform 0.2s ease;
-  }
-
-  .avatar-initials {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    background: $white;
-    color: $navy;
-    font-size: 30px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
-    transition: transform 0.2s ease;
-  }
-
-  .avatar-overlay {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.52);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    color: $white;
-    font-size: 10px;
-    gap: 4px;
-    i { font-size: 18px; }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-// Identity body
-.identity-body {
-  padding: 22px 20px 20px;
-  text-align: center;
-
-  .id-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: $text;
-    margin: 0 0 10px;
-  }
-
-  .id-role {
-    display: inline-block;
-    background: $red-glow;
-    color: $red;
-    border: 1px solid rgba(204, 31, 36, 0.22);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    padding: 4px 14px;
-    border-radius: 20px;
-  }
-
-  .id-divider {
-    height: 1px;
-    background: $border;
-    margin: 18px 0;
-  }
-
-  .id-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 12px;
-    color: $muted;
-    font-weight: 500;
-    margin-bottom: 18px;
-
-    .dot-green {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: $green;
-      box-shadow: 0 0 0 3px rgba(0, 200, 106, 0.2);
-      animation: pulse-green 2s ease-in-out infinite;
-    }
-  }
-
-  .id-meta {
-    list-style: none;
-    padding: 0; margin: 0;
-    text-align: left;
-
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 10px 0;
-      border-bottom: 1px solid $border;
-      gap: 10px;
-      &:last-child { border-bottom: none; }
-    }
-
-    .meta-key {
-      font-size: 11px;
-      font-weight: 600;
-      color: $muted;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      flex-shrink: 0;
-      padding-top: 1px;
-    }
-
-    .meta-val {
-      font-size: 13px;
-      color: $text;
-      font-weight: 500;
-      text-align: right;
-      word-break: break-all;
-    }
-
-    .meta-verified {
-      color: #00a84a;
-      font-size: 12px;
-      font-weight: 600;
-      i { font-size: 11px; }
-    }
-  }
+// ── Section card ─────────────────────────────────────────────
+.settings-section {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  backdrop-filter: blur(10px);
 }
 
-// ── Info Cards ────────────────────────────────────────────────
-.info-card {
-  background: $white;
-  border-radius: $radius;
-  box-shadow: $shadow;
-  border: 1px solid $border;
-  margin-bottom: 22px;
-  overflow: hidden;
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
-  animation: fadeSlideUp 0.5s ease-out both;
-
-  &:nth-child(1) { animation-delay: 0.15s; }
-  &:nth-child(2) { animation-delay: 0.22s; }
-
-  &:hover {
-    box-shadow: $shadow-h;
-    transform: translateY(-2px);
-  }
-}
-
-.info-card-header {
+.settings-section__label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.3rem;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 20px 26px;
-  border-bottom: 1px solid $border;
-  background: #fafbfd;
-
-  .info-header-icon {
-    width: 42px; height: 42px;
-    border-radius: $radius-sm;
-    background: linear-gradient(135deg, $navy-dk, $navy);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    i { color: $white; font-size: 16px; }
-
-    &.icon-security {
-      background: linear-gradient(135deg, $red-dark, $red);
-    }
-  }
-
-  .info-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: $text;
-    margin: 0;
-  }
-  .info-sub {
-    font-size: 12px;
-    color: $muted;
-    margin: 2px 0 0;
-  }
+  gap: 0.5rem;
+  i { font-size: 16px; }
 }
 
-.info-card-body {
-  padding: 24px 26px;
+.settings-section__sub {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 1.5rem;
 }
 
-// ── Fields ────────────────────────────────────────────────────
-.field-group {
-  margin-bottom: 20px;
-  &.mb-0 { margin-bottom: 0; }
+// ── Divider ──────────────────────────────────────────────────
+.settings-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 1.5rem 0;
 }
 
-.field-label {
+// ── Avatar row ───────────────────────────────────────────────
+.settings-row--picture {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  color: $muted;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin-bottom: 8px;
-
-  .readonly-badge {
-    font-size: 10px;
-    font-weight: 500;
-    text-transform: none;
-    letter-spacing: 0;
-    color: $white;
-    background: $muted;
-    border-radius: 4px;
-    padding: 2px 7px;
-  }
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.field-wrap {
-  position: relative;
+.settings-row__left {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
 
-  .ficon {
-    position: absolute;
-    left: 14px;
-    color: $navy;
-    font-size: 14px;
-    pointer-events: none;
-    z-index: 1;
+.settings-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #cc1f24, #ff4d52);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 800; color: #fff;
+  position: relative; cursor: pointer; overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.15);
+  transition: transform 0.2s;
+
+  &:hover { transform: scale(1.05); }
+  &:hover .settings-avatar__overlay { opacity: 1; }
+}
+
+.settings-avatar__img {
+  width: 100%; height: 100%;
+  object-fit: cover; border-radius: 50%;
+}
+
+.settings-avatar__overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; opacity: 0;
+  transition: opacity 0.2s; border-radius: 50%;
+  i { font-size: 18px; }
+}
+
+.settings-avatar__info {
+  display: flex; flex-direction: column; gap: 0.2rem;
+}
+
+.settings-avatar__name {
+  font-size: 0.95rem; font-weight: 700; color: #fff;
+}
+
+.settings-avatar__role {
+  font-size: 0.75rem; color: #cc1f24; font-weight: 600;
+}
+
+.settings-avatar__hint {
+  font-size: 0.72rem; color: rgba(255,255,255,0.35);
+}
+
+.settings-row__actions {
+  display: flex; gap: 0.75rem; flex-wrap: wrap;
+}
+
+// ── Field groups ─────────────────────────────────────────────
+.settings-field-group {
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+
+.settings-field-label {
+  font-size: 0.85rem; font-weight: 700; color: #fff;
+  display: flex; align-items: center; gap: 0.4rem;
+  i { font-size: 14px; color: rgba(255,255,255,0.6); }
+}
+
+.settings-field-desc {
+  font-size: 0.78rem; color: rgba(255,255,255,0.4); margin: -0.25rem 0 0;
+}
+
+.settings-field-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+
+.settings-field {
+  display: flex; flex-direction: column; gap: 0.4rem;
+}
+
+.settings-label {
+  font-size: 0.75rem; font-weight: 600;
+  color: rgba(255,255,255,0.55); letter-spacing: 0.03em;
+}
+
+// ── Inputs ───────────────────────────────────────────────────
+.settings-input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+
+  &::placeholder { color: rgba(255,255,255,0.3); }
+
+  &:focus:not(.settings-input--readonly) {
+    border-color: rgba(204,31,36,0.55);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(204,31,36,0.12);
   }
-
-  .field-input {
-    width: 100%;
-    padding: 10px 14px 10px 42px;
-    height: 44px;
-    background: $bg;
-    border: 1.5px solid $border;
-    border-radius: $radius-sm;
-    font-size: 14px;
-    color: $text;
-    font-weight: 500;
-    outline: none;
-    font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &[readonly] {
-      cursor: default;
-      opacity: 1;
-    }
-    &:focus {
-      border-color: $red;
-      box-shadow: 0 0 0 3px rgba(204, 31, 36, 0.07);
-      background: $white;
-    }
-  }
-
-  .field-mono {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 12px;
-    letter-spacing: 0.3px;
-  }
 }
 
-.field-hint {
-  font-size: 12px;
-  color: $muted;
-  margin: 6px 0 0;
+.settings-input--readonly {
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.4) !important;
+  cursor: not-allowed;
+  padding-right: 7.5rem !important;
 }
 
-// ── Animations ────────────────────────────────────────────────
-@keyframes fadeSlideDown {
-  from { opacity: 0; transform: translateY(-14px); }
-  to   { opacity: 1; transform: translateY(0); }
+.settings-input--half { max-width: 50%; }
+
+.settings-input--pwd { padding-right: 2.5rem; }
+
+.settings-input-wrap {
+  position: relative; display: flex; align-items: center;
 }
 
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+.settings-readonly-badge {
+  position: absolute; right: 0.75rem;
+  font-size: 0.68rem; font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.2rem 0.55rem; border-radius: 6px;
+  pointer-events: none; white-space: nowrap;
 }
 
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(0, 200, 106, 0.2); }
-  50%       { box-shadow: 0 0 0 7px rgba(0, 200, 106, 0.06); }
+// ── Password ─────────────────────────────────────────────────
+.settings-pwd-wrap {
+  position: relative; display: flex; align-items: center;
 }
 
-// ── Responsive ────────────────────────────────────────────────
-@media (max-width: 991px) {
-  .identity-card { margin-bottom: 20px; }
-  .info-card-header { padding: 16px 20px; }
-  .info-card-body   { padding: 18px 20px; }
+.settings-pwd-toggle {
+  position: absolute; right: 0.75rem;
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.4); padding: 0;
+  display: flex; align-items: center;
+  transition: color 0.2s;
+  i { font-size: 13px; }
+  &:hover { color: rgba(255,255,255,0.8); }
 }
 
-@media (max-width: 767px) {
-  .hero-header { padding: 18px 20px; }
-  .hero-title  { font-size: 1.15rem; }
+// ── Buttons ──────────────────────────────────────────────────
+.settings-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.6rem 1.25rem; border-radius: 10px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  font-family: inherit; border: 1px solid transparent;
+  transition: all 0.2s ease; white-space: nowrap;
+  background-image: none !important;
+  i { font-size: 13px; margin: 0; }
+}
 
-  .avatar-wrap,
-  .avatar-wrap .avatar-photo,
-  .avatar-wrap .avatar-initials { width: 78px; height: 78px; }
-  .avatar-wrap .avatar-initials { font-size: 26px; }
+.settings-btn--primary {
+  background: #cc1f24 !important; color: #fff; border-color: #cc1f24;
+  box-shadow: 0 4px 14px rgba(204,31,36,0.30);
+  &:hover { background: #a81820 !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(204,31,36,0.40); }
+}
 
-  .field-input { height: 42px; font-size: 13px; }
+.settings-btn--ghost {
+  background: rgba(255,255,255,0.08) !important; color: #fff;
+  border-color: rgba(255,255,255,0.15);
+  &:hover { background: rgba(255,255,255,0.14) !important; }
+}
+
+.settings-btn--danger-ghost {
+  background: rgba(204,31,36,0.1) !important; color: #ff8080;
+  border-color: rgba(204,31,36,0.3);
+  &:hover { background: rgba(204,31,36,0.22) !important; color: #fff; }
+}
+
+// ── Form footer ──────────────────────────────────────────────
+.settings-form-footer {
+  display: flex; justify-content: flex-end; margin-top: 1rem;
+}
+
+// ── Integrations ─────────────────────────────────────────────
+.settings-integration-row {
+  display: flex; align-items: center; gap: 1rem;
+}
+
+.settings-integration-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 800; flex-shrink: 0;
+}
+
+.settings-integration-icon--keycloak {
+  background: linear-gradient(135deg, #0052cc, #0065ff);
+  color: #fff;
+}
+
+.settings-integration-icon--user {
+  background: rgba(204,31,36,0.15);
+  color: #cc1f24;
+  border: 1px solid rgba(204,31,36,0.3);
+  i { font-size: 18px; }
+}
+
+.settings-integration-info {
+  display: flex; flex-direction: column; gap: 0.15rem; flex: 1;
+  strong { font-size: 0.9rem; font-weight: 700; color: #fff; }
+  span { font-size: 0.73rem; color: rgba(255,255,255,0.45); word-break: break-all; }
+}
+
+.settings-integration-badge {
+  font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+.settings-integration-badge--connected {
+  background: rgba(39,174,96,0.15);
+  border-color: rgba(39,174,96,0.35);
+  color: #86efac;
+}
+
+// ── Responsive ───────────────────────────────────────────────
+@media (max-width: 640px) {
+  .settings-section { padding: 1.25rem; }
+  .settings-field-row { grid-template-columns: 1fr; }
+  .settings-row--picture { flex-direction: column; align-items: flex-start; }
+  .settings-input--half { max-width: 100%; }
+  .settings-form-footer { justify-content: stretch; }
+  .settings-btn--primary { width: 100%; justify-content: center; }
 }

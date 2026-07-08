@@ -1,165 +1,166 @@
+<div class="content settings-page">
 
-<div class="content user-wrapper">
-
-  <!-- ── Hero Header ─────────────────────────────────────── -->
-  <div class="hero-header">
-    <div class="hero-left">
-      <div class="hero-icon-wrap">
-        <i class="tim-icons icon-single-02"></i>
-      </div>
-      <div class="hero-text">
-        <h1 class="hero-title">Mon Profil</h1>
-        <p class="hero-sub">Gérez vos informations personnelles et votre compte</p>
-      </div>
-    </div>
+  <!-- ── Search bar ── -->
+  <div class="settings-search-bar">
+    <i class="tim-icons icon-zoom-split settings-search-icon"></i>
+    <input type="text" [(ngModel)]="search" class="settings-search-input"
+      placeholder="Rechercher dans les paramètres..." />
   </div>
 
-  <div class="row profile-row">
+  <div class="settings-body">
 
-    <!-- ── Left : Identity Card ────────────────────────────── -->
-    <div class="col-xl-3 col-lg-4">
-      <div class="identity-card">
+    <!-- ── Section Account ── -->
+    <div class="settings-section">
+      <div class="settings-section__label">Account</div>
+      <p class="settings-section__sub">Informations en temps réel de votre compte</p>
 
-        <!-- Banner with avatar -->
-        <div class="identity-banner">
-          <div class="avatar-wrap" (click)="triggerPhotoUpload()">
-            <img *ngIf="photoUrl" [src]="photoUrl" class="avatar-photo" alt="Photo de profil" />
-            <div *ngIf="!photoUrl" class="avatar-initials">
+      <!-- Avatar row -->
+      <div class="settings-row--picture">
+        <div class="settings-row__left">
+          <div class="settings-avatar" (click)="triggerPhotoUpload()">
+            <img *ngIf="photoUrl" [src]="photoUrl" alt="avatar" class="settings-avatar__img" />
+            <span *ngIf="!photoUrl">
               {{ (currentUser?.firstName?.[0] || '') + (currentUser?.lastName?.[0] || '') || (currentUser?.username?.[0] || 'U') | uppercase }}
-            </div>
-            <div class="avatar-overlay">
+            </span>
+            <div class="settings-avatar__overlay">
               <i class="tim-icons icon-camera-18"></i>
-              <span>Changer</span>
             </div>
           </div>
-          <input #photoInput type="file" accept="image/*" class="d-none"
-                 (change)="onPhotoSelected($event)" />
-        </div>
-
-        <!-- Info body -->
-        <div class="identity-body">
-          <h5 class="id-name">{{ getDisplayName() }}</h5>
-          <span class="id-role">{{ getPrimaryRole() }}</span>
-
-          <div class="id-divider"></div>
-
-          <div class="id-status">
-            <span class="dot-green"></span>
-            <span>Compte actif</span>
+          <input #photoInput type="file" accept="image/*" class="d-none" (change)="onPhotoSelected($event)" />
+          <div class="settings-avatar__info">
+            <span class="settings-avatar__name">{{ getDisplayName() }}</span>
+            <span class="settings-avatar__role">{{ getPrimaryRole() }}</span>
+            <span class="settings-avatar__hint">PNG, JPEG moins de 2 Mo</span>
           </div>
-
-          <ul class="id-meta">
-            <li>
-              <span class="meta-key">Email</span>
-              <span class="meta-val">{{ currentUser?.email || '—' }}</span>
-            </li>
-            <li>
-              <span class="meta-key">Identifiant</span>
-              <span class="meta-val">{{ currentUser?.username || '—' }}</span>
-            </li>
-            <li>
-              <span class="meta-key">Statut</span>
-              <span class="meta-val meta-verified">
-                <i class="tim-icons icon-check-2"></i> Vérifié
-              </span>
-            </li>
-          </ul>
         </div>
+        <div class="settings-row__actions">
+          <button class="settings-btn settings-btn--ghost" type="button" (click)="triggerPhotoUpload()">
+            Changer la photo
+          </button>
+          <button *ngIf="photoUrl" class="settings-btn settings-btn--danger-ghost" type="button" (click)="removePhoto()">
+            <i class="tim-icons icon-trash-simple"></i> Supprimer
+          </button>
+        </div>
+      </div>
 
+      <div class="settings-divider"></div>
+
+      <!-- Full name -->
+      <div class="settings-field-group">
+        <div class="settings-field-label">
+          <i class="tim-icons icon-single-02"></i>
+          Nom complet
+        </div>
+        <div class="settings-field-row">
+          <div class="settings-field">
+            <label class="settings-label">Prénom</label>
+            <input type="text" class="settings-input" [value]="currentUser?.firstName || ''" readonly />
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Nom</label>
+            <input type="text" class="settings-input" [value]="currentUser?.lastName || ''" readonly />
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Email -->
+      <div class="settings-field-group">
+        <div class="settings-field-label">
+          <i class="tim-icons icon-email-85"></i>
+          Email de contact
+        </div>
+        <p class="settings-field-desc">Adresse email associée à votre compte.</p>
+        <div class="settings-input-wrap">
+          <input type="email" class="settings-input settings-input--readonly"
+            [value]="currentUser?.email || ''" readonly />
+          <span class="settings-readonly-badge">Lecture seule</span>
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Username -->
+      <div class="settings-field-group">
+        <div class="settings-field-label">
+          <i class="tim-icons icon-single-02"></i>
+          Nom d'utilisateur
+        </div>
+        <div class="settings-input-wrap">
+          <input type="text" class="settings-input settings-input--readonly settings-input--half"
+            [value]="currentUser?.username || ''" readonly />
+          <span class="settings-readonly-badge">Lecture seule</span>
+        </div>
       </div>
     </div>
 
-    <!-- ── Right : Form Cards ──────────────────────────────── -->
-    <div class="col-xl-9 col-lg-8">
+    <!-- ── Section Mot de passe ── -->
+    <div class="settings-section">
+      <div class="settings-section__label">
+        <i class="tim-icons icon-lock-circle"></i>
+        Mot de passe
+      </div>
+      <p class="settings-section__sub">Modifiez votre mot de passe actuel.</p>
 
-      <!-- Informations personnelles -->
-      <div class="info-card">
-        <div class="info-card-header">
-          <div class="info-header-icon">
-            <i class="tim-icons icon-single-02"></i>
-          </div>
-          <div>
-            <h5 class="info-title">Informations personnelles</h5>
-            <p class="info-sub">Détails de votre compte utilisateur</p>
+      <div class="settings-field-row">
+        <div class="settings-field">
+          <label class="settings-label">Mot de passe actuel</label>
+          <div class="settings-pwd-wrap">
+            <input [type]="showCurrent ? 'text' : 'password'" class="settings-input settings-input--pwd" placeholder="••••••••••" />
+            <button type="button" class="settings-pwd-toggle" (click)="showCurrent = !showCurrent">
+              <i class="tim-icons" [ngClass]="showCurrent ? 'icon-simple-remove' : 'icon-single-02'"></i>
+            </button>
           </div>
         </div>
-        <div class="info-card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="field-group">
-                <label class="field-label">Nom d'utilisateur</label>
-                <div class="field-wrap">
-                  <i class="tim-icons icon-single-02 ficon"></i>
-                  <input class="field-input" type="text"
-                    [value]="currentUser?.username || ''" readonly />
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="field-group">
-                <label class="field-label">Adresse email</label>
-                <div class="field-wrap">
-                  <i class="tim-icons icon-email-85 ficon"></i>
-                  <input class="field-input" type="email"
-                    [value]="currentUser?.email || ''" readonly />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="field-group mb-0">
-                <label class="field-label">Prénom</label>
-                <div class="field-wrap">
-                  <i class="tim-icons icon-single-copy-04 ficon"></i>
-                  <input class="field-input" type="text"
-                    [value]="currentUser?.firstName || ''" readonly />
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="field-group mb-0">
-                <label class="field-label">Nom de famille</label>
-                <div class="field-wrap">
-                  <i class="tim-icons icon-single-copy-04 ficon"></i>
-                  <input class="field-input" type="text"
-                    [value]="currentUser?.lastName || ''" readonly />
-                </div>
-              </div>
-            </div>
+        <div class="settings-field">
+          <label class="settings-label">Nouveau mot de passe</label>
+          <div class="settings-pwd-wrap">
+            <input [type]="showNew ? 'text' : 'password'" class="settings-input settings-input--pwd" placeholder="••••••••••" />
+            <button type="button" class="settings-pwd-toggle" (click)="showNew = !showNew">
+              <i class="tim-icons" [ngClass]="showNew ? 'icon-simple-remove' : 'icon-single-02'"></i>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Sécurité -->
-      <div class="info-card">
-        <div class="info-card-header">
-          <div class="info-header-icon icon-security">
-            <i class="tim-icons icon-lock-circle"></i>
-          </div>
-          <div>
-            <h5 class="info-title">Sécurité du compte</h5>
-            <p class="info-sub">Identifiant unique et informations d'accès</p>
-          </div>
-        </div>
-        <div class="info-card-body">
-          <div class="field-group mb-0">
-            <label class="field-label">
-              Identifiant utilisateur
-              <span class="readonly-badge">Lecture seule</span>
-            </label>
-            <div class="field-wrap">
-              <i class="tim-icons icon-key-25 ficon"></i>
-              <input class="field-input field-mono" type="text"
-                [value]="currentUser?.id || ''" readonly />
-            </div>
-            <p class="field-hint">Identifiant Keycloak unique — ne peut pas être modifié.</p>
-          </div>
-        </div>
+      <div class="settings-form-footer">
+        <button type="button" class="settings-btn settings-btn--primary">
+          <i class="tim-icons icon-lock-circle"></i> Changer le mot de passe
+        </button>
       </div>
-
     </div>
+
+    <!-- ── Section Compte intégré ── -->
+    <div class="settings-section">
+      <div class="settings-section__label">
+        <i class="tim-icons icon-badge"></i>
+        Compte intégré
+      </div>
+      <p class="settings-section__sub">Gérez votre authentification et vos informations de compte.</p>
+
+      <div class="settings-integration-row">
+        <div class="settings-integration-icon settings-integration-icon--keycloak">K</div>
+        <div class="settings-integration-info">
+          <strong>Keycloak SSO</strong>
+          <span>Authentification centralisée LinSoft</span>
+        </div>
+        <span class="settings-integration-badge settings-integration-badge--connected">Connecté</span>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <div class="settings-integration-row">
+        <div class="settings-integration-icon settings-integration-icon--user">
+          <i class="tim-icons icon-single-02"></i>
+        </div>
+        <div class="settings-integration-info">
+          <strong>@{{ currentUser?.username }}</strong>
+          <span>Identifiant unique — {{ currentUser?.id }}</span>
+        </div>
+        <span class="settings-integration-badge">{{ getPrimaryRole() }}</span>
+      </div>
+    </div>
+
   </div>
-
 </div>

@@ -11,6 +11,9 @@ import { AvatarService } from "../../core/services/avatar.service";
 export class UserComponent implements OnInit, OnDestroy {
   currentUser: UserInfo | null = null;
   photoUrl: string | null = null;
+  search: string = '';
+  showCurrent: boolean = false;
+  showNew: boolean = false;
   private userId: string = '';
   private sub: Subscription = new Subscription();
 
@@ -33,6 +36,13 @@ export class UserComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.avatarService.avatar$.subscribe(url => this.photoUrl = url)
     );
+  }
+
+  removePhoto(): void {
+    this.photoUrl = null;
+    if (this.userId) {
+      this.avatarService.clear(this.userId);
+    }
   }
 
   triggerPhotoUpload(): void {
