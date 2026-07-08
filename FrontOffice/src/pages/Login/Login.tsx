@@ -4,7 +4,6 @@ import { Eye, EyeOff, Lock, LogIn, User } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import api from '../../services/api';
 import type { UserProfile } from '../../types';
 import './Auth.css';
 
@@ -14,32 +13,6 @@ const BACKOFFICE_URL =
   (import.meta.env as Record<string, string | undefined>).VITE_BACKOFFICE_URL || 'http://localhost:4200';
 // Rôles donnant accès au BackOffice (doit rester aligné avec AuthGuard du BackOffice)
 const ADMIN_ROLES = ['admin', 'organisateur', 'organizer', 'event-organizer', 'ADMIN', 'ORGANIZER'];
-
-// Décoder le payload JWT Keycloak
-function decodeToken(token: string): Record<string, unknown> {
-  try { return JSON.parse(atob(token.split('.')[1])); } catch { return {}; }
-}
-
-function getUsernameFromToken(token: string): string {
-  const p = decodeToken(token);
-  return (p.preferred_username as string) || (p.sub as string) || '';
-}
-
-// Rôles realm_access depuis le JWT (fallback si l'utilisateur n'est pas dans la DB)
-function getRolesFromToken(token: string): string[] {
-  const p = decodeToken(token);
-  return (p.realm_access as { roles?: string[] })?.roles ?? [];
-}
-
-// Récupérer les rôles DB via users-service
-async function getRolesFromDB(username: string): Promise<string[]> {
-  try {
-    const res = await api.get<UserProfile>(`/users/username/${username}`);
-    return res.data?.roles ?? [];
-  } catch {
-    return [];
-  }
-}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -66,15 +39,14 @@ export default function Login() {
     try {
       await login({ username: form.username.trim(), password: form.password });
 
-      // Redirection selon le rôle — DB users-service en priorité, JWT en fallback
+      // Redirection selon le rôle.
+      // AuthContext.login() appelle getCurrentUser() qui lit realm_access JWT + DB MongoDB
+      // et persiste le résultat dans localStorage.user — on le lit directement ici.
       const token = localStorage.getItem('access_token') ?? '';
       const refreshToken = localStorage.getItem('refresh_token') ?? '';
-      const username = getUsernameFromToken(token);
-      const dbRoles = await getRolesFromDB(username);
-      const jwtRoles = getRolesFromToken(token);
-      // Union DB + JWT : couvre les admins Keycloak sans entrée en DB
-      const allRoles = [...new Set([...dbRoles, ...jwtRoles])];
-      const isTeamMember = allRoles.some((r) => ADMIN_ROLES.includes(r));
+      const storedUser = JSON.parse(localStorage.getItem('user') ?? '{}') as UserProfile;
+      const roles: string[] = storedUser.roles ?? [];
+      const isTeamMember = roles.some((r) => ADMIN_ROLES.includes(r));
 
       if (isTeamMember) {
         // Admin / organisateur → BackOffice, avec passage des tokens (pas de form Keycloak)
