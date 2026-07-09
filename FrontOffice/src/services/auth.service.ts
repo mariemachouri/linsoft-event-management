@@ -25,8 +25,9 @@ export const authService = {
       const token = localStorage.getItem('access_token');
       if (!token) return null;
 
-      // Decode JWT payload — Keycloak includes email, given_name, family_name
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      // Decode JWT payload (base64url → base64 before atob)
+      const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(b64));
       const username: string = payload.preferred_username || payload.sub || '';
       if (!username) return null;
 
