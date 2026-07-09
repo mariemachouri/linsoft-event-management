@@ -103,7 +103,7 @@
                 <td><strong>{{ item.name }}</strong><br /><small class="text-muted">{{ item.description }}</small></td>
                 <td><span class="badge badge-info">{{ item.category }}</span></td>
                 <td>{{ item.unit }}</td>
-                <td>{{ item.defaultUnitPrice | number:'1.2-2' }} {{ item.currency || 'TND' }}</td>
+                <td>{{ item.defaultUnitPrice | number:'1.2-2' }} TND</td>
                 <td>
                   <span class="badge" [ngClass]="item.active ? 'badge-success' : 'badge-secondary'">
                     {{ item.active ? 'Actif' : 'Inactif' }}

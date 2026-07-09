@@ -208,7 +208,7 @@ export class ChargeItemsComponent implements OnInit {
   }
 
   private emptyForm(): ChargeItem {
-    return { eventId: '', catalogItemId: '', description: '', quantity: 1, unitPrice: 0, currency: 'EUR', status: 'PENDING' };
+    return { eventId: '', catalogItemId: '', description: '', quantity: 1, unitPrice: 0, currency: 'TND', status: 'PENDING' };
   }
 
   private clearMessages(): void {
