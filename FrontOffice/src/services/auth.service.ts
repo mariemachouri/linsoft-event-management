@@ -57,7 +57,8 @@ export const authService = {
             firstName:   found.firstName   || jwtProfile.firstName,
             lastName:    found.lastName    || jwtProfile.lastName,
             phoneNumber: found.phoneNumber,
-            roles:       found.roles       ?? jwtProfile.roles,
+            // Prefer DB roles; fall back to JWT roles when DB roles are empty
+            roles:       (found.roles && found.roles.length > 0) ? found.roles : jwtProfile.roles,
             avatarUrl:   savedAvatar,
           };
         }
