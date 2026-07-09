@@ -36,16 +36,15 @@ export class ChargeItemsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Charger les événements en premier, puis les charges pour que getEventName() fonctionne
     this.eventService.getAllEvents().subscribe({
-      next: (data) => { this.events = data; },
-      error: () => { this.errorMessage = 'Impossible de charger les événements.'; }
+      next: (data) => { this.events = data; this.loadAllCharges(); },
+      error: () => { this.errorMessage = 'Impossible de charger les événements.'; this.loadAllCharges(); }
     });
     this.catalogService.getActiveCatalogItems().subscribe({
       next: (data) => { this.catalogItems = data; },
       error: () => {}
     });
-    // Charger toutes les charges au démarrage (historique global)
-    this.loadAllCharges();
   }
 
   onEventChange(): void {
