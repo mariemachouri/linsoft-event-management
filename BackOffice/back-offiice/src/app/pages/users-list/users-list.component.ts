@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService, UserResponse } from '../../core/services/user.service';
+import { LINSOFT_LOGO_BASE64 } from '../../core/constants/pdf-logo.constant';
 
 @Component({
   selector: 'app-users-list',
@@ -150,7 +151,7 @@ export class UsersListComponent implements OnInit {
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:Arial,sans-serif;padding:30px;font-size:12px;color:#222}
   .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #E30613;padding-bottom:14px;margin-bottom:24px}
-  .logo{font-size:20px;font-weight:900}.logo span{color:#E30613}
+  .logo img{height:34px;display:block}
   .meta{text-align:right;color:#888;font-size:11px;line-height:1.8}
   h1{font-size:15px;margin-bottom:16px}
   table{width:100%;border-collapse:collapse}
@@ -166,7 +167,7 @@ export class UsersListComponent implements OnInit {
   @media print{body{padding:15px}}
 </style></head><body>
   <div class="header">
-    <div class="logo">LN<span>SOFT</span></div>
+    <div class="logo"><img src="${LINSOFT_LOGO_BASE64}" alt="LinSoft"></div>
     <div class="meta">Gestion des utilisateurs<br>Généré le ${today}</div>
   </div>
   <h1>Liste des utilisateurs (${this.filteredUsers.length})</h1>

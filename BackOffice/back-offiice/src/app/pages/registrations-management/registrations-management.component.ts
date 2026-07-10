@@ -4,6 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { RegistrationService, Registration } from '../../core/services/registration.service';
 import { EventService, Event } from '../../core/services/event.service';
 import { UserService, UserResponse } from '../../core/services/user.service';
+import { LINSOFT_LOGO_BASE64 } from '../../core/constants/pdf-logo.constant';
 
 export interface EventGroup {
   event: Event;
@@ -208,8 +209,7 @@ export class RegistrationsManagementComponent implements OnInit {
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; padding: 30px; color: #222; font-size: 12px; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; border-bottom: 3px solid #E30613; padding-bottom: 14px; }
-    .logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
-    .logo span { color: #E30613; }
+    .logo img { height: 34px; display: block; }
     .meta { text-align: right; color: #666; font-size: 11px; line-height: 1.6; }
     h1 { font-size: 15px; margin-bottom: 4px; color: #111; }
     .subtitle { color: #555; font-size: 11px; margin-bottom: 20px; }
@@ -228,7 +228,7 @@ export class RegistrationsManagementComponent implements OnInit {
 </head>
 <body>
   <div class="header">
-    <div class="logo">LN<span>SOFT</span></div>
+    <div class="logo"><img src="${LINSOFT_LOGO_BASE64}" alt="LinSoft"></div>
     <div class="meta">Gestion d'événements<br>Généré le ${date}</div>
   </div>
   <h1>Liste des participants — ${eventName}</h1>

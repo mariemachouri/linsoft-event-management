@@ -15,6 +15,16 @@ table thead th {
   letter-spacing: 0.5px;
 }
 
+// Corps des tableaux (répartition des coûts, articles recommandés) en blanc
+// sur le fond sombre du thème Black Dashboard
+table tbody td {
+  color: #fff !important;
+}
+
+h5 {
+  color: #fff !important;
+}
+
 .list-group-item {
   background-color: #ffffff;
   border-color: #dee2e6;

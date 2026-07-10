@@ -7,6 +7,8 @@ import {
 } from '../../core/services/charge-prediction.service';
 import { AuthService } from '../../core/services/auth.service';
 import { EventService, Event as EventModel } from '../../core/services/event.service';
+import { UserService, UserResponse } from '../../core/services/user.service';
+import { LINSOFT_LOGO_BASE64 } from '../../core/constants/pdf-logo.constant';
 
 @Component({
   selector: 'app-charges-management',
@@ -16,6 +18,7 @@ import { EventService, Event as EventModel } from '../../core/services/event.ser
 export class ChargesManagementComponent implements OnInit {
   predictions: ChargePrediction[] = [];
   events: EventModel[] = [];
+  users: UserResponse[] = [];
   loading = false;
   errorMessage = '';
   isAdmin = false;
@@ -37,6 +40,7 @@ export class ChargesManagementComponent implements OnInit {
     private chargePredictionService: ChargePredictionService,
     private authService: AuthService,
     private eventService: EventService,
+    private userService: UserService,
     private router: Router
   ) {}
 
@@ -44,11 +48,22 @@ export class ChargesManagementComponent implements OnInit {
     this.isAdmin = this.authService.hasRole('admin');
     this.loadPredictions();
     this.eventService.getAllEvents().subscribe({ next: (events) => this.events = events, error: () => {} });
+    this.userService.getAllUsers().subscribe({ next: (users) => this.users = users, error: () => {} });
   }
 
   getEventName(eventId: string): string {
     const event = this.events.find(e => e.id === eventId);
     return event ? (event.title || event.name || eventId) : eventId;
+  }
+
+  getOrganizerName(organizerId: string): string {
+    if (!organizerId) return '—';
+    const user = this.users.find(u =>
+      u.id === organizerId || u.keycloakId === organizerId || u.email === organizerId || u.username === organizerId
+    );
+    if (!user) return organizerId;
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    return fullName || user.username || user.email || organizerId;
   }
 
   loadPredictions(): void {
@@ -80,7 +95,7 @@ export class ChargesManagementComponent implements OnInit {
       return;
     }
 
-    if (confirm(`Êtes-vous sûr de vouloir APPROUVER cette prédiction de ${this.getTotalCost(prediction)} € ?`)) {
+    if (confirm(`Êtes-vous sûr de vouloir APPROUVER cette prédiction de ${this.getTotalCost(prediction)} TND ?`)) {
       const request = {
         adminId: this.authService.getCurrentUserId(),
         approved: true
@@ -105,7 +120,7 @@ export class ChargesManagementComponent implements OnInit {
       return;
     }
 
-    if (confirm(`Êtes-vous sûr de vouloir REJETER cette prédiction de ${this.getTotalCost(prediction)} € ?`)) {
+    if (confirm(`Êtes-vous sûr de vouloir REJETER cette prédiction de ${this.getTotalCost(prediction)} TND ?`)) {
       const request = {
         adminId: this.authService.getCurrentUserId(),
         approved: false
@@ -170,10 +185,10 @@ export class ChargesManagementComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    const headers = ['Événement', 'Organisateur', 'Coût prédit (€)', 'Confiance (%)', 'Statut', 'Approbation requise'];
+    const headers = ['Événement', 'Organisateur', 'Coût prédit (TND)', 'Confiance (%)', 'Statut', 'Approbation requise'];
     const rows = this.filteredPredictions.map(p => [
       this.getEventName(p.eventId || ''),
-      p.organizerId || '—',
+      this.getOrganizerName(p.organizerId || ''),
       String(this.getTotalCost(p).toFixed(2)),
       String(this.getConfidencePercentage(p)) + '%',
       this.getStatusLabel(p.status as ChargeStatus),
@@ -201,8 +216,8 @@ export class ChargesManagementComponent implements OnInit {
     const rows = this.filteredPredictions.map(p => `
       <tr>
         <td>${this.getEventName(p.eventId || '')}</td>
-        <td>${p.organizerId || '—'}</td>
-        <td style="font-weight:700;color:#E30613">${this.getTotalCost(p).toFixed(2)} €</td>
+        <td>${this.getOrganizerName(p.organizerId || '')}</td>
+        <td style="font-weight:700;color:#E30613">${this.getTotalCost(p).toFixed(2)} TND</td>
         <td>
           <div class="conf-bar">
             <div class="conf-fill" style="width:${this.getConfidencePercentage(p)}%"></div>
@@ -219,7 +234,7 @@ export class ChargesManagementComponent implements OnInit {
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:Arial,sans-serif;padding:30px;font-size:12px;color:#222}
   .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #E30613;padding-bottom:14px;margin-bottom:20px}
-  .logo{font-size:20px;font-weight:900}.logo span{color:#E30613}
+  .logo img{height:34px;display:block}
   .meta{text-align:right;color:#888;font-size:11px;line-height:1.8}
   .kpi-row{display:flex;gap:16px;margin-bottom:20px}
   .kpi{flex:1;border:1px solid #eee;border-radius:8px;padding:12px 16px;text-align:center}
@@ -242,12 +257,12 @@ export class ChargesManagementComponent implements OnInit {
   @media print{body{padding:15px}}
 </style></head><body>
   <div class="header">
-    <div class="logo">LN<span>SOFT</span></div>
+    <div class="logo"><img src="${LINSOFT_LOGO_BASE64}" alt="LinSoft"></div>
     <div class="meta">Prédictions IA — Charges par événement<br>Généré le ${today}</div>
   </div>
   <div class="kpi-row">
     <div class="kpi"><span class="kpi-val">${this.filteredPredictions.length}</span><span class="kpi-lbl">Prédictions</span></div>
-    <div class="kpi"><span class="kpi-val">${totalBudget.toFixed(2)} €</span><span class="kpi-lbl">Budget total prédit</span></div>
+    <div class="kpi"><span class="kpi-val">${totalBudget.toFixed(2)} TND</span><span class="kpi-lbl">Budget total prédit</span></div>
     <div class="kpi"><span class="kpi-val">${avgConfidence}%</span><span class="kpi-lbl">Confiance moyenne IA</span></div>
   </div>
   <h1>Charges par événement — Prédictions IA</h1>

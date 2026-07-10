@@ -83,12 +83,12 @@
 
                   <!-- Organisateur -->
                   <td>
-                    <small class="text-muted">{{ prediction.organizerId }}</small>
+                    <small class="text-muted">{{ getOrganizerName(prediction.organizerId) }}</small>
                   </td>
 
                   <!-- Coût prédit -->
                   <td>
-                    <strong>{{ getTotalCost(prediction) | number:'1.2-2' }} €</strong>
+                    <strong>{{ getTotalCost(prediction) | number:'1.2-2' }} TND</strong>
                   </td>
 
                   <!-- Confiance IA -->
