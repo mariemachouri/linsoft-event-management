@@ -196,6 +196,26 @@ public class AIChargePredictionService {
     }
     
     /**
+     * Coût total "vérité terrain" issu des structures de coût historiques, utilisé comme
+     * cible d'entraînement par le modèle de régression linéaire (MLChargePredictionService).
+     */
+    double computeGroundTruthCost(ChargePrediction.EventMetrics metrics) {
+        Map<String, Double> baseCosts = HISTORICAL_COSTS.getOrDefault(
+            metrics.eventType.name().toLowerCase(), HISTORICAL_COSTS.get("meetup")
+        );
+        double cityMultiplier = CITY_MULTIPLIERS.getOrDefault(metrics.city, 1.0);
+        var breakdown = calculateCostBreakdown(metrics, baseCosts, cityMultiplier);
+        return breakdown.venueCost + breakdown.cateringCost + breakdown.equipmentCost +
+            breakdown.staffingCost + breakdown.marketingCost + breakdown.insuranceCost +
+            breakdown.miscellaneousCost;
+    }
+
+    /** Multiplicateur tarifaire de la ville (1.0 si ville inconnue). */
+    double getCityMultiplier(String city) {
+        return CITY_MULTIPLIERS.getOrDefault(city, 1.0);
+    }
+
+    /**
      * Génère des suggestions de méthodes de paiement basées sur l'analyse IA
      */
     public java.util.List<PaymentMethod> recommendPaymentMethods(ChargePrediction.EventMetrics metrics, double predictedCost) {

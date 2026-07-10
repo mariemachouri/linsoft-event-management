@@ -3,6 +3,7 @@ package com.eventmgmt.charges.resource;
 import com.eventmgmt.charges.model.ChargePrediction;
 import com.eventmgmt.charges.model.PaymentMethod;
 import com.eventmgmt.charges.service.ChargePredictionService;
+import com.eventmgmt.charges.service.MLChargePredictionService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -13,9 +14,12 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ChargePredictionResource {
-    
+
     @Inject
     ChargePredictionService service;
+
+    @Inject
+    MLChargePredictionService mlService;
     
     /**
      * Lister toutes les prédictions
@@ -128,6 +132,16 @@ public class ChargePredictionResource {
         return service.findPendingApprovals();
     }
     
+    /**
+     * Métriques du modèle de régression linéaire en production (R², MAE, taille du
+     * jeu d'entraînement)
+     */
+    @GET
+    @Path("ml-metrics")
+    public MLChargePredictionService.ModelMetrics mlMetrics() {
+        return mlService.getModelMetrics();
+    }
+
     /**
      * Supprimer une prédiction
      */

@@ -16,9 +16,12 @@ public class ChargePredictionService {
     
     @Inject
     ChargePredictionRepository repository;
-    
+
     @Inject
     AIChargePredictionService aiService;
+
+    @Inject
+    MLChargePredictionService mlService;
     
     /**
      * Créer une nouvelle prédiction de charges avec IA
@@ -35,9 +38,28 @@ public class ChargePredictionService {
         prediction.status = ChargeStatus.PENDING;
         prediction.createdAt = LocalDateTime.now().toString();
         
-        // Utiliser l'IA pour prédire les charges
+        // Le moteur de règles fournit la répartition par catégorie, les facteurs de risque,
+        // les recommandations et les articles suggérés
         prediction.predictionResult = aiService.predictCharges(eventMetrics);
-        
+
+        // Le coût total prédit provient du modèle de régression linéaire entraîné ; la
+        // répartition par catégorie est recalée proportionnellement pour rester cohérente
+        double mlTotalCost = mlService.predictTotalCost(eventMetrics);
+        double rulesTotalCost = prediction.predictionResult.predictedTotalCost;
+        double scale = rulesTotalCost > 0 ? mlTotalCost / rulesTotalCost : 1.0;
+
+        var breakdown = prediction.predictionResult.breakdown;
+        breakdown.venueCost *= scale;
+        breakdown.cateringCost *= scale;
+        breakdown.equipmentCost *= scale;
+        breakdown.staffingCost *= scale;
+        breakdown.marketingCost *= scale;
+        breakdown.insuranceCost *= scale;
+        breakdown.miscellaneousCost *= scale;
+
+        prediction.predictionResult.predictedTotalCost = mlTotalCost;
+        prediction.predictionResult.aiModel = "linear_regression";
+
         // Initialiser la décision de paiement avec les recommandations IA
         prediction.paymentDecision = new ChargePrediction.PaymentDecision();
         java.util.List<PaymentMethod> recommendedMethods = aiService.recommendPaymentMethods(

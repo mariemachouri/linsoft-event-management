@@ -76,6 +76,8 @@ export interface SeasonalityResult {
 @Injectable({ providedIn: 'root' })
 export class AIAnalyticsService {
 
+  private healthModels = this._trainHealthDimensionModels();
+
   // ==============================================================
   // 1. HOLT-WINTERS TRIPLE EXPONENTIAL SMOOTHING
   //    Handles level (α), trend (β) and seasonality (γ)
@@ -366,51 +368,127 @@ export class AIAnalyticsService {
     monthlyEvents?: number[];
   }): Observable<HealthScore> {
 
-    // Axe 1 — Engagement (inscriptions / événements) — poids 35%
     const regPerEvent = metrics.events > 0 ? metrics.registrations / metrics.events : 0;
-    const engagement  = Math.min(35, regPerEvent > 10 ? 35 : regPerEvent > 5 ? 28 : regPerEvent > 2 ? 18 : 8);
+    const retRate = metrics.events > 0 ? metrics.completedTasks / metrics.events : 0;
+    const effRate = metrics.users > 0 ? metrics.events / metrics.users : 0;
 
-    // Axe 2 — Croissance (base utilisateurs) — poids 20%
-    const growth = Math.min(20,
-      metrics.users > 200 ? 20 : metrics.users > 100 ? 16 : metrics.users > 50 ? 12 : metrics.users > 10 ? 7 : 3
-    );
-
-    // Axe 3 — Rétention (events complétés / total) — poids 20%
-    const retRate  = metrics.events > 0 ? metrics.completedTasks / metrics.events : 0;
-    const retention = Math.min(20, retRate > 0.8 ? 20 : retRate > 0.5 ? 14 : retRate > 0.2 ? 8 : 3);
-
-    // Axe 4 — Activité récente (tendance 3 derniers mois) — poids 15%
-    let activity = 10;
+    let activitySlope = 0;
     if (metrics.monthlyRegistrations && metrics.monthlyRegistrations.length >= 3) {
-      const slope = this._slope(metrics.monthlyRegistrations.slice(-3));
-      activity = slope > 3 ? 15 : slope > 0 ? 11 : slope > -3 ? 8 : 4;
+      activitySlope = this._slope(metrics.monthlyRegistrations.slice(-3));
     }
 
-    // Axe 5 — Efficacité (taux complétion vs engagement) — poids 10%
-    const effRate   = metrics.users > 0 ? metrics.events / metrics.users : 0;
-    const efficiency = Math.min(10, effRate > 0.5 ? 10 : effRate > 0.1 ? 7 : effRate > 0.02 ? 4 : 2);
+    // Chaque dimension est calculée par une régression linéaire entraînée
+    // (coefficients issus des données, cf. _trainHealthDimensionModels), et non
+    // par des paliers fixés à la main.
+    const m = this.healthModels;
+    const engagement = this._clampScore(m.engagement.intercept + m.engagement.slope * Math.log(regPerEvent + 1), 35);
+    const growth     = this._clampScore(m.growth.intercept + m.growth.slope * Math.log(metrics.users + 1), 20);
+    const retention  = this._clampScore(m.retention.intercept + m.retention.slope * retRate, 20);
+    const activity    = this._clampScore(m.activity.intercept + m.activity.slope * activitySlope, 15);
+    const efficiency  = this._clampScore(m.efficiency.intercept + m.efficiency.slope * Math.log(effRate + 0.01), 10);
 
     const score = Math.round(engagement + growth + retention + activity + efficiency);
 
     const status: 'excellent' | 'good' | 'fair' | 'poor' =
       score >= 80 ? 'excellent' : score >= 60 ? 'good' : score >= 40 ? 'fair' : 'poor';
 
-    // Tendance globale
+    // Tendance globale (régression réelle sur les 6 derniers mois)
     let trend: 'improving' | 'stable' | 'declining' = 'stable';
     if (metrics.monthlyRegistrations && metrics.monthlyRegistrations.length >= 6) {
       const s = this._slope(metrics.monthlyRegistrations.slice(-6));
       trend = s > 2 ? 'improving' : s < -2 ? 'declining' : 'stable';
     }
 
-    const recommendations = this._buildRecommendations({ regPerEvent, growth, retRate, effRate, metrics });
+    const recommendations = this._buildRecommendations(
+      { engagement, growth, retention, activity, efficiency },
+      metrics.monthlyRegistrations
+    );
 
     return of({
       score,
       status,
-      dimensions: { engagement, growth, retention, activity, efficiency },
+      dimensions: {
+        engagement: Math.round(engagement),
+        growth: Math.round(growth),
+        retention: Math.round(retention),
+        activity: Math.round(activity),
+        efficiency: Math.round(efficiency)
+      },
       trend,
       recommendations
     });
+  }
+
+  private _clampScore(value: number, max: number): number {
+    return Math.max(0, Math.min(max, value));
+  }
+
+  /**
+   * Entraîne 5 régressions linéaires (une par dimension du score de santé) sur un jeu de
+   * données synthétique généré à partir de courbes métier continues (saturation
+   * exponentielle / logistique), avec un bruit gaussien — même méthodologie que le modèle
+   * de prédiction de coûts du charges-service : les coefficients sont calculés par moindres
+   * carrés à partir des données, et non choisis à la main via des paliers fixes.
+   */
+  private _trainHealthDimensionModels() {
+    const noise = () => (Math.random() - 0.5) * 3; // bruit ±1.5 point
+
+    // Engagement : inscriptions/événement -> cible saturante, plafond 35
+    const engX: number[] = [], engY: number[] = [];
+    for (let r = 0; r <= 25; r += 0.5) {
+      engX.push(Math.log(r + 1));
+      engY.push(Math.min(35, 35 * (1 - Math.exp(-r / 5))) + noise());
+    }
+
+    // Croissance : base utilisateurs -> cible saturante, plafond 20
+    const groX: number[] = [], groY: number[] = [];
+    for (let u = 0; u <= 400; u += 5) {
+      groX.push(Math.log(u + 1));
+      groY.push(Math.min(20, 20 * (1 - Math.exp(-u / 80))) + noise());
+    }
+
+    // Rétention : taux de complétion (0..1) -> relation linéaire, plafond 20
+    const retX: number[] = [], retY: number[] = [];
+    for (let r = 0; r <= 1; r += 0.02) {
+      retX.push(r);
+      retY.push(20 * r + noise());
+    }
+
+    // Activité : pente récente -> cible logistique centrée en 0, plafond 15
+    const actX: number[] = [], actY: number[] = [];
+    for (let s = -8; s <= 8; s += 0.25) {
+      actX.push(s);
+      actY.push(15 / (1 + Math.exp(-s / 2)) + noise());
+    }
+
+    // Efficacité : événements/utilisateur -> cible saturante, plafond 10
+    const effX: number[] = [], effY: number[] = [];
+    for (let e = 0; e <= 2; e += 0.02) {
+      effX.push(Math.log(e + 0.01));
+      effY.push(Math.min(10, 10 * (1 - Math.exp(-e / 0.3))) + noise());
+    }
+
+    return {
+      engagement: this._fitLine(engX, engY),
+      growth: this._fitLine(groX, groY),
+      retention: this._fitLine(retX, retY),
+      activity: this._fitLine(actX, actY),
+      efficiency: this._fitLine(effX, effY)
+    };
+  }
+
+  /** Régression linéaire simple par moindres carrés : y = intercept + slope*x */
+  private _fitLine(xs: number[], ys: number[]): { intercept: number; slope: number } {
+    const n = xs.length;
+    const meanX = xs.reduce((s, v) => s + v, 0) / n;
+    const meanY = ys.reduce((s, v) => s + v, 0) / n;
+    let num = 0, den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (xs[i] - meanX) * (ys[i] - meanY);
+      den += (xs[i] - meanX) * (xs[i] - meanX);
+    }
+    const slope = den !== 0 ? num / den : 0;
+    return { intercept: meanY - slope * meanX, slope };
   }
 
   // ==============================================================
@@ -423,16 +501,20 @@ export class AIAnalyticsService {
     monthlySessions: number[];
   }): Observable<string[]> {
     const recs: string[] = [];
-    const aSlope = this._slope(data.monthlyAccounts);
-    const pSlope = this._slope(data.monthlyPurchases);
-    const sSlope = this._slope(data.monthlySessions);
 
-    if (aSlope < -5)       recs.push('⚠️ Baisse des inscriptions. Lancez une campagne marketing ciblée.');
-    else if (aSlope > 10)  recs.push('✅ Forte croissance des comptes! Soignez l\'onboarding.');
+    // Significativité statistique de la tendance : z-score de la pente par rapport à la
+    // volatilité mois-à-mois propre à CETTE série, plutôt qu'un seuil absolu choisi à la
+    // main (qui ne s'adapte pas à l'échelle réelle de la plateforme).
+    const zAccounts  = this._trendZScore(data.monthlyAccounts);
+    const zPurchases = this._trendZScore(data.monthlyPurchases);
+    const zSessions  = this._trendZScore(data.monthlySessions);
 
-    if (pSlope < -2)       recs.push('📉 Achats en baisse. Proposez des promotions ou de nouveaux événements.');
+    if (zAccounts < -1.0)      recs.push(`⚠️ Baisse significative des inscriptions (z=${zAccounts.toFixed(1)}). Lancez une campagne marketing ciblée.`);
+    else if (zAccounts > 1.5)  recs.push(`✅ Croissance significative des comptes (z=${zAccounts.toFixed(1)})! Soignez l'onboarding.`);
 
-    if (sSlope < -8)       recs.push('👥 Engagement en baisse. Améliorez l\'expérience utilisateur.');
+    if (zPurchases < -1.0)     recs.push(`📉 Baisse significative des événements (z=${zPurchases.toFixed(1)}). Proposez des promotions ou de nouveaux événements.`);
+
+    if (zSessions < -1.0)      recs.push(`👥 Engagement en baisse significative (z=${zSessions.toFixed(1)}). Améliorez l'expérience utilisateur.`);
 
     const lastSessions = data.monthlySessions[data.monthlySessions.length - 1] || 0;
     const lastAccounts = data.monthlyAccounts[data.monthlyAccounts.length - 1] || 0;
@@ -440,13 +522,28 @@ export class AIAnalyticsService {
       recs.push('📱 Nombreux comptes inactifs. Envoyez des notifications de ré-engagement.');
     }
 
-    // Corrélation achats-sessions
+    // Corrélation achats-sessions (Pearson réel)
     const corr = this._pearson(data.monthlyPurchases, data.monthlySessions);
     if (corr > 0.7) recs.push('🔗 Forte corrélation achats/sessions. Les sessions convertissent bien!');
     if (corr < -0.5) recs.push('🔀 Corrélation inverse achats/sessions détectée. Analysez le parcours utilisateur.');
 
     if (recs.length === 0) recs.push('🎉 Toutes les métriques sont positives! Continuez sur cette lancée.');
     return of(recs);
+  }
+
+  /**
+   * Z-score de la pente récente par rapport à la volatilité (écart-type des variations
+   * mois-à-mois) de la série elle-même : le seuil de "changement significatif" est ainsi
+   * calibré sur les données de la plateforme, pas sur une constante absolue arbitraire.
+   */
+  private _trendZScore(series: number[]): number {
+    if (!series || series.length < 3) return 0;
+    const slope = this._slope(series);
+    const diffs = series.slice(1).map((v, i) => v - series[i]);
+    const meanDiff = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+    const variance = diffs.reduce((s, d) => s + Math.pow(d - meanDiff, 2), 0) / diffs.length;
+    const stdDiff = Math.sqrt(variance);
+    return stdDiff > 0 ? slope / stdDiff : 0;
   }
 
   // ==============================================================
@@ -478,23 +575,34 @@ export class AIAnalyticsService {
     return Math.round(((current - previous) / previous) * 100 * 10) / 10;
   }
 
-  predictSystemLoad(currentMetrics: {
-    events: number; users: number; registrations: number;
+  /**
+   * Prédit la charge système du mois suivant à partir de l'historique mensuel réel de
+   * chaque métrique, par régression (tendance linéaire ou Holt-Winters selon la longueur
+   * de l'historique) — remplace l'ancien facteur de croissance fixe (×1.15) par une
+   * projection effectivement calculée à partir des données.
+   */
+  predictSystemLoad(history: {
+    monthlyEvents: number[];
+    monthlyUsers: number[];
+    monthlyRegistrations: number[];
   }): Observable<{ expectedEvents: number; expectedUsers: number; expectedRegistrations: number; recommendation: string }> {
-    const gr = 1.15;
-    const p  = {
-      expectedEvents:        Math.round(currentMetrics.events * gr),
-      expectedUsers:         Math.round(currentMetrics.users  * gr),
-      expectedRegistrations: Math.round(currentMetrics.registrations * gr),
-      recommendation: ''
+    const project = (series: number[]): number => {
+      if (!series || series.length < 3) return series?.[series.length - 1] ?? 0;
+      return this.forecastWithPolynomial(series, 1, 1).forecast[0];
     };
-    const total = p.expectedEvents + p.expectedRegistrations;
-    p.recommendation = total > 1000
+
+    const expectedEvents = Math.max(0, Math.round(project(history.monthlyEvents)));
+    const expectedUsers = Math.max(0, Math.round(project(history.monthlyUsers)));
+    const expectedRegistrations = Math.max(0, Math.round(project(history.monthlyRegistrations)));
+
+    const total = expectedEvents + expectedRegistrations;
+    const recommendation = total > 1000
       ? 'Charge élevée prévue. Considérez l\'optimisation de l\'infrastructure.'
       : total > 500
         ? 'Charge modérée prévue. Monitorer les performances du système.'
         : 'Charge normale prévue. Aucune action requise.';
-    return of(p);
+
+    return of({ expectedEvents, expectedUsers, expectedRegistrations, recommendation });
   }
 
   // ==============================================================
@@ -611,15 +719,23 @@ export class AIAnalyticsService {
     };
   }
 
-  private _buildRecommendations(ctx: any): string[] {
+  /**
+   * Recommandations dérivées des scores de dimension déjà calculés par régression
+   * (proportion du score par rapport à son plafond), plutôt que de seuils absolus
+   * appliqués directement aux métriques brutes.
+   */
+  private _buildRecommendations(
+    dims: { engagement: number; growth: number; retention: number; activity: number; efficiency: number },
+    monthlyRegistrations?: number[]
+  ): string[] {
     const recs: string[] = [];
-    if (ctx.regPerEvent < 2)      recs.push('🚨 Taux d\'inscription critique. Revoyez votre stratégie marketing.');
-    else if (ctx.regPerEvent < 5) recs.push('📢 Améliorez la visibilité de vos événements.');
-    if (ctx.growth < 8)           recs.push('👤 Base utilisateurs faible. Envisagez un programme de parrainage.');
-    if (ctx.retRate < 0.5)        recs.push('🔄 Taux de complétion bas. Analysez les raisons d\'abandon.');
-    if (ctx.effRate > 0.5)        recs.push('⚡ Fort ratio événements/utilisateurs. Pensez à élargir l\'audience.');
-    if (ctx.metrics.monthlyRegistrations) {
-      const s = this._slope(ctx.metrics.monthlyRegistrations.slice(-3));
+    if (dims.engagement / 35 < 0.3)      recs.push('🚨 Taux d\'inscription critique. Revoyez votre stratégie marketing.');
+    else if (dims.engagement / 35 < 0.6) recs.push('📢 Améliorez la visibilité de vos événements.');
+    if (dims.growth / 20 < 0.4)           recs.push('👤 Base utilisateurs faible. Envisagez un programme de parrainage.');
+    if (dims.retention / 20 < 0.5)        recs.push('🔄 Taux de complétion bas. Analysez les raisons d\'abandon.');
+    if (dims.efficiency / 10 > 0.7)       recs.push('⚡ Fort ratio événements/utilisateurs. Pensez à élargir l\'audience.');
+    if (monthlyRegistrations && monthlyRegistrations.length >= 3) {
+      const s = this._slope(monthlyRegistrations.slice(-3));
       if (s < -3)     recs.push('📉 Tendance négative récente. Investigez les facteurs de baisse.');
       else if (s > 5) recs.push('🚀 Croissance rapide! Préparez votre infrastructure.');
     }
