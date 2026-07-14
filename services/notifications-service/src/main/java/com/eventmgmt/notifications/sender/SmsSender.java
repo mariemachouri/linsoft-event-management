@@ -4,87 +4,121 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.Base64;
 
 @ApplicationScoped
 public class SmsSender {
     private static final Logger LOG = Logger.getLogger(SmsSender.class);
 
-    private static final String SANDBOX_URL    = "https://api.sandbox.africastalking.com/version1/messaging";
-    private static final String PRODUCTION_URL = "https://api.africastalking.com/version1/messaging";
+    // ── Twilio ──────────────────────────────────────────────────────────────
+    @ConfigProperty(name = "twilio.account.sid", defaultValue = "none")
+    String twilioAccountSid;
+
+    @ConfigProperty(name = "twilio.auth.token", defaultValue = "none")
+    String twilioAuthToken;
+
+    @ConfigProperty(name = "twilio.from.number", defaultValue = "none")
+    String twilioFromNumber;
+
+    @ConfigProperty(name = "twilio.enabled", defaultValue = "false")
+    boolean twilioEnabled;
+
+    // ── Africa's Talking (fallback) ─────────────────────────────────────────
+    @ConfigProperty(name = "africastalking.enabled", defaultValue = "false")
+    boolean atEnabled;
 
     @ConfigProperty(name = "africastalking.username", defaultValue = "sandbox")
-    String username;
+    String atUsername;
 
     @ConfigProperty(name = "africastalking.api.key", defaultValue = "none")
-    String apiKey;
-
-    @ConfigProperty(name = "africastalking.enabled", defaultValue = "false")
-    boolean enabled;
+    String atApiKey;
 
     @ConfigProperty(name = "africastalking.sandbox", defaultValue = "true")
-    boolean sandbox;
+    boolean atSandbox;
 
-    private final HttpClient httpClient = buildHttpClient();
+    private static final String AT_SANDBOX_URL    = "https://api.sandbox.africastalking.com/version1/messaging";
+    private static final String AT_PRODUCTION_URL = "https://api.africastalking.com/version1/messaging";
 
-    private static HttpClient buildHttpClient() {
-        try {
-            // Trust-all SSL context — bypasses cert validation AND forces TLSv1.2
-            // (needed for Docker/WSL2 where TLS 1.3 handshake fails through network proxies)
-            TrustManager[] trustAll = new TrustManager[]{
-                new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-                }
-            };
-            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-            sslContext.init(null, trustAll, new java.security.SecureRandom());
-            return HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .version(java.net.http.HttpClient.Version.HTTP_1_1)
-                .sslContext(sslContext)
-                .build();
-        } catch (Exception e) {
-            return HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .version(java.net.http.HttpClient.Version.HTTP_1_1)
-                .build();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .version(HttpClient.Version.HTTP_1_1)
+        .build();
+
+    public void send(String recipient, String message) {
+        String phone = recipient.startsWith("+") ? recipient : "+" + recipient;
+
+        if (twilioEnabled) {
+            sendViaTwilio(phone, message);
+        } else if (atEnabled) {
+            sendViaAfricasTalking(phone, message);
+        } else {
+            LOG.infof("[SMS-SIMULATION] To: %s | Message: %s", phone, message);
         }
     }
 
-    public void send(String recipient, String message) {
-        if (!enabled) {
-            LOG.infof("[SMS-SIMULATION] To: %s | Message: %s", recipient, message);
-            return;
-        }
+    // ── Twilio ──────────────────────────────────────────────────────────────
+    private void sendViaTwilio(String to, String message) {
+        String url = "https://api.twilio.com/2010-04-01/Accounts/"
+            + twilioAccountSid + "/Messages.json";
 
-        // Normalize phone number
-        String phone = recipient.startsWith("+") ? recipient : "+" + recipient;
-        String apiUrl = sandbox ? SANDBOX_URL : PRODUCTION_URL;
+        String credentials = Base64.getEncoder().encodeToString(
+            (twilioAccountSid + ":" + twilioAuthToken).getBytes(StandardCharsets.UTF_8));
+
+        String body = "From=" + encode(twilioFromNumber)
+            + "&To=" + encode(to)
+            + "&Body=" + encode(message);
+
+        try {
+            LOG.infof("Sending SMS via Twilio to %s", to);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(15))
+                .header("Authorization", "Basic " + credentials)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+            HttpResponse<String> response = httpClient.send(
+                request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 201) {
+                LOG.infof("✅ [TWILIO] SMS sent to %s", to);
+            } else {
+                LOG.errorf("❌ [TWILIO] HTTP %d | %s", response.statusCode(), response.body());
+                throw new RuntimeException("Twilio returned HTTP " + response.statusCode());
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.errorf(e, "Failed to send SMS via Twilio to %s", to);
+            throw new RuntimeException("Failed to send SMS via Twilio", e);
+        }
+    }
+
+    // ── Africa's Talking ────────────────────────────────────────────────────
+    private void sendViaAfricasTalking(String to, String message) {
+        String apiUrl = atSandbox ? AT_SANDBOX_URL : AT_PRODUCTION_URL;
+
+        String body = "username=" + encode(atUsername)
+            + "&to=" + encode(to)
+            + "&message=" + encode(message);
 
         try {
             LOG.infof("Sending SMS via Africa's Talking (%s) to %s",
-                sandbox ? "sandbox" : "production", phone);
-
-            String body = "username=" + encode(username)
-                + "&to=" + encode(phone)
-                + "&message=" + encode(message);
+                atSandbox ? "sandbox" : "production", to);
 
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .timeout(Duration.ofSeconds(15))
-                .header("apiKey", apiKey)
+                .header("apiKey", atApiKey)
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -94,16 +128,15 @@ public class SmsSender {
                 request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 201 || response.statusCode() == 200) {
-                LOG.infof("✅ SMS sent to %s | Response: %s", phone, response.body());
+                LOG.infof("✅ [AT] SMS sent to %s", to);
             } else {
-                LOG.errorf("SMS failed — HTTP %d | %s", response.statusCode(), response.body());
+                LOG.errorf("❌ [AT] HTTP %d | %s", response.statusCode(), response.body());
                 throw new RuntimeException("Africa's Talking returned HTTP " + response.statusCode());
             }
-
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            LOG.errorf(e, "Failed to send SMS to %s", phone);
+            LOG.errorf(e, "Failed to send SMS via Africa's Talking to %s", to);
             throw new RuntimeException("Failed to send SMS via Africa's Talking", e);
         }
     }
