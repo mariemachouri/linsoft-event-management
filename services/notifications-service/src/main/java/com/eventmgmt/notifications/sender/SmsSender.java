@@ -65,7 +65,7 @@ public class SmsSender {
 
     // ── Twilio ──────────────────────────────────────────────────────────────
     private void sendViaTwilio(String to, String message) {
-        String url = "https://api.twilio.com/2010-04-01/Accounts/"
+        String url = "http://api.twilio.com/2010-04-01/Accounts/"
             + twilioAccountSid + "/Messages.json";
 
         String credentials = Base64.getEncoder().encodeToString(
