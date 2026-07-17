@@ -41,14 +41,70 @@ public class NotificationConsumer {
             .ofPattern("d MMMM yyyy 'à' HH:mm", Locale.FRENCH)
             .withZone(ZoneId.of("Europe/Paris"));
 
+    private static final DateTimeFormatter FR_DATE_SHORT = DateTimeFormatter
+            .ofPattern("d MMM yyyy", Locale.FRENCH)
+            .withZone(ZoneId.of("Africa/Tunis"));
+
     /** Convertit une date ISO (Instant) en format lisible français. */
     private String formatDate(String iso) {
         if (iso == null || iso.isBlank()) return "—";
         try {
             return FR_DATE.format(Instant.parse(iso));
         } catch (Exception e) {
-            return iso; // fallback : valeur brute si parsing impossible
+            return iso;
         }
+    }
+
+    private String formatDateShort(String iso) {
+        if (iso == null || iso.isBlank()) return "";
+        try {
+            return FR_DATE_SHORT.format(Instant.parse(iso));
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String getEventLocation(String eventId) {
+        try {
+            EventInfo info = EventInfo.find("eventId", eventId).firstResult();
+            if (info != null && info.location != null && !info.location.isBlank()) {
+                return info.location;
+            }
+        } catch (Exception ex) { }
+        return null;
+    }
+
+    private String getEventStartDate(String eventId) {
+        try {
+            EventInfo info = EventInfo.find("eventId", eventId).firstResult();
+            if (info != null && info.startDate != null) {
+                return formatDateShort(info.startDate);
+            }
+        } catch (Exception ex) { }
+        return null;
+    }
+
+    private String buildRegistrationSms(String name, String eventId) {
+        String eventTitle = getEventTitle(eventId);
+        String location = getEventLocation(eventId);
+        String date = getEventStartDate(eventId);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[LinSoft Event Management]\n");
+        sb.append("Bonjour");
+        if (name != null && !name.isBlank()) {
+            sb.append(" ").append(name.trim());
+        }
+        sb.append(",\n\nVotre inscription a ete confirmee !\n\n");
+        sb.append("Evenement : ").append(eventTitle).append("\n");
+        if (date != null && !date.isEmpty()) {
+            sb.append("Date : ").append(date).append("\n");
+        }
+        if (location != null && !location.isEmpty()) {
+            sb.append("Lieu : ").append(location).append("\n");
+        }
+        sb.append("\nA bientot !");
+        return sb.toString();
     }
 
     // ---------------------------------------------------------------
@@ -218,10 +274,7 @@ public class NotificationConsumer {
 
                 // Also send SMS to guest phone
                 if (phone != null && !phone.isBlank()) {
-                    String smsBody = String.format(
-                        "Bonjour %s, votre inscription à l'événement « %s » est confirmée !",
-                        firstName, eventTitle
-                    );
+                    String smsBody = buildRegistrationSms(firstName, message.getEventId());
                     createAndSendSms(phone, smsBody);
                     LOG.infof("Guest SMS notification sent for registration %s → %s",
                             message.getRegistrationId(), phone);
@@ -260,9 +313,7 @@ public class NotificationConsumer {
                             message.getRegistrationId(), recipient);
                     // SMS éventuel
                     if (phone != null && !phone.isBlank()) {
-                        createAndSendSms(phone, String.format(
-                            "Votre inscription à l'événement « %s » est enregistrée !",
-                            eventTitle2));
+                        createAndSendSms(phone, buildRegistrationSms(name, message.getEventId()));
                     }
                     // Abonnement aux rappels
                     subscribeReminder(message.getEventId(), recipient, phone, name, false);
