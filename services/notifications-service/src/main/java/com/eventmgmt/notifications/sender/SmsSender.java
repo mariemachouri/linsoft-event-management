@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -12,6 +14,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 public class SmsSender {
@@ -63,7 +66,7 @@ public class SmsSender {
         }
     }
 
-    // ── Twilio ──────────────────────────────────────────────────────────────
+    // ── Twilio (via wget — Java HttpClient blocked by OpenShift egress) ────
     private void sendViaTwilio(String to, String message) {
         String url = "http://api.twilio.com/2010-04-01/Accounts/"
             + twilioAccountSid + "/Messages.json";
@@ -71,29 +74,49 @@ public class SmsSender {
         String credentials = Base64.getEncoder().encodeToString(
             (twilioAccountSid + ":" + twilioAuthToken).getBytes(StandardCharsets.UTF_8));
 
-        String body = "From=" + encode(twilioFromNumber)
+        String postData = "From=" + encode(twilioFromNumber)
             + "&To=" + encode(to)
             + "&Body=" + encode(message);
 
         try {
             LOG.infof("Sending SMS via Twilio to %s", to);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .timeout(Duration.ofSeconds(15))
-                .header("Authorization", "Basic " + credentials)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(body))
-                .build();
+            ProcessBuilder pb = new ProcessBuilder(
+                "wget", "-qO-",
+                "--timeout=20",
+                "--post-data=" + postData,
+                "--header=Authorization: Basic " + credentials,
+                "--header=Content-Type: application/x-www-form-urlencoded",
+                url
+            );
+            pb.redirectErrorStream(true);
 
-            HttpResponse<String> response = httpClient.send(
-                request, HttpResponse.BodyHandlers.ofString());
+            Process process = pb.start();
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line);
+                }
+            }
 
-            if (response.statusCode() == 201) {
+            boolean finished = process.waitFor(30, TimeUnit.SECONDS);
+            int exitCode = finished ? process.exitValue() : -1;
+
+            if (!finished) {
+                process.destroyForcibly();
+                throw new RuntimeException("Twilio wget timed out");
+            }
+
+            String result = output.toString();
+            if (exitCode == 0 && result.contains("\"queued\"")) {
                 LOG.infof("✅ [TWILIO] SMS sent to %s", to);
+            } else if (exitCode == 0 && result.contains("\"sid\"")) {
+                LOG.infof("✅ [TWILIO] SMS sent to %s (status in response)", to);
             } else {
-                LOG.errorf("❌ [TWILIO] HTTP %d | %s", response.statusCode(), response.body());
-                throw new RuntimeException("Twilio returned HTTP " + response.statusCode());
+                LOG.errorf("❌ [TWILIO] wget exit=%d | %s", exitCode, result);
+                throw new RuntimeException("Twilio SMS failed: " + result);
             }
         } catch (RuntimeException e) {
             throw e;
